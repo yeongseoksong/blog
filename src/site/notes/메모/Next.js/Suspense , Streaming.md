@@ -5,7 +5,7 @@
 #### SSR 절차
 ---
 
-![[server-rendering-without-streaming-chart.avif]]
+![server-rendering-without-streaming-chart.avif](/images/server-rendering-without-streaming-chart.avif)
 1. 먼저, 특정 페이지의 모든 데이터를 서버에서 가져옴
 2. 그런 다음 서버는 페이지의 HTML을 렌더링
 3. 페이지의 HTML, CSS 및 JavaScript가 클라이언트로 전송

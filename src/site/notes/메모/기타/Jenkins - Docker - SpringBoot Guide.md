@@ -20,17 +20,17 @@ debugInConsole: false
 ## 0. Preview
 #### 기초 버전
 
-![jenkin pipeline preview.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/jenkin%20pipeline%20preview.png)
-![젠킨스 spring boot 기본 아키텍처.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%A0%A0%ED%82%A8%EC%8A%A4%20spring%20boot%20%EA%B8%B0%EB%B3%B8%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.png)
+![jenkin pipeline preview.png](/img/user/images/jenkin pipeline preview.png)
+![젠킨스 spring boot 기본 아키텍처.png](/img/user/images/젠킨스 spring boot 기본 아키텍처.png)
 
 #### 최종 버전
 
-![젠킨스 최종 파이프라인.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%A0%A0%ED%82%A8%EC%8A%A4%20%EC%B5%9C%EC%A2%85%20%ED%8C%8C%EC%9D%B4%ED%94%84%EB%9D%BC%EC%9D%B8.png)
+![젠킨스 최종 파이프라인.png](/img/user/images/젠킨스 최종 파이프라인.png)
 
-![젠킨스 최종 아키텍처.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%A0%A0%ED%82%A8%EC%8A%A4%20%EC%B5%9C%EC%A2%85%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.png)
+![젠킨스 최종 아키텍처.png](/img/user/images/젠킨스 최종 아키텍처.png)
 
 
-![젠킨스 최종 네이버 클라우드 서버.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%A0%A0%ED%82%A8%EC%8A%A4%20%EC%B5%9C%EC%A2%85%20%EB%84%A4%EC%9D%B4%EB%B2%84%20%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%20%EC%84%9C%EB%B2%84.png)
+![젠킨스 최종 네이버 클라우드 서버.png](/img/user/images/젠킨스 최종 네이버 클라우드 서버.png)
 
 
 
@@ -310,7 +310,7 @@ pipeline {
 
 
 ## 10 . Jenkins Machine, Spring Machine 분리
-![젠킨스 최종 아키텍처.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%A0%A0%ED%82%A8%EC%8A%A4%20%EC%B5%9C%EC%A2%85%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.png)
+![젠킨스 최종 아키텍처.png](/img/user/images/젠킨스 최종 아키텍처.png)
 
 - 클라우드 콘솔에서 spring 용 machine 을 생성 한다. 이때 서브넷은 jenkins 와 같게 설정한다.
 - ACG 설정에 들어가 outbound 를 모두 열어준다.

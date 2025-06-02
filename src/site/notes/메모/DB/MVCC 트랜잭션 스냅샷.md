@@ -75,7 +75,7 @@ SELECT * FROM information_schema.innodb_trx;
 ```
 - 각 tx 에서 `select` 쿼리를 실행 후 실행 중인 트랜잭션을 아래의 명령어로 확인하면 다음과 같다. 
 
-![생존 트랜잭션 확인.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/%EC%83%9D%EC%A1%B4%20%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98%20%ED%99%95%EC%9D%B8.png)
+![생존 트랜잭션 확인.png](/img/user/images/생존 트랜잭션 확인.png)
 
 - `autocommit` 을 0 으로 설정 했기 때문이다
 

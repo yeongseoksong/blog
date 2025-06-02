@@ -2,7 +2,7 @@
 {"dg-publish":true,"permalink":"//os/tlb-hit-cache-hit-memory-hit/"}
 ---
 
-![cache,tlb,page.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/cache,tlb,page.png)
+![cache,tlb,page.png](/img/user/images/cache,tlb,page.png)
 
 **​**﻿**​(0)번** : TLB -> hit,  Cache -> hit,  Virtual Memory -> hit
 

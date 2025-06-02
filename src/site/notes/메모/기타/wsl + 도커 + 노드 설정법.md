@@ -17,7 +17,7 @@ localhostForwarding=true
 
 >localhostForwarding을 해주면 wsl 주소가 아닌 윈도우 주소를 통해서 접속 가능해진다.
 
-![image-20220531152017317.webp](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/image-20220531152017317.webp)
+![image-20220531152017317.webp](/img/user/images/image-20220531152017317.webp)
 스왑메모리 권장 설정양이다.  4gb로 메모리를 설정 할 것이니 swap 도 4gb로 설정 한다.
 
 설정이 완료 됐으면 wsl 을 종료후에 다시 실행한다.

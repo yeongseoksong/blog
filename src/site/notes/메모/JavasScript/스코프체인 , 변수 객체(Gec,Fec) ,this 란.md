@@ -17,7 +17,7 @@
 
 ####1.a. **글로벌 실행 컨텍스트(Global Execution Context)** 
 ---
-![Pasted image 20231201145629.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231201145629.png)
+![Pasted image 20231201145629.png](/img/user/images/Pasted image 20231201145629.png)
 - **전역 객체**(Global Object / GO)를 가리킨다.
 - 변수 객체는 _유일_하고, _최상위_에 위치한다.
 - 모든 **전역 변수**와, **전역 함수**를 프로퍼티로 갖는다.
@@ -27,7 +27,7 @@
 
 #### 1.b. 함수 실행 컨텍스트 (Functional Execution Context)
 ---
-![Pasted image 20231201145550.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231201145550.png)
+![Pasted image 20231201145550.png](/img/user/images/Pasted image 20231201145550.png)
 - **활성 객체**(Activation Object / AO)를 가리킨다.
 - **지역 변수**와 **내부 함수**를 프로퍼티로 갖는다.
 - 프로퍼티에 인수들의 정보를 배열로 담고 있는 객체인 **arguments object**가 추가된다.
@@ -36,7 +36,7 @@
 
 #### 2. 스코프 체인 (Scope Chain)
 ---
-![Pasted image 20231201144304.jpg](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231201144304.jpg)
+![Pasted image 20231201144304.jpg](/img/user/images/Pasted image 20231201144304.jpg)
 스코프 체인(Scope Chain)은 일종의 리스트로서 전역 객체와 중첩된 함수의 스코프의 레퍼런스를 차례로 저장하고, 의미 그대로 각각의 **스코프가 어떻게 연결(chain)되고 있는지 보여주는 것**을 말한다.
 #### 스코프 체인 동작 방식
 ---
@@ -53,7 +53,7 @@ function a() { //function a Execution Context(EC)
 a()  // '지역 변수'
 ```
 
-![Pasted image 20231201144644.jpg](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231201144644.jpg)
+![Pasted image 20231201144644.jpg](/img/user/images/Pasted image 20231201144644.jpg)
 
 > 함수 실행 컨텍스트가 가리키는  활성 객체에서 먼저 찾아본 후에 
 > 스코프 체인이 연결되어 있는 다음 AO (Activation object)혹은  Go(global object) 로 이동하여 변수를 파악한다.

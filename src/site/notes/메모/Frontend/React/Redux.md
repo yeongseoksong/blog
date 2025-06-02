@@ -30,7 +30,7 @@ useContext 와 Redux  둘 다 App 의 전역 상태를 다루기 위해 사용�
 
 #### Redux 동작 방식
 ---
-![Pasted image 20240129111755.jpg](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020240129111755.jpg)
+![Pasted image 20240129111755.jpg](/img/user/images/Pasted image 20240129111755.jpg)
 > Redux 아키텍쳐는 단방향으로만 데이터가 흐른다.
 
 

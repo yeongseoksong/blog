@@ -5,7 +5,7 @@
 
 
 
-![seruciryContext.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/seruciryContext.png)
+![seruciryContext.png](/img/user/images/seruciryContext.png)
 
 #### SecurityContextHolder
 - **SecurityContext** 를 관리하며 crud 기능을 제공

@@ -21,7 +21,7 @@ https://waspro.tistory.com/331
 ## 1. CGI (common gateway interface ~2003)
 ---
 
-![Common-Gateway-Interface.webp](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Common-Gateway-Interface.webp)
+![Common-Gateway-Interface.webp](/img/user/images/Common-Gateway-Interface.webp)
 **공용 게이트웨이 인터페이스**는 서버 프로그램에서 다른 프로그램을 불러내고, 그 처리 결과를 클라이언트에 송신하기 위한 규격을 정의한것을 의미한다. ( 프로토콜 )
 
 CGI 실행 절차는 아래와 같다.
@@ -41,6 +41,6 @@ Wsgi 실행 절차는 아래와 같다.
 > 1) Request -> 2) Web Sever ->3) WSGI (Gunicorn) middleware -> WSGI Web Framework(Flask,django)
 
 ## 3. ASGI (async server gateway interface 2019~)
-![1_9YVDOeD0H2nzNHG2BTPAog.webp](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/1_9YVDOeD0H2nzNHG2BTPAog.webp)
+![1_9YVDOeD0H2nzNHG2BTPAog.webp](/img/user/images/1_9YVDOeD0H2nzNHG2BTPAog.webp)
 WSGI에 호환성을 갖으며, 요청을 비동기로 처리할 수 있는 인터페이스 이다. Middleware 로 uvicorn 이 있다.
 

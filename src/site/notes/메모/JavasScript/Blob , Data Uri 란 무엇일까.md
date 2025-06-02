@@ -42,7 +42,7 @@ Blob은 이진 데이터의 집합을 하나의 엔티티로 저장하는 객체
 
 아래는 자바스크립트에서 Blob 인터페이스를 정의한 방식이다.
 
-![1_GPasxj7xFaL72Y4wgEr_8w.webp](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/1_GPasxj7xFaL72Y4wgEr_8w.webp)
+![1_GPasxj7xFaL72Y4wgEr_8w.webp](/img/user/images/1_GPasxj7xFaL72Y4wgEr_8w.webp)
 
 생성자 함수에서 BlobParts 는 blob 객체 , UsvString , ArrayBuffer를 인수로 받을 수 있다.
 Blob 객체의 데이터를 다루는 함수들이 존재한다.
@@ -56,11 +56,11 @@ const blob = new Blob([arrayBuffer], { type: 'image/png' });
 
 ```
 
-![Pasted image 20231206145502.jpg](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231206145502.jpg)
+![Pasted image 20231206145502.jpg](/img/user/images/Pasted image 20231206145502.jpg)
 
 
 > #### File 객체
-> Blob 객체를 상속하는 객체이다 .  name,lastModified 속성을 추가로 갖는다.![Pasted image 20231206145753.jpg](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Pasted%20image%2020231206145753.jpg)
+> Blob 객체를 상속하는 객체이다 .  name,lastModified 속성을 추가로 갖는다.![Pasted image 20231206145753.jpg](/img/user/images/Pasted image 20231206145753.jpg)
 > 
 
 

@@ -13,7 +13,7 @@
 
 ## Session Fixation
 ---
-![Session Fixation.png](/img/user/0.%20%EC%9D%B4%EB%AF%B8%EC%A7%80/Session%20Fixation.png)
+![Session Fixation.png](/img/user/images/Session Fixation.png)
 1. 해커 가 web server 에 로그인해 session 을 획득한다.
 2. 피해자에게 1. 에서 획득한 **session id** 를 포함한 url 을 전송해 클릭을 유도한다. (email)
 3. 피해자의 브라우저에 session id 인 쿠키가 존재하지 않으므로 로그인을 하도록 요청한다.
