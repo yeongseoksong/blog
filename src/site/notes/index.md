@@ -1,6 +1,5 @@
 ---
-{"dg-publish":true,"permalink":"/index-md/"}
+{"dg-publish":true,"permalink":"/index/"}
 ---
 
 
-Hello World

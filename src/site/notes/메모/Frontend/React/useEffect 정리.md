@@ -54,7 +54,7 @@ export async function GET() {
 ---
 부수효과는 위와 같이 무한루프를 야기한다. 이를 문제를 해결하기 위해서 react 에서는 useEffect 훅을 사용한다.
 
-![Pasted image 20240116163011.png](/img/user/images/Pasted image 20240116163011.png)
+![Pasted image 20240116163011.png](/images/Pasted%20image%2020240116163011.png)
 
 아래와 같이 useEffect 에 의존성배열을 빈 배열로 넣어주면 ComponentDidMount 시점에 실행된다.
 

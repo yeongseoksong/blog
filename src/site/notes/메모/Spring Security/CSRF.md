@@ -58,6 +58,6 @@ return http.build();
 
 
 **CsrfFilter.java**
-![csrf filter logic.png](/img/user/images/csrf filter logic.png)
+![csrf filter logic.png](/images/csrf%20filter%20logic.png)
 1. CSRF 토큰을 헤더에 등록하지 않는"GET", "HEAD", "TRACE", "OPTIONS" 메서드는 `requireCsrfProtectionMatcher`  (false) 에 의해 다음 코드로 넘어간다.
 2. CSRF 에 보호 받는 api 에서 수행되며 헤더의 토큰 값을 비교해 일치 하지 않으면 에러를 발생 시킨다.
