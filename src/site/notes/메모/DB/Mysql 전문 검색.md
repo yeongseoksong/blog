@@ -99,7 +99,7 @@ select * from tb_test where match(doc_body) against('삼성' in boolean mode) or
 
 ```
 
-![full text index test img.png](/images/full%20text%20index%20test%20img.png)
+![full text index test img.png](/img/user/images/full-text-index-test-img.png)
 
 #### "애플테스트", "애1플" 데이터 삽입후 확인
 

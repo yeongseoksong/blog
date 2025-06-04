@@ -98,7 +98,7 @@ ON m.team_id = t.team_id;
 	- **Hibernate**
 	- OpenJpa
 
-![jpa-jdbc over view.png](/images/jpa-jdbc%20over%20view.png)
+![jpa-jdbc over view.png](/img/user/images/jpa-jdbc-over-view.png)
 
 
 - 참고로 JPA 는 **JPQL(Java Persistence Query Language)** 을 내부적으로 사용하며 JPQL 는 결국 JDBC 를 사용해 **Native SQL** 로 변환 된다는 점을 기억해야 한다.
@@ -128,7 +128,7 @@ select * from member
 
 ## 3.1 EntityMangerFactory
 ---
-![EntityMangerFatory em.png](/images/EntityMangerFatory%20em.png)
+![EntityMangerFatory em.png](/img/user/images/EntityMangerFatory-em.png)
 
 - 어플리케이션 하나에는 단 하나의 `EntityMangerFactory` 가 존재한다. Spring 에서 Jpa 를 사용할 경우에 컨테이너에 등록되어 사용할 수 있다.
 	- `EntityManagerFatory` 는 생성 비용이 크기 때문이다.
@@ -140,7 +140,7 @@ select * from member
 
 ## 3.2 EntityManger
 ---
-![영속성 컨텔스트와 엔티티 매니저.png](/images/%EC%98%81%EC%86%8D%EC%84%B1%20%EC%BB%A8%ED%85%94%EC%8A%A4%ED%8A%B8%EC%99%80%20%EC%97%94%ED%8B%B0%ED%8B%B0%20%EB%A7%A4%EB%8B%88%EC%A0%80.png)
+![영속성 컨텔스트와 엔티티 매니저.png](/img/user/images/영속성-컨텔스트와-엔티티-매니저.png)
 - `Entity`의 생명 주기를 관리하는 역할을 수행
 - `EntityMangerFactory` 에 의해 생성되며 실제로 **커넥션 풀을 사용**해 DB 에 접근하는 객체이다.
   *DB 접근이 실제로 필요할 때만 커넥션을 사용한다.*
@@ -202,7 +202,7 @@ em.persist(member); // 엔티티를 영속성 컨텍스트에 저장한다.
 
 ### 3.3.1 엔티티 생명 주기
 
-![entity lifecycle.png](/images/entity%20lifecycle.png)
+![entity lifecycle.png](/img/user/images/entity-lifecycle.png)
 - **비영속; new/tranisent** :영속성 컨텍스트와 전혀 관계 없는 상태
   - `new Member()` 로 순수한 객체 상태일 때
 - **영속; managed** : 영속성 컨텍스트에 저장된 상태
@@ -254,7 +254,7 @@ em.flush(); // DB 와 PersistenContext 를 동기화 !
 
 ### 3.3.4  영속성 컨텍스트 생명 주기 
 
-![영속성 컨텍스트 생존 범위.png](/images/%EC%98%81%EC%86%8D%EC%84%B1%20%EC%BB%A8%ED%85%8D%EC%8A%A4%ED%8A%B8%20%EC%83%9D%EC%A1%B4%20%EB%B2%94%EC%9C%84.png)
+![영속성 컨텍스트 생존 범위.png](/img/user/images/영속성-컨텍스트-생존-범위.png)
 - 트랜잭션 과 영속성 컨텍스트가 같은 생명 주기를 공유하는 트랜잭션 범위의 영속성 컨텍스트 전략
 	- `open-in-view : false`
 - **실행 흐름**
@@ -519,7 +519,7 @@ public class Post {
 
 ## 5.1 연관관계 주인
 ---
-![1-n 관계.png](/images/1-n%20%EA%B4%80%EA%B3%84.png)
+![1-n 관계.png](/img/user/images/1-n-관계.png)
 - **JPA에서 FK를 관리하는 엔티티를 '연관관계의 주인' 이라고 부른다.**
 - 주인이 아닌 필드에 `@mappedBy` 를 사용한다.
 - 주인인 필드는 외래키와 매핑 되어 키를 관리할 수 있다.

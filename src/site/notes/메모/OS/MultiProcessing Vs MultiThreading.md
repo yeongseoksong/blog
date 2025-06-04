@@ -3,7 +3,7 @@
 ---
 
 
-![Pasted image 20231129145831.png](/images/Pasted%20image%2020231129145831.png)![Pasted image 20231129145844.png](/images/Pasted%20image%2020231129145844.png)
+![Pasted image 20231129145831.png](/img/user/images/Pasted-image-20231129145831.png)![Pasted image 20231129145844.png](/img/user/images/Pasted-image-20231129145844.png)
 운영체제가 PCB를 관리하는 방식과 TCB의 그림이다. 
 
 >PCB 는 os 스케줄링에 의해 Context Switching 되고
@@ -24,7 +24,7 @@
 >멀티 스레드 프로그램이 많은 양의 공유 데이터를 사용하는 경우 동기화 및 캐시 일관성 작업으로 인해 병목이 일어나 성능이 떨어진다
 ## 2. 컨텍스트 스위칭 오버헤드
 ---
-![Pasted image 20231129152956.jpg](/images/Pasted%20image%2020231129152956.jpg)
+![Pasted image 20231129152956.jpg](/img/user/images/Pasted-image-20231129152956.jpg)
  
  >멀티 프로세스 대신 멀티 스레드로 프로그램 모델을 구성하는 이유는 프로세스의 컨텍스트 스위칭 오버헤드 보다 스레드의 컨텍스트 스위칭 오버헤드가 훨씬 작아 병목이 적기 때문이다. 하지만 어디까지나 프로세스에 비해 상대적으로 작다는 것이지 오버헤드 자체 비용은 결코 무시할수는 없다.
 
@@ -44,10 +44,10 @@
 
 
 
-![Pasted image 20231129161755.png](/images/Pasted%20image%2020231129161755.png)
+![Pasted image 20231129161755.png](/img/user/images/Pasted-image-20231129161755.png)
 멀티 스레드는 I/O 작업이 처리될 동안 다음에 이행할 작업들을 다른 스레드에게 자원을 할당하여 수행할 수 있도록 할 수 있다. 네트워크 통신도 마찬가지로 네트워크 상황에 따라 전송 시간이 오래 걸릴 수 있으므로 통신 지연동안 스레드를 재활용 시키는 것이다.
 
 > I/o 작업하는 해당 장비 ( 네트워크 장비 ,메모리, 하드 ) 와 통신하는데 걸리는 시간이 존재 
 
 #### (event loop 기반)
-![Pasted image 20231129162340.png](/images/Pasted%20image%2020231129162340.png)
+![Pasted image 20231129162340.png](/img/user/images/Pasted-image-20231129162340.png)
