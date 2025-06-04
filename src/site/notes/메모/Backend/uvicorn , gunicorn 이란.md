@@ -7,7 +7,7 @@ WSGI ,ASGI 는 Pyhon에서 사용되는 CGI의 일종으로 Web Server 는 여�
 
 [참고] [[메모/Backend/WAS,CGI, WSGI ,ASGI 비교\|WAS,CGI, WSGI ,ASGI 비교]]
 
-![Pasted image 20231129135028.png](/img/user/images/Pasted image 20231129135028.png)
+![Pasted image 20231129135028.png](/images/Pasted%20image%2020231129135028.png)
 
 | 규약 | 구현 미들웨어 | 동작방식 |
 | ---- | ------------- | -------- |
@@ -16,7 +16,7 @@ WSGI ,ASGI 는 Pyhon에서 사용되는 CGI의 일종으로 Web Server 는 여�
 
  ### 0. Gunicorn
 ---
-![Pasted image 20231130130604.png](/img/user/images/Pasted image 20231130130604.png)
+![Pasted image 20231130130604.png](/images/Pasted%20image%2020231130130604.png)
 Gunicorn "Green Unicorn" 으로 Python WSGI(Web Server Gateway Interface, 파이썬의 WAS) HTTP Server로 Ruby의 Unicorn 프로젝트에서 이식된 prefork 방식의 웹 서버이다.
 
 
@@ -40,7 +40,7 @@ Uvicorn은 ASGI 서버이며, 초고속 ASGI 서버에 본질적으로 필요한
 >Nevertheless, as of now, Uvicorn's capabilities for handling worker processes are more limited than Gunicorn's. So, if you want to have a process manager at this level (at the Python level), then it might be better to try with Gunicorn as the process manager.
 ### 2. gunicorn + uvicorn
 ---
-![Pasted image 20231130141235.jpg](/img/user/images/Pasted image 20231130141235.jpg)
+![Pasted image 20231130141235.jpg](/images/Pasted%20image%2020231130141235.jpg)
 Uvicorn은 단일 프로세스로 비동기 처리가 가능하지만, 결국 단일 프로세스라는 한계가 있기 때문에 처리량을 더 늘리기 위해서는 멀티 프로세스를 활용해야 한다.
 gunicorn과 uvicorn을 함께 사용하면, ASGI 애플리케이션을 여러 작업자로 분산하여 처리하고, 동시에 다수의 HTTP 요청을 빠르게 처리할 수 있다. 
 

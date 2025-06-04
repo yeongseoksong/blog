@@ -56,11 +56,11 @@ const blob = new Blob([arrayBuffer], { type: 'image/png' });
 
 ```
 
-![Pasted image 20231206145502.jpg](/img/user/images/Pasted image 20231206145502.jpg)
+![Pasted image 20231206145502.jpg](/images/Pasted%20image%2020231206145502.jpg)
 
 
 > #### File 객체
-> Blob 객체를 상속하는 객체이다 .  name,lastModified 속성을 추가로 갖는다.![Pasted image 20231206145753.jpg](/img/user/images/Pasted image 20231206145753.jpg)
+> Blob 객체를 상속하는 객체이다 .  name,lastModified 속성을 추가로 갖는다.![Pasted image 20231206145753.jpg](/images/Pasted%20image%2020231206145753.jpg)
 > 
 
 
