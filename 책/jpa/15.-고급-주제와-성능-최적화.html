@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>15. 고급 주제와 성능 최적화</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="15. 고급 주제와 성능 최적화"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="15. 고급 주제와 성능 최적화"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/jpa/15.-고급-주제와-성능-최적화"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/jpa/15.-고급-주제와-성능-최적화"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/jpa/15.-고급-주제와-성능-최적화" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-113" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-113" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/jpa/">jpa</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>15. 고급 주제와 성능 최적화</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">15. 고급 주제와 성능 최적화</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-11-19T00:00:00.000Z">2024년 11월 19일</time><span>16 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/jpa" class="internal tag-link">topic/jpa</a></li><li><a href="../../tags/concept/orm" class="internal tag-link">concept/orm</a></li><li><a href="../../tags/concept/query-optimization" class="internal tag-link">concept/query-optimization</a></li><li><a href="../../tags/concept/transactions" class="internal tag-link">concept/transactions</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="151-예외-처리">15.1 예외 처리<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#151-예외-처리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1514-트랜잭션-롤백-시-주의-사항">15.1.4 트랜잭션 롤백 시 주의 사항<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1514-트랜잭션-롤백-시-주의-사항" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>트랜잭션 롤백은 DB 의 반영사항만 롤백하고 수정한 자바 객체는 복구해주지 않는다.</li>
+<li>그렇기 때문에 <strong>객체가 수정된 상태로 영속성 컨텍스트에 남아있게된다.</strong></li>
+<li>DB와 영속성 컨텍스트의 불일치를 해결하기위해 아래 방법을 사용한다.
+<ul>
+<li><code>EntityManager.clear()</code></li>
+<li>새 영속성 컨텍스트 생성</li>
+</ul>
+</li>
+<li>OSIV 를 사용할 때 불일치가 있는 영속성 컨텍스트를 그대로 사용할 수 있기 때문에 위 방법으로 초기화 해주어야 한다.<br/>
+<em>트랜 잭션 롤백 시에 자동으로 영속성 컨텍스트도 초기화 하도록 변경되었다.</em></li>
+<li><strong>기본 영속성 컨텍스트 전략에서는 롤백이 발생해 트랜잭션이 종료될 때 영속성 컨텍스트도 종료되므로 문제가 발생하지 않는다.</strong></li>
+</ul>
+<h1 id="152-엔티티-비교">15.2 엔티티 비교<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#152-엔티티-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="152-영속성-컨텍스트가-다를-때-엔티티-비교">15.2 영속성 컨텍스트가 다를 때 엔티티 비교<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#152-영속성-컨텍스트가-다를-때-엔티티-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>엔티티는 영속성 컨텍스트에 존재 하지 않을 때 새로운 자바 인스턴스를 생성하고 이것을 재활용한다.</li>
+<li>다른 두 영속성 컨텍스트에서 같은 엔티티를 조회할 때 문제가 발생할 수 있다. </li>
+<li>동등성엔 만족하지만 반환 받게되는 인스턴스는 서로 다른 것이므로 동일성은 만족하지 못한다.</li>
+<li><strong>대안</strong>
+<ul>
+<li><strong>데이터베이스 동등성 비교 (@Id 비교)</strong><br/>
+엔티티를 영속화하기 전에 엔티티 식별자를 얻을 수 없는 문제 존재</li>
+<li><code>equals()</code> 오버라이딩<br/>
+후보키에 해당하는 필드의 비교를 통해 동등성을 비교한다.</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>같은 영속성 컨텍스트</th><th>다른 영속성 컨텍스트</th></tr></thead><tbody><tr><td><strong>동일성(==)</strong></td><td>o</td><td>x</td></tr><tr><td><strong>동등성(equals)</strong></td><td>o</td><td>o</td></tr><tr><td><strong>데이터베이스 동등성</strong></td><td>o</td><td>o</td></tr></tbody></table></div>
+<h1 id="153-프록시-심화-주제">15.3 프록시 심화 주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#153-프록시-심화-주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>프록시는 엔티티를 상속받기 때문에 영속성 컨텍스트에서 반환받은 엔티티가 프록시인지 구분하지 않고 코드에서 사용할 수 있다.</li>
+<li>그렇기 때문에 지연로딩 정책을 수정하더라도 코드상 수정 사항이 발생하지 않는다.</li>
+</ul>
+<h2 id="1531-영속성-컨텍스트와-프록시">15.3.1 영속성 컨텍스트와 프록시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1531-영속성-컨텍스트와-프록시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>영속성 컨텍스트는 프록시와, 실제 엔티티를 반환할 수 있다. <code>gerReference(),find()</code></li>
+<li>같은 엔티티의 프록시와, 실제 엔티티를 동일성 비교를 수행하면 java 상에서는 서로 다른 인스턴스 이므로 false를 반환 해야한다.</li>
+<li>그러나, 영속성 컨텍스트는 동일한 영속성 컨텍스트에서 엔티티의 동일성을 보장해야하기 때문에 <strong>처음 조회 했던 엔티티나, 프록시를 추후에 조회할 때 반환하게 된다.</strong>
+<ul>
+<li><code>find()</code> 를 먼저 수행하고 <code>getReference()</code><br/>
+먼저 실제 엔티티가 영속화 됐기 때문에 <code>getReference()</code>를 수행해도 프록시가 아닌 실제 엔티티를 영속성 컨텍스트로 부터 반환받는다.</li>
+<li><code>getReference()</code> 를 먼저 수행하고 <code>find()</code><br/>
+프록시가 먼저 영속화 됐으므로 <code>find()</code> 시에도 프록시 반환</li>
+</ul>
+</li>
+</ul>
+<h2 id="1533-프록시-동등성-비교">15.3.3 프록시 동등성 비교<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1533-프록시-동등성-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>ide에서 <code>equals()</code> 를 자동 생성하면 프록시 동등성 비교시 에러가 발생한다.
+<ul>
+<li>기본적으로 타입을 동일성으로 비교하고, </li>
+<li>프록시는 초기화 되기 전에 멤버 변수에 null 값이 들어있기 때문이다</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><em>Entity의 멤버변수 (name)을 보통 <code>private</code> 으로 설정하기에 다른 곳에서 멤버 변수를 사용할 때는 항상 getter 를 사용하게되므로 null 이 반환되는 상황이 없지만, equals 는 해당 클래스에서 정의되기 때문에 <code>private</code> 멤버 변수임에도 <code>food.name</code> 접근이 가능해 null이 반환되는 문제가 생긴다.</em></p>
+</blockquote>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Entity</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Food</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Id</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">	Long id;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Column</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">unique</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//비즈니스 키로 name인 예시이다.</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">    String name;  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    @</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Override</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> boolean</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> equals</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Object </span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">o</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) {  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">        if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">this</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> ==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> o) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">        if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (o </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> null</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> ||</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> getClass</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">() </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> o.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getClass</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">return</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> false</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">; </span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">	// Food 를 상속하므로 프록시는 instance of 로 비교해야함  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">        Food food </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (Food) o;  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">        return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> Objects.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">equals</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(name, food.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getName</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()); </span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">	//프록시에서 최기에 food = null 이다 따라서 getName()을 호출해 초기화한 후 실행되어야 한다.  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    }</span></span></code></pre></figure>
+<ul>
+<li>*intellij 에서 equals 생성 시 체크 옵션을 모두 체크하면 해결된다.</li>
+</ul>
+<h2 id="1534-상속관계와-프록시">15.3.4 상속관계와 프록시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1534-상속관계와-프록시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>@Inheritance</code> 로 슈퍼타입 모델링 기법을 jpa 로 구현한 경우에 다형성을 위해 대개 다음과 같이 코드를 작성한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Entity</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Member</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">OneToOne</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">fetch</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">FetchType.LAZY)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> item; </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//book 을 가지고 있다 가정한다.</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">} </span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//memberA.setItem(new Book()); -> persist() </span></span>
+<span data-line> </span>
+<span data-line> </span></code></pre></figure>
+<p><img src="../../assets/images/jpa/상속관계-프록시.png" alt="상속관계 프록시.png"/></p>
+<ul>
+<li><code>memberA.getItem()</code> 은 지연로딩이기 때문에 프록시를 반환하는데 반환하는 타입이 Item 의 프록시이다.</li>
+<li>이때, Book과 관련된 작업을 하고싶어도 Book 과 Item_Proxy 는 상속 관계가 아니므로 다운 캐스팅이 불가능하다. </li>
+<li>다음은 상속관계 엔티티 사용시 발생하는 위와 같은 문제점을 해결하는 방법이다.</li>
+</ul>
+<h4 id="jpql-로-대상-직접-조회">JPQL 로 대상 직접 조회<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#jpql-로-대상-직접-조회" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>JPQL 로 처음부터 자식 타입을 직접 조회 한다. Book 엔티티로 반환 값을 받는다.</li>
+<li>Item 이 아닌 Book 으로 결과 값을 조회 하므로 다형성을 사용할 수 없다.</li>
+</ul>
+<h4 id="프록시-벗기기">프록시 벗기기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#프록시-벗기기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">Item item</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">member.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getItem</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(); </span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// 지연 로딩이므로 프록시가 반환된다.</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">Item unProxy </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> unProxy</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(item);</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// 프록시에서 원본 엔티티를 꺼낸다.</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(unProxy </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">instanceof</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> Book) </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// true</span></span></code></pre></figure>
+<ul>
+<li><code>unProxy == item</code> 은 <code>false</code><br/>
+프록시인 item과 실제 엔티티인 unProxy 를 비교하면 둘은 다른 인스턴스 이므로 false 가 반환된다.</li>
+<li><strong><code>unProxy()</code> 를 사용하면, 결과적으로 조회한 프록시와 원본 엔티티를 구분하지 않고 사용할 수 없게 된다.</strong><br/>
+Jpa 는 영속성 컨텍스트 내에서 한번 프록시로 노출한 경우 계속 같은 프록시를 노출해 동일성을 보장하기 때문이다.<br/>
+<code>unProxy()</code> 사용 시에 영속성 컨텍스트에 보관하고 있는 것과 다른 인스턴스 이다!</li>
+<li>원본 엔티티 (<code>unProxy</code>) 또한 영속화되어 관리된다. 따라서 원본 엔티티의 값을 변경해도 변경 감지는 동작한다.</li>
+</ul>
+<h4 id="기능을-위한-별도의-인터페이스-제공">기능을 위한 별도의 인터페이스 제공<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#기능을-위한-별도의-인터페이스-제공" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>각 자식 클래스들에서 인터페이스를 구현한다.</li>
+<li>동적 바인딩 되므로 자식의 함수가 호출된다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> interface</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Common</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{ </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> print</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> abstract</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Item</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> implements</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Common</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{}</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Book</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> extends</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Item</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Override</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> print</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(){...}</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<h4 id="비지터-패턴-사용">비지터 패턴 사용<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#비지터-패턴-사용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><em>[참고]</em> : <a href="../../메모/기타/visitor-pattern" class="internal internal-link alias" data-slug="메모/기타/visitor-pattern">visitor pattern</a></p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//슈퍼타입 @Inheritance()...</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> abstract</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Item</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">	// 비지터 패턴 사용 </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> abstract</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> accept</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Visitor </span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">visitor</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Entity</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">DiscriminatorValue</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;B&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Book</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> extends</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Item</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{ </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//  Album .. 다른 엔티티 동일</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Override</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> void</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> accept</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Visitor </span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">visitor</span></span>
+<span data-line><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">		visitor</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">visit</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">this</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">	}</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">}</span></span></code></pre></figure>
+<ul>
+<li><code>item.accept(new VisitorImpl())</code> 호출 시</li>
+<li>프록시는 원본 엔티티의 메서드 호출을 위임받아 실행하므로 <code>book.accept(visitor)</code> 가 호출된다.</li>
+<li>결과적으로 <code>VisitorImpl</code> 에 구현된 로직대로 엔티티들이 처리된다.</li>
+<li><strong>instance of 나 타입 캐스팅 없이 구현이 가능하며, 알고리즘과 객체 구조를 분리해 OCP 를 지킬 수 있다.</strong></li>
+</ul>
+<h1 id="154-성능-최적화">15.4 성능 최적화<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#154-성능-최적화" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1541-n1-문제">15.4.1 N+1 문제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1541-n1-문제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="즉시-로딩-시">즉시 로딩 시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#즉시-로딩-시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><code>em.find()</code>  면 조인 쿼리를 수행해 문제가 발생 x</li>
+<li>그러나, jpql <code>select m from Member m</code> 을 하면 jpql을 수행해 Member 결과 값만 가져오고 조인 쿼리를 수행하지 않는다.</li>
+<li>즉시 로딩으로 설정되었으므로 각 결과 칼럼마다 연관 엔티티를 조회하는 쿼리가 n 번 수행된다.</li>
+<li><strong>그래서 n+1  쿼리라 한다.</strong>
+<ul>
+<li>n 은 member 결과 칼럼의 수 </li>
+<li>1 은 member 를 조회하기 위한 쿼리 한번.</li>
+</ul>
+</li>
+</ul>
+<h4 id="지연-로딩과-n1">지연 로딩과 N+1<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#지연-로딩과-n1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>지연 로딩이므로 기본적으론 n+1 문제가 발생하지 않는데, 아래와 같이 list 를 순회하는 경우 n+1 문제가 발생한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">List&lt;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Member</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">> members </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> em.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">find</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Member.class,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">1L</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Member member </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">:</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> members){</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">	member.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getOrders</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">().</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">size</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(); </span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">	// select * from orders where member_id = 1..n*수행</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<h4 id="페치-조인-사용">페치 조인 사용<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#페치-조인-사용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><code>select m from Member m join fetch m.orders</code> 같은 쿼리로 N+1 문제 해결 가능</li>
+</ul>
+<h4 id="하이버네이트의-batchsize">하이버네이트의 @BatchSize<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#하이버네이트의-batchsize" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>지정한 size 만큼  SQL 의 In절을 사용해 조회 한다.</li>
+<li><code>select * from orders where member_id in (?,?,?..n)</code></li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Member</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">BatchSize</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">size</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">5</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)	</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">OnetoMany</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">mappedBy</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;member&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">fetch</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">FetchType.EAGER)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> List&lt;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Order</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">> orders </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> new</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> ArrayList&lt;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Order</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">>();</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<ul>
+<li>
+<p><strong>즉시 로딩시</strong> <code>@BatchSize</code> 를 설정하면 orders를 조회하는 쿼리에 size 값 만큼 <code>in</code> 절에 member_id 넣어 원래 n 번 반복되는 상황을 <strong>(n/size) 번 만큼 쿼리가 수행</strong>되게 한다.</p>
+</li>
+<li>
+<p><strong>지연 로딩</strong>으로 설정한 경우엔 orders를 <strong>최초 사용 시</strong> <strong>size 만큼 orders 를 조회하는 쿼리를 수행</strong>하고 재사용한다. 미리 로딩한 데이터가 없을 때 size 만큼 orders 를 다시 로딩해두는 과정을 반복한다.</p>
+</li>
+</ul>
+<h4 id="하이버네이트-fetchfetchmodesubselect">하이버네이트 @Fetch(FetchMode.SUBSELECT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#하이버네이트-fetchfetchmodesubselect" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>연관된 데이터 조회 시에 서브쿼리를 사용해 N+1 문제를 해결한다.
+<ul>
+<li><code>select O from Orders o where o.member_id in (select m.id from member M where m.id>10)</code></li>
+</ul>
+</li>
+<li><strong>즉시 로딩이면 조회 시점에 지연 로딩이면 엔티티 사용 시점에 실행된다.</strong></li>
+</ul>
+<h4 id="n1-정리">N+1 정리<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#n1-정리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>지연 로딩을 기본으로 사용하고 필요시에 <code>fetch join</code> 을 사용하는 것을 권장</li>
+<li><code>@OneToOne, @ManyToOne</code> 은 기본 전략이 즉시 로딩이므로 지연 로딩을 명시해야 한다.</li>
+</ul>
+<h2 id="1542-읽기-전용-쿼리의-성능-최적화">15.4.2 읽기 전용 쿼리의 성능 최적화<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1542-읽기-전용-쿼리의-성능-최적화" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>영속성 컨텍스트는 변경 감지를 지원하기 위해 스냅샷 인스턴스를 보관해 <strong>메모리를 더 많이 사용한다는 단점</strong>이 존재한다.</li>
+<li>읽기 전용 쿼리는 딱 한번만 읽어서 화면에 출력하면 된다.
+<ul>
+<li><strong>스칼라 타입으로 조회</strong>
+<ul>
+<li><code>select o.id,o.name... from Order o</code></li>
+<li>영속성 컨텍스트가 스칼라 타입은 관리하지 않는다.</li>
+</ul>
+</li>
+<li><strong>읽기 전용 쿼리 힌트</strong>
+<ul>
+<li><code>@QueryHint(name = &quot;org.hibernate.readOnly&quot;, value = &quot;true&quot;)</code></li>
+<li>스냅샷을 보관하지 않아 메모리 사용량 최적화 가능</li>
+<li>스냅샷이 없으므로 엔티티를 수정해도 반영 x</li>
+</ul>
+</li>
+<li><strong>읽기 전용 트랜잭션</strong>
+<ul>
+<li>하이버네이트 세션의 플러시 모드를 <strong>FlushMode.MANUAL</strong>로 설정한다.</li>
+<li>강제로 호출하지 않는 한 트랜잭션이 커밋 되어도 플러시가 실행되지 않는다.</li>
+<li>플러시할 때 <strong>스냅샷을 비교하는 작업이 일어나지 않아 성능이 향상</strong>된다.</li>
+</ul>
+</li>
+<li><strong>트랜잭션 밖에서 읽기</strong>
+<ul>
+<li><code>@Transactional(propagation= Propagation.NOT_SUPPORTED)</code></li>
+<li>트랜잭션을 사용하지 않아 플러시가 일어나지 않는다. 따라서 조회 성능이 향상된다.</li>
+<li>JPQL 또한 트랜잭션이 없으면 플러시를 호출하지 않는다.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>영속화</th><th>스냅샷 생성</th><th>flush</th></tr></thead><tbody><tr><td><strong>스칼라 타입</strong></td><td>x</td><td>x</td><td>x</td></tr><tr><td><strong>쿼리 힌트</strong></td><td>o</td><td>x</td><td>o (동작 x)</td></tr><tr><td><strong>readonly 트랜잭션</strong></td><td><strong>o</strong></td><td>o</td><td>x</td></tr></tbody></table></div>
+<ul>
+<li><strong>쿼리 힌트</strong>는 스냅샷 생성을 안하므로 <strong>메모리 최적화</strong>에 이점이 있고 <strong>read only 트랜잭션</strong>은 <code>flush</code> 가 동작하지 않으므로 <strong>속도 최적화</strong>에 이점이 있다.</li>
+<li>결론적으로 가장 좋은 최적화는 두 옵션을 동시에 사용하는 것이다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Transactional</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">readOnly</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// 읽기 전용 트랜잭션 - 플러시가 작동하지 않아 성능 절약 </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> List</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">Member</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> getMemberList</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">long</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="function"> memberId) { </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> em.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">createQuery</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;select m from Member m&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, Member.class) </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">		.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">setHint</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;org.hibernate.readOnly&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// 읽기 전용 쿼리 힌트 - 메모리 절약 .getResultList(); }</span></span></code></pre></figure>
+<blockquote>
+<p>Spring Data Jpa 에서 <code>@QueryHinsts</code> 힌트를 주지 않아도<code> @Transactional (readOnly=true)</code> 만 작성해도 위와 같이 동작한다.</p>
+</blockquote>
+<h2 id="1545-트랜잭션을-지원하는-쓰기-지연과-성능-최적화">15.4.5 트랜잭션을 지원하는 쓰기 지연과 성능 최적화<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1545-트랜잭션을-지원하는-쓰기-지연과-성능-최적화" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="트랜잭션을-지원하는-쓰기지연과-jdbc-배치">트랜잭션을 지원하는 쓰기지연과 JDBC 배치<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#트랜잭션을-지원하는-쓰기지연과-jdbc-배치" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>1차 캐시와 <code>flush</code> 기능을 활용하여 SQL배치 처리를 효과적으로 가능하다. </li>
+<li>application.properties 에 <code>hibernate.jdbc.batch_size</code> 크기만큼 <strong>같은 쿼리를</strong> 모아서 수행</li>
+<li>Mysql 은 IDENTITY 이므로 식별자를 위해 <code>em.perist()</code> 이즉시 쿼리를 수행해야하므로 쓰기지연을 사용한 배치 최적화 불가능</li>
+</ul>
+<h4 id="트랜잭션을-지원하는-쓰기-지연과-애플리케이션-확장성">트랜잭션을 지원하는 쓰기 지연과 애플리케이션 확장성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#트랜잭션을-지원하는-쓰기-지연과-애플리케이션-확장성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>데이터 베이스의 쓰기 지연과 변경 감지 기능은 테이블 행에 락이 걸리는 시간을 최소화 시킨다.</li>
+<li><code>flush</code> 시점에 쿼리를 수행하고 커밋하기 때문이다.</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/jpa와-영속성" class="internal internal-link alias" data-slug="탐색/주제/jpa와-영속성">JPA와 영속성</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-77" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#151-예외-처리" data-for="151-예외-처리">15.1 예외 처리</a></li><li class="depth-1"><a href="#1514-트랜잭션-롤백-시-주의-사항" data-for="1514-트랜잭션-롤백-시-주의-사항">15.1.4 트랜잭션 롤백 시 주의 사항</a></li><li class="depth-0"><a href="#152-엔티티-비교" data-for="152-엔티티-비교">15.2 엔티티 비교</a></li><li class="depth-1"><a href="#152-영속성-컨텍스트가-다를-때-엔티티-비교" data-for="152-영속성-컨텍스트가-다를-때-엔티티-비교">15.2 영속성 컨텍스트가 다를 때 엔티티 비교</a></li><li class="depth-0"><a href="#153-프록시-심화-주제" data-for="153-프록시-심화-주제">15.3 프록시 심화 주제</a></li><li class="depth-1"><a href="#1531-영속성-컨텍스트와-프록시" data-for="1531-영속성-컨텍스트와-프록시">15.3.1 영속성 컨텍스트와 프록시</a></li><li class="depth-1"><a href="#1533-프록시-동등성-비교" data-for="1533-프록시-동등성-비교">15.3.3 프록시 동등성 비교</a></li><li class="depth-1"><a href="#1534-상속관계와-프록시" data-for="1534-상속관계와-프록시">15.3.4 상속관계와 프록시</a></li><li class="depth-0"><a href="#154-성능-최적화" data-for="154-성능-최적화">15.4 성능 최적화</a></li><li class="depth-1"><a href="#1541-n1-문제" data-for="1541-n1-문제">15.4.1 N+1 문제</a></li><li class="depth-1"><a href="#1542-읽기-전용-쿼리의-성능-최적화" data-for="1542-읽기-전용-쿼리의-성능-최적화">15.4.2 읽기 전용 쿼리의 성능 최적화</a></li><li class="depth-1"><a href="#1545-트랜잭션을-지원하는-쓰기-지연과-성능-최적화" data-for="1545-트랜잭션을-지원하는-쓰기-지연과-성능-최적화">15.4.5 트랜잭션을 지원하는 쓰기 지연과 성능 최적화</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/jpa와-영속성" class="internal">JPA와 영속성</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

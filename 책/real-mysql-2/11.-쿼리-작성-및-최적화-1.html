@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>11. 쿼리 작성 및 최적화-1</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="11. 쿼리 작성 및 최적화-1"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="11. 쿼리 작성 및 최적화-1"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-2/11.-쿼리-작성-및-최적화-1"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-2/11.-쿼리-작성-및-최적화-1"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/real-mysql-2/11.-쿼리-작성-및-최적화-1" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-128" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-128" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/real-mysql-2/">real mysql 2</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>11. 쿼리 작성 및 최적화-1</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">11. 쿼리 작성 및 최적화-1</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-12-12T00:00:00.000Z">2024년 12월 12일</time><span>20 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/database" class="internal tag-link">topic/database</a></li><li><a href="../../tags/concept/mysql" class="internal tag-link">concept/mysql</a></li><li><a href="../../tags/concept/query-optimization" class="internal tag-link">concept/query-optimization</a></li><li><a href="../../tags/concept/indexing" class="internal tag-link">concept/indexing</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="111-쿼리-작성과-연관된-시스템-변수">11.1 쿼리 작성과 연관된 시스템 변수<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#111-쿼리-작성과-연관된-시스템-변수" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>SQL 작성 규칙은 시스템 설정에 따라 달라진다.</li>
+<li>Mysql 에약어 종류와 주의사항 </li>
+</ul>
+<h2 id="1111-sql-모드">11.1.1 SQL 모드<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1111-sql-모드" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>sql_mode</code> 시스템 설정에 여러 개의 값을 동시에 설정 가능</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>옵션</th><th>설명</th></tr></thead><tbody><tr><td><strong>STRICT_ALL_TABLES, STRICT_TRANS_TABLES</strong></td><td>INSERT 나 Update 문장에서 변경하는 칼럼의 타입과 값이 서로 다를 때 자동으로 타입 변환을 수행하는데, 이때 <strong>타입이 적절히 변환되기 어려운 경우 쿼리를 계속 실행할지 에러를 반환할지 결정</strong>한다.<br/><em>TRANS 는 트랜잭션을 의미하며 InnoDB같이 tx를 지원하는 스토리지 엔진에만 엄격한 모드를 적용한다.</em></td></tr><tr><td><strong>ANSI_QUOTES</strong></td><td><strong>문자열은 ”을</strong> 사용하고 칼럼명이나 테이블명 같은 <strong>식별자는 &quot;&quot; 사용</strong></td></tr><tr><td><strong>ONLY_FULL_GROUP_BY</strong></td><td>GROUP By 절에 사용된 칼럼만 집계 함수에 사용할 수 있다.</td></tr><tr><td><strong>PIPES_AS_CONCAT</strong></td><td>”||” 연산자로 concat 기능이 가능하게 한다.</td></tr><tr><td><strong>PAD_CHAR_TO_FULL_LENGTH</strong></td><td>Mysql은 char 타입이더라도 문자열 뒤의 공백을 제거한다. 이 옵션 설정시 <strong>공백을 제거하지 않는다</strong>.</td></tr><tr><td><strong>IGNORE_SPACE</strong></td><td><strong>프로시저나 함수명과 괄호사이의 공백제거</strong> MYSQL의 내장함수는 모두 예약어로 간주되어 식별자로 사용 불가능해진다.</td></tr><tr><td><strong>REAL_AS_FLOAT</strong></td><td><strong>real(double) 타입이 float 타입의 동의어로 변경</strong>된다.</td></tr><tr><td><strong>NO_ZERO_IN_DATE</strong>, <strong>NO_ZERO_DATE</strong></td><td>DATE나 DATETIME 칼럼에 <strong>잘못된 날짜를 저장하는 것이 불가능</strong>해진다.</td></tr><tr><td><strong>ANSI</strong></td><td>최대한 ANSI 표준 SQL에 맞춰 동작하게한다.<br/><strong>REAL_AS_FLOAT, PIEPS_AS_CONCAT, IGNORE_SPACE, ONLY_FULL_GROUP_BY</strong> 활성화됨</td></tr><tr><td><strong>TRADITIONAL</strong></td><td><strong>STRICT_TRANS_TABLES</strong> 와 비슷하지만 더 엄격한 방식으로 SQL 작동 제어</td></tr></tbody></table></div>
+<h2 id="1112-영문-대소문자-구분">11.1.2 영문 대소문자 구분<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1112-영문-대소문자-구분" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>DB는 디스크의 디렉터리나 파일로 매핑되므로 OS 에 종속적이다.</li>
+<li>그래서 대소문자를 구분하는 UNIX 와 구분하지 않는 WINDOW 간의 마이그래션은 에러를 발생시킬 수 있다.</li>
+<li><code>lower_case_table_names</code> 시스템 변수를 1 로 설정하면 모두 소문자로만 저장해 이를 해결할 수 있다. 기본 값은 0 으로 대소문자를 구분한다.</li>
+</ul>
+<h2 id="1113-mysql-예약어">11.1.3 MySQL 예약어<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1113-mysql-예약어" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>테이블, 칼럼명 생성 시 예약어에 해당하면 ` 로 감싸서 작성하면 에러를 반환하지 않는다.</li>
+<li>예약어로 생성된 테이블은 유지보수가 힘들기 때문에 ` 사용하는 상황을 지양</li>
+<li>테이블을 생성할 때에는 예약어를 구분하기 위해 ` 없이 테이블을 생성하는 것을 권장한다. 그래야 MySQL에서 예약어를 사용했는지 에러로 알려줄 수 있다.</li>
+</ul>
+<h1 id="113-mysql-연산자와-내장-함수">11.3 MySQL 연산자와 내장 함수<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113-mysql-연산자와-내장-함수" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1131-리터럴-표기법-문자열">11.3.1 리터럴 표기법 문자열<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1131-리터럴-표기법-문자열" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h3 id="11311-문자열">11.3.1.1 문자열<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11311-문자열" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>sql</th><th>mysql</th></tr></thead><tbody><tr><td>따옴표</td><td>’ 기본</td><td>’,” 가능</td></tr><tr><td>문자열 내부에 ’ 존재</td><td>” 연속으로 써 해결</td><td>혼합 사용으로 허용,”</td></tr><tr><td>문자열 내부에 ” 존재</td><td>혼합 사용으로 허용됌</td><td>&quot;&quot; 연속으로 써 해결,혼합 사용</td></tr><tr><td>식별자 충돌</td><td>&quot;&quot;,() 로 식별자를 감싸 해결</td><td>` 로 감싸 해결</td></tr></tbody></table></div>
+<ul>
+<li>식별자 충돌의 경우 <code>sql_mode</code> 를 <code>ansi_quotes</code> 로 지정한 경우 ` 로 감쌀 수 없게된다.</li>
+</ul>
+<h3 id="11312-숫자">11.3.1.2 숫자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11312-숫자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>문자열 값과 숫자를 비교 시에 <strong>문자열이 숫자로 형변환</strong> 된다.</li>
+<li>String 칼럼에 숫자 상수를 비교할 경우 모든 칼럼을 형변환 해 비교해야 한다.
+<ul>
+<li>이는 <strong>인덱스가 존재해도 사용할 수 없는 문제</strong>를 발생시킨다.</li>
+<li>또, String 칼럼에 <strong>알파벳이라도 존재하면 쿼리 자체가 실패</strong>해버린다.</li>
+</ul>
+</li>
+</ul>
+<h3 id="11313-날짜">11.3.1.3 날짜<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11313-날짜" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>다른 DBMS 에서는 날짜 변환 함수를 사용해야한다. <code>STR_TO_DATE()</code></li>
+<li>MySQL 은 정해진 포맷으로 표기 시 자동으로 <code>DATE</code>, <code>DATETIME</code> 로 변환한다.
+<ul>
+<li>YYYY-MM-DD -> <code>DATE</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="11314-불리언">11.3.1.4 불리언<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11314-불리언" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>Bool, Boolean</code> = <code>TINYINT</code></li>
+<li>C 언어처럼 <code>true/false</code> 를 1/0 에 매핑해 사용한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">//</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> bool_valu : FALSE,TRUE,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">4</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">5</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, 존재</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> tb_boolean </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> bool_value </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">In</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (FALSE,TRUE)</span></span>
+<span data-line> </span>
+<span data-line> </span></code></pre></figure>
+<ul>
+<li>TRUE 는 1에만 매핑되어 있기 때문에 결과 값에 다른 정수가 포함되지 않는다.</li>
+</ul>
+<h2 id="1132-mysql-연산자">11.3.2 MySQL 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1132-mysql-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h3 id="11321-동등equal-비교">11.3.2.1 동등(Equal) 비교(=,&lt;=>)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11321-동등equal-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>&lt;=></code> 또한 동등 비교 연산자로 제공하는데, <strong>NULL 값까지 비교를 수행해</strong> <strong>NULL-Safe 비교 연산자</strong>라고 한다.</li>
+<li><code>NULL &lt;=> NULL : 1</code> , <code>NULL = NULL : 0</code></li>
+<li><code>NULL &lt;=> 1 : 0</code>, <code>NULL = 1 : NULL</code></li>
+</ul>
+<h3 id="11322-부정not-equal-비교--">11.3.2.2 부정(Not-Equal) 비교 (&lt;>, !=)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11322-부정not-equal-비교--" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>&lt;></code> 외에도 <code>!=</code> 연산자 사용을 지원한다.</li>
+</ul>
+<h3 id="11323-not-연산자">11.3.2.3 NOT 연산자(!)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11323-not-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>부정의 결과 값을 정확히 예측할 수 없는 경우 사용을 자제 해야한다.</li>
+</ul>
+<h3 id="11324-and-와-or-연산자"><span id="11324-and-와-or--연산자" class="heading-alias"></span>11.3.2.4 AND(&amp;&amp;) 와 OR(||) 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11324-and-와-or-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>&amp;&amp;</code>, <code>||</code> 연산자를 MySQL 에서는 지원한다.</li>
+<li>오라클에서 <code>||</code> 는 문자열 결합 연산자로 사용되기에 마이그레이션 시 주의 해야한다.</li>
+<li><code>sql_mode</code> 를 <code>pipes_as_concat</code> 으로 설정해 오라클 방식으로 변경 가능하다.</li>
+</ul>
+<blockquote>
+<p>MySql 에서 And 가 or 보다 우선순위가 높다</p>
+</blockquote>
+<h3 id="11325-나누기div-와-나머지mod-연산자">11.3.2.5 나누기(/,DIV) 와 나머지(%,MOD) 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11325-나누기div-와-나머지mod-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h3 id="11326-regexp-연산자">11.3.2.6 REGEXP 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11326-regexp-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>RLIKE</code> 도 <code>REGEXP</code> 와 같은 역할을 수행한다.</li>
+<li>비교 대상 문자열의 일부에 대해서만 일치해도 <code>TRUE</code> 를 반환한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'abc'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> REGEXP </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'^[x-z]'</span></span></code></pre></figure>
+<ul>
+<li>정규식으로 칼럼을 비교할 때 인덱스 레인지 스캔을 사용할 수 없어 <code>where</code>절에 <code>REGEXP</code> 단독 사용은 성능상 좋지 않다.
+<ul>
+<li>다른 조건으로 데이터 범위를 줄인 후에 정규식을 사용할 것</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>심벌</th><th>기능</th></tr></thead><tbody><tr><td>^</td><td>문자열의 시작을 표시한다. 즉 일치하는 문자열이 반드시 제일 앞에 존재해야한다.</td></tr><tr><td>$</td><td>문자열의 끝을 표시한다. 일치하는 문자열이 문자열 제일 끝에 존재해야한다.</td></tr><tr><td>[]</td><td>문자 그룹을 표시한다. 그룹 내 문자중 하나인지를 확인한다.</td></tr><tr><td>()</td><td>문자열 그룹을 표시한다. 그룹 내 문자를 모두 포함하는지를 확인한다.</td></tr><tr><td>|</td><td>연결된 문자열 중 하나인지를 확인한다. ‘abc’|‘xyz’ 는 ‘abc’ 혹은 ‘xyz’ 인지를 확인한다.</td></tr><tr><td>.</td><td>어떤 문자든지 1개의 문자로 표시하며, ”…” 은 3개의 문자로 구성된 문자열을 찾는 정규식 이다.</td></tr><tr><td>*</td><td>이 기호 앞에 표시된 정규식은 0~1 번 이상 반복 가능하다.</td></tr><tr><td>+</td><td>이 기호 앞에 표시된 정규식은 1번 이상 반복 가능하다.</td></tr><tr><td>?</td><td>이 기호 앞에 표시된 정규식은 0~1 번만 올 수 있다</td></tr></tbody></table></div>
+<h3 id="11327-like-연산자">11.3.2.7 LIKE 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11327-like-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>REGEXP</code> 는 인덱스를 전혀 사용하지 못하지만, <code>LIKE</code> 는 인덱스를 이용해 처리할 수 있다.</li>
+<li>비교 대상 문자열이 처음부터 끝까지 일치해야 <code>TRUE</code> 를 반환한다.</li>
+<li><code>%,_</code> 이 검색이 뒤쪽에 있다면 인덱스 레인지 스캔을 사용할 수 있지만 검색어 앞쪽에 있다면 인덱스 레인지 스캔을 사용할 수 없다.</li>
+</ul>
+<blockquote>
+<p>인덱스의 LEFT-MOST 특성에 의해 검색어 앞쪽에 와일드 카드 문자가 존재시에 인덱스 풀 스캔방식이 적용된다.<br/>
+<em>[참고]</em> : [8. 인덱스](/%EC%B1%85/real%20mysql%201/8.%20%EC%9D%B8%EB%8D%B1%EC%8A%A4.md#인덱스의 가용성)</p>
+</blockquote>
+<h3 id="11328-between-연산자">11.3.2.8 BETWEEN 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11328-between-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">-- pk (dept_no, empt_no)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> dept_emp </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> dept_no </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">between</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'd003'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> and</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'd005'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> and</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> emp_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">10001</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<ul>
+<li><code>BETWEEN</code> 은 <strong>범위에 존재하는 모든 인덱스를 검색</strong>해야 해야만 한다. 그래서 <code>emp_no=10001</code> 조건절이 비교 범위를 줄여주지 못한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> dept_emp</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> dept_no </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">in</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'d003'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'d004'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'d005'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">and</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> emp_no </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 10001</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<ul>
+<li>동등 비교 연산자와 비슷한 역할을 하는 <code>IN</code> 연산자의 경우 <code>dept_no, emp_no</code> 두 비교 조건절을 사용해 비교 범위를 줄여줄 수 있다.</li>
+</ul>
+<blockquote>
+<p><code>where dept_no='d005' and emp_no=10001;</code> 와 같이 실행 한경우에 실행계획에 <code>type</code> 이 <code>const</code> 됨을 확인할 수 있었다.</p>
+<blockquote>
+<p>즉, 쿼리를 최적화하는 단계에서 쿼리를 먼저 실행해 상수화 해 결과를 반환한 것이다.<br/>
+<em>[참고]</em> : <a href="../../책/real-mysql-1/10.-실행-계획#const" class="internal internal-link alias" data-slug="책/real-mysql-1/10.-실행-계획">10. 실행 계획</a></p>
+</blockquote>
+</blockquote>
+<ul>
+<li><strong>인덱스가 다중 칼럼일 때, 앞쪽 칼럼의 선택도가 떨어질 경우 <code>IN</code> 연산자를 사용해 쿼리 성능 개선이 가능하다.</strong></li>
+</ul>
+<blockquote>
+<p>IN 절에 서브쿼리를 넣으면, 옵티마이저가 <strong>세미 조인 최적화</strong>를 사용해 쿼리를 더 빠르게 변환해 수행할 수 있다.</p>
+</blockquote>
+<h3 id="11329-in-연산자">11.3.2.9 IN 연산자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11329-in-연산자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>IN</code> 은 여러 값들에 대해 동등 비교 연산을 수행한다.
+<ul>
+<li><strong>상수가 사용된 경우</strong><br/>
+8.0 버전 이후부터 상수로 튜플을 사용하더라도 인덱스를 최적으로 사용할 수 있다.</li>
+<li><strong>서브쿼리가 사용된 경우</strong><br/>
+세미 조인 최적화가 수행되어 실행된다.</li>
+</ul>
+</li>
+<li><code>NOT IN</code> 의 경우 부정형 비교이기 떄문에 인덱스를 이용해 처리 범위를 줄이는 조건으로 사용할 수 없다.</li>
+</ul>
+<h2 id="1133-mysql-내장함수">11.3.3 MYSQL 내장함수<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1133-mysql-내장함수" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>MYSQL 에서 함수는 <strong>기본 내장함수, 사용자 정의 함수</strong>로 분류된다.
+<ul>
+<li>프로시저나 스토어드 함수와 다름을 유의</li>
+</ul>
+</li>
+</ul>
+<h3 id="11331-null-값-비교-및-대체ifnull-isnull">11.3.3.1 NULL 값 비교 및 대체(IFNULL, ISNULL)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11331-null-값-비교-및-대체ifnull-isnull" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>IFNULL(column, value)</code> : column == null ? value : column</li>
+<li><code>ISNULL(column)</code> : column == null</li>
+</ul>
+<h3 id="11332-현재-시각-조회-now-sysdate">11.3.3.2 현재 시각 조회 (NOW, SYSDATE)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11332-현재-시각-조회-now-sysdate" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>두 함수 모두 현재 시간을 반환하나 작동 방식에 차이 존재
+<ul>
+<li><code>NOW()</code> : 하나의 SQL 안에서 같은 값을 사용</li>
+<li><code>SYSDATE()</code> : 하나의 SQL 안에서 실행되더라도 실제 실행 시점의 시간을 사용</li>
+</ul>
+</li>
+<li><strong><code>SYSDATE()</code> 문제점</strong>
+<ul>
+<li>레플리카 서버에 안정적으로 복제될 수 없다.</li>
+<li>인덱스를 효율적으로 사용할 수 없다.
+<ul>
+<li><code>where id =1 and date>SYSDATE()</code> 실행 시에 <strong>인덱스를 스캔하더라도 각 레코드마다 <code>SYSDATE()</code> 함수를 실행</strong>해야 한다. 그래서 <code>idx(id, date)</code> 일 때 위의 조건절로 쿼리를 수행하더라도 실행 계획에서 인덱스를 <code>id</code> 밖에 사용하지 못한다.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="11333-날짜와-시간의-포맷-date_format-str_to_date">11.3.3.3 날짜와 시간의 포맷 (DATE_FORMAT, STR_TO_DATE)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11333-날짜와-시간의-포맷-date_format-str_to_date" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>DATE_FORMAT</code> : <code>DATETIME</code> 타입을 문자열로 변환 <code>DATE_FORMAT(NOW(), &quot;%Y-%m-%d&quot;)</code></li>
+<li><code>STR_TO_DATE</code> : <code>STR_TODATE( '2020-08-23','%Y-%m-%d')</code>
+<ul>
+<li>문자열 포맷을 (년-월-일 시:분:초) 로 입력하면 자동으로 <code>DATETIME</code> 타입으로 형 변환 된다. </li>
+</ul>
+</li>
+</ul>
+<h3 id="11334-날짜와-시간의-연산-date_add-date_sub">11.3.3.4 날짜와 시간의 연산 (DATE_ADD, DATE_SUB)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11334-날짜와-시간의-연산-date_add-date_sub" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>DATE_ADD(NOW(), INTERVAL 1 DAY)</code>, <code>DATE_SUB(...)</code>
+<ul>
+<li>INTERVAL n <strong>[YEAR, MONTH, DAY, HOUR, MINUTE, SECOND, MICROSECOND, QUARTER, WEEK ]</strong> 
+<ul>
+<li>n :  은 더하거나 뺄 양을 의미</li>
+<li>YEAR,MONTH … : 어떤 값 (년도, 달 등)을 연산할 건지 정의</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="11335-타임스탬프-연산-unix_timestamp-from_unixtime">11.3.3.5 타임스탬프 연산 (UNIX_TIMESTAMP, FROM_UNIXTIME)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11335-타임스탬프-연산-unix_timestamp-from_unixtime" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>UNIX_TIMESTAMP</code> : 1970-01-01 00:00:00 이후부터 경과된 초의 수를 반환</li>
+<li><code>FROM_UNIXTIME</code> : <code>TIMESTAMP</code>  타입을 <code>DATETIME</code> 타입으로 반환</li>
+</ul>
+<h3 id="11336-문자열-처리-rpad-lpad--rtrim-ltrim-trim">11.3.3.6 문자열 처리 (RPAD, LPAD / RTRIM, LTRIM, TRIM)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11336-문자열-처리-rpad-lpad--rtrim-ltrim-trim" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>RPAD(),LPAD()</code> : 문자를 덧붙여서 지정된 길이의 문자열을 만든다.</li>
+<li><code>RTRIM(), LTRIM(), TRIM()</code> : 문자열의 연속된 공백 문자를 제거한다.</li>
+</ul>
+<h3 id="11337-문자열-결합-concat">11.3.3.7 문자열 결합 (CONCAT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11337-문자열-결합-concat" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>CONCAT()</code> :  문자열 결합 함수, 인자 개수 제한 없음</li>
+<li><code>CONCAT_WS(',','test','test')</code> : 첫번째 인자에 구분자를 넣어주어 구분자를 사용해 문자열을 결합한다.</li>
+</ul>
+<h3 id="11338-group-by-문자열-결합-group_concat">11.3.3.8 GROUP BY 문자열 결합 (GROUP_CONCAT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11338-group-by-문자열-결합-group_concat" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>그룹 함수로 칼럼의 값들을 기본 구분자 ’,’ 로 연결해 값을 반환한다.</li>
+<li><code>GROUP_CONCAT(dept_no)</code></li>
+<li><code>GROUP_CONCAT(dept_no SEPARATOR '|')</code></li>
+</ul>
+<h3 id="11339-값의-비교와-대체case-wehn--then--end">11.3.3.9 값의 비교와 대체(CASE WEHN … THEN … END)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11339-값의-비교와-대체case-wehn--then--end" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> de</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">dept_no</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">first_name</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">gender</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">CASE</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> WHEN</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">gender</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'F'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> s</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">salary</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> salaries s </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> s</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">emp_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">emp_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> order by</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> from_date </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">limit</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">ELSE</span></span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> END</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AS</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> last_salary</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> dept_emp de,empoyees e</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> e</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">emp_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> de</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">emp_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> and</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> de</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">dept_no</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'d001'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<ul>
+<li>위와 같이 <code>CASE WHEN</code> 문으로 서브쿼리가 실행될지 여부 또한 결정할 수 있다.</li>
+<li>여성일때에만 서브쿼리를 수행하기 떄문에 불필요한 서브쿼리 실행을 막을 수 있다.</li>
+</ul>
+<h3 id="113310-타입-변환cast-convert">11.3.3.10 타입 변환(CAST, CONVERT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113310-타입-변환cast-convert" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>SQL 은 문자열 기반으로 동작해 SQL 에 포함된 모든 입력값은 문자열 처럼 취급 된다.</li>
+<li><strong>문자열, 숫자, 날짜</strong> 의 변환은 명시적으로 해주지 않아도 자동으로 필요한 형태로 변환</li>
+<li><code>CAST('1234' as SIGNED INTEGER)</code></li>
+<li><code>CONVERT('ABC' USING 'utf8mb4'),</code>  <code>CONVERT('1234',UNSINGED)</code>
+<ul>
+<li>형변환이나, 문자열의 문자 집합을 변경할 수 있다.</li>
+</ul>
+</li>
+</ul>
+<h3 id="113311-이진수-값과-16진수-문자열hex-string-변환hex-unhex">11.3.3.11 이진수 값과 16진수 문자열(Hex String) 변환(HEX, UNHEX)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113311-이진수-값과-16진수-문자열hex-string-변환hex-unhex" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>HEX()</code> : 이진 값을 16 진수문자열로 변환</li>
+<li><code>UNHEX</code> : 16진수 문자열을 이진 값으로 변환</li>
+</ul>
+<h3 id="113312-암호화-및-해시-함수-md5-sha-sha2">11.3.3.12 암호화 및 해시 함수 (MD5, SHA, SHA2)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113312-암호화-및-해시-함수-md5-sha-sha2" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>
+<p><code>select unhex(md5('abc'))</code> 로 바이너리 타입으로 변환후에 저장한다.</p>
+<ul>
+<li>바이너리로 변환하면 해시 함수의 비트 수에 딱 맞게 저장 공간을 사용할 수 있다.</li>
+</ul>
+</li>
+<li>
+<p><code>select hex(unhex(md5('abc')))</code> 바이너리 타입으로 저장한 값을 사람이 읽을 수 있는 16진수 문자열로 반환한다.</p>
+</li>
+<li>
+<p><strong>함수 기반 인덱스 사용</strong></p>
+<ul>
+<li>url 주소 정보처럼 데이터 크기가 큰 데이터에 인덱스 걸어야할 때 해시 함수를 사용하면 좋다.</li>
+<li>이렇게 큰 데이터에 인덱스를 생성할 수 없을 뿐더러, 되더라도 많은 공간을 낭비하게 된다.</li>
+<li><code>INDEX ix_url( MD5(url))</code> 과 같이 <strong>함수 기반 인덱스르 사용하면</strong> 별도의 칼럼 추가 없이 인덱스를 사용할 수 있다.</li>
+<li><code>select * from url_table where MD5(url)=MD5(&quot;www.naver.com&quot;)</code> 과 같이 조회 할 수 있다.</li>
+<li>저장 공간을 아끼기 위해서는 <code>INDEX ix_url(UNHEX(MD5(url)))</code> 같이 작성해 이진 값을 저장하면 된다.</li>
+</ul>
+</li>
+</ul>
+<h3 id="113313-처리-대기sleep">11.3.3.13 처리 대기(SLEEP)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113313-처리-대기sleep" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>SLEEP(1.5)</code> : 1.5 초간 대기후에 쿼리를 수행한다.</li>
+<li><code>select sleep(1.5) from employees</code>  는 레코드 건 수만큼 <code>sleep(1.5)</code> 가 실행된다. </li>
+</ul>
+<h3 id="113314-벤치마크benchmark">11.3.3.14 벤치마크(BENCHMARK)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113314-벤치마크benchmark" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>BENCHMARK(10,SELECT COUNT(*) FROM EMPLOYEES)</code>
+<ul>
+<li>첫번째 인자 : 반복할 횟수를 지정한다.</li>
+<li>두번째 인자 : 스칼라 값을 반환하는 함수를 사용한다.</li>
+</ul>
+</li>
+<li>벤치마크 함수와 실제 쿼리가 10번 실행되는 것은 차이가 존재한다.</li>
+<li>실제 쿼리가 10번 수행될 때에는 <strong>쿼리 파싱, 최적화, 테이블 잠금,네트워크 비용</strong>이 10번 필요하나 벤치마크 함수는 1번의 작업만 필요하다.</li>
+<li>또, 메모리 할당 또한 1/10 차이 난다.</li>
+</ul>
+<blockquote>
+<p><strong>스칼라 값</strong> : 칼럼을 하나 가지는 단이 레코드</p>
+</blockquote>
+<h3 id="113315-ip-주소-변환inet_aton-inet_ntoa">11.3.3.15 IP 주소 변환(INET_ATON, INET_NTOA)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113315-ip-주소-변환inet_aton-inet_ntoa" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>INET_ATON ('10.0.5.9')</code> : IPv4 문자열을 4바이트 부호없는 정수 타입에 저장할 수 있게 해준다.</li>
+<li><code>INET_NTOA ()</code> : 정수형의 IPv4 주소를 ip 형식으로 문자열로 변환해준다.
+<ul>
+<li><code>inet_ntoa(inet_aton(&quot;10.0.5.9&quot;))</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="113316-json-포맷json_pretty">11.3.3.16 JSON 포맷(JSON_PRETTY)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113316-json-포맷json_pretty" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>JSON_PRETTY(doc)</code> 는 json을 가독성 좋게 출력해준다.</li>
+</ul>
+<h3 id="113317-json-필드-크기json_storage_size">11.3.3.17 JSON 필드 크기(JSON_STORAGE_SIZE)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113317-json-필드-크기json_storage_size" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>JSON 은 텍스트지만 디스크 공간을 절약하기 위해 BSON (Binary Json) 포맷을 사용해 디스크에저장한다.</li>
+<li>BSON 은 실제 저장된 공간의 크기를 예측하기 어려운데, <code>JSON_STROAGE_SIZE()</code> 를 통해 확인할 수 있다.</li>
+</ul>
+<h3 id="11338-json-필드-추출json_extract">11.3.3.8 JSON 필드 추출(JSON_EXTRACT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#11338-json-필드-추출json_extract" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>JSON_UNQUOTE(JSON_EXTRACT(doc,&quot;$.first_name))</code> : 로 doc 칼럼에 “$.first_name” 경로에 있는 값을 따옴표 없이 가져올 수 있다.</li>
+<li><code>doc->&quot;$.first_name</code> :  <code>JSON_EXTRACT(doc,&quot;$.first_name)</code> 과 같은 기능을 수행한다.</li>
+<li><code>doc->&lt;&quot;$.first_name</code> : <code>JSON_UNQUOTE(JSON_EXTRACT(doc,&quot;$.first_name))</code> 과 같은 기능을 수행한다.</li>
+</ul>
+<h3 id="113319-json-오브젝프-포함-여부-확인json_contains">11.3.3.19 JSON 오브젝프 포함 여부 확인(JSON_CONTAINS)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113319-json-오브젝프-포함-여부-확인json_contains" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>JSON_CONTAINS(doc,'{&quot;first_name&quot;:&quot;Christian&quot;}')</code></li>
+<li><code>JSON_CONTAINS(doc,'&quot;Christian&quot;','$.first_name')</code></li>
+<li>doc 칼럼에서 “first_name” 필드에 “Christian” 값이 존재하는지 확인한다.</li>
+</ul>
+<h3 id="113320-json-오브젝트-생성json_object">11.3.3.20 JSON 오브젝트 생성(JSON_OBJECT)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113320-json-오브젝트-생성json_object" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="function"> JSON_OBJECT</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;empNo&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,emp_no,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">				  &quot;salary&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,salary) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> salaries</span></span></code></pre></figure>
+<h3 id="113321-json-칼럼으로-집계-json_objectagg--json_arrayagg">11.3.3.21 JSON 칼럼으로 집계 (JSON_OBJECTAGG &amp; JSON_ARRAYAGG)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113321-json-칼럼으로-집계-json_objectagg--json_arrayagg" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>GROUP By</code> 절과 함께 사용되는 집계 함수이다.</li>
+<li><code>JSON_OBJECTAGG(emp_no,from_date) ... GROUP BY dept_no</code> : emp_no 를 키로하고 from_date 를 값으로 하는 <strong>JSON 도큐먼트</strong>를 생성</li>
+<li><code>JSON_ARRAYAGG(emp_no)... GROUP BY dept_no</code> : emp_no 의 결과 값들을 <strong>JSON 배열</strong>로 만들어 반환</li>
+</ul>
+<h3 id="113322-json-데이터를-테이블로-변환json_table">11.3.3.22 JSON 데이터를 테이블로 변환(JSON_TABLE)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#113322-json-데이터를-테이블로-변환json_table" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>JSON 데이터들의 값들을 모아서 RDBMS 테이블을 만들어 반환한다.</li>
+<li>항상 <strong>내부 임시 테이블</strong>을 이용한다는 점을 유의해야 한다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">SELECT</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">FROM</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> JSON_TABLE(</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'{</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">	&quot;users&quot;:[</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">		{&quot;id&quot;: 1, &quot;name&quot;: &quot;Alice&quot;, &quot;age&quot;:25},</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">		{&quot;id&quot;: 2, &quot;name&quot;: &quot;Bob&quot;, &quot;age&quot;:30},</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">		{&quot;id&quot;: 3, &quot;name&quot;: &quot;Charlie&quot;, &quot;age&quot;:35}</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">	]</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">}'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;$.users[*]&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> COLUMNS (</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">user_id </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">INT</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> PATH</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;$.id&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">user_name </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">VARCHAR</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">50</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">PATH</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;$.name&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">user_age </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">INT</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> PATH</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;$.age&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">AS</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> users_table;</span></span></code></pre></figure>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/데이터베이스와-sql" class="internal internal-link alias" data-slug="탐색/주제/데이터베이스와-sql">데이터베이스와 SQL</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-92" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#111-쿼리-작성과-연관된-시스템-변수" data-for="111-쿼리-작성과-연관된-시스템-변수">11.1 쿼리 작성과 연관된 시스템 변수</a></li><li class="depth-1"><a href="#1111-sql-모드" data-for="1111-sql-모드">11.1.1 SQL 모드</a></li><li class="depth-1"><a href="#1112-영문-대소문자-구분" data-for="1112-영문-대소문자-구분">11.1.2 영문 대소문자 구분</a></li><li class="depth-1"><a href="#1113-mysql-예약어" data-for="1113-mysql-예약어">11.1.3 MySQL 예약어</a></li><li class="depth-0"><a href="#113-mysql-연산자와-내장-함수" data-for="113-mysql-연산자와-내장-함수">11.3 MySQL 연산자와 내장 함수</a></li><li class="depth-1"><a href="#1131-리터럴-표기법-문자열" data-for="1131-리터럴-표기법-문자열">11.3.1 리터럴 표기법 문자열</a></li><li class="depth-2"><a href="#11311-문자열" data-for="11311-문자열">11.3.1.1 문자열</a></li><li class="depth-2"><a href="#11312-숫자" data-for="11312-숫자">11.3.1.2 숫자</a></li><li class="depth-2"><a href="#11313-날짜" data-for="11313-날짜">11.3.1.3 날짜</a></li><li class="depth-2"><a href="#11314-불리언" data-for="11314-불리언">11.3.1.4 불리언</a></li><li class="depth-1"><a href="#1132-mysql-연산자" data-for="1132-mysql-연산자">11.3.2 MySQL 연산자</a></li><li class="depth-2"><a href="#11321-동등equal-비교" data-for="11321-동등equal-비교">11.3.2.1 동등(Equal) 비교(=,&lt;=>)</a></li><li class="depth-2"><a href="#11322-부정not-equal-비교--" data-for="11322-부정not-equal-비교--">11.3.2.2 부정(Not-Equal) 비교 (&lt;>, !=)</a></li><li class="depth-2"><a href="#11323-not-연산자" data-for="11323-not-연산자">11.3.2.3 NOT 연산자(!)</a></li><li class="depth-2"><a href="#11324-and-와-or-연산자" data-for="11324-and-와-or-연산자">11.3.2.4 AND(&amp;&amp;) 와 OR(||) 연산자</a></li><li class="depth-2"><a href="#11325-나누기div-와-나머지mod-연산자" data-for="11325-나누기div-와-나머지mod-연산자">11.3.2.5 나누기(/,DIV) 와 나머지(%,MOD) 연산자</a></li><li class="depth-2"><a href="#11326-regexp-연산자" data-for="11326-regexp-연산자">11.3.2.6 REGEXP 연산자</a></li><li class="depth-2"><a href="#11327-like-연산자" data-for="11327-like-연산자">11.3.2.7 LIKE 연산자</a></li><li class="depth-2"><a href="#11328-between-연산자" data-for="11328-between-연산자">11.3.2.8 BETWEEN 연산자</a></li><li class="depth-2"><a href="#11329-in-연산자" data-for="11329-in-연산자">11.3.2.9 IN 연산자</a></li><li class="depth-1"><a href="#1133-mysql-내장함수" data-for="1133-mysql-내장함수">11.3.3 MYSQL 내장함수</a></li><li class="depth-2"><a href="#11331-null-값-비교-및-대체ifnull-isnull" data-for="11331-null-값-비교-및-대체ifnull-isnull">11.3.3.1 NULL 값 비교 및 대체(IFNULL, ISNULL)</a></li><li class="depth-2"><a href="#11332-현재-시각-조회-now-sysdate" data-for="11332-현재-시각-조회-now-sysdate">11.3.3.2 현재 시각 조회 (NOW, SYSDATE)</a></li><li class="depth-2"><a href="#11333-날짜와-시간의-포맷-date_format-str_to_date" data-for="11333-날짜와-시간의-포맷-date_format-str_to_date">11.3.3.3 날짜와 시간의 포맷 (DATE_FORMAT, STR_TO_DATE)</a></li><li class="depth-2"><a href="#11334-날짜와-시간의-연산-date_add-date_sub" data-for="11334-날짜와-시간의-연산-date_add-date_sub">11.3.3.4 날짜와 시간의 연산 (DATE_ADD, DATE_SUB)</a></li><li class="depth-2"><a href="#11335-타임스탬프-연산-unix_timestamp-from_unixtime" data-for="11335-타임스탬프-연산-unix_timestamp-from_unixtime">11.3.3.5 타임스탬프 연산 (UNIX_TIMESTAMP, FROM_UNIXTIME)</a></li><li class="depth-2"><a href="#11336-문자열-처리-rpad-lpad--rtrim-ltrim-trim" data-for="11336-문자열-처리-rpad-lpad--rtrim-ltrim-trim">11.3.3.6 문자열 처리 (RPAD, LPAD / RTRIM, LTRIM, TRIM)</a></li><li class="depth-2"><a href="#11337-문자열-결합-concat" data-for="11337-문자열-결합-concat">11.3.3.7 문자열 결합 (CONCAT)</a></li><li class="depth-2"><a href="#11338-group-by-문자열-결합-group_concat" data-for="11338-group-by-문자열-결합-group_concat">11.3.3.8 GROUP BY 문자열 결합 (GROUP_CONCAT)</a></li><li class="depth-2"><a href="#11339-값의-비교와-대체case-wehn--then--end" data-for="11339-값의-비교와-대체case-wehn--then--end">11.3.3.9 값의 비교와 대체(CASE WEHN … THEN … END)</a></li><li class="depth-2"><a href="#113310-타입-변환cast-convert" data-for="113310-타입-변환cast-convert">11.3.3.10 타입 변환(CAST, CONVERT)</a></li><li class="depth-2"><a href="#113311-이진수-값과-16진수-문자열hex-string-변환hex-unhex" data-for="113311-이진수-값과-16진수-문자열hex-string-변환hex-unhex">11.3.3.11 이진수 값과 16진수 문자열(Hex String) 변환(HEX, UNHEX)</a></li><li class="depth-2"><a href="#113312-암호화-및-해시-함수-md5-sha-sha2" data-for="113312-암호화-및-해시-함수-md5-sha-sha2">11.3.3.12 암호화 및 해시 함수 (MD5, SHA, SHA2)</a></li><li class="depth-2"><a href="#113313-처리-대기sleep" data-for="113313-처리-대기sleep">11.3.3.13 처리 대기(SLEEP)</a></li><li class="depth-2"><a href="#113314-벤치마크benchmark" data-for="113314-벤치마크benchmark">11.3.3.14 벤치마크(BENCHMARK)</a></li><li class="depth-2"><a href="#113315-ip-주소-변환inet_aton-inet_ntoa" data-for="113315-ip-주소-변환inet_aton-inet_ntoa">11.3.3.15 IP 주소 변환(INET_ATON, INET_NTOA)</a></li><li class="depth-2"><a href="#113316-json-포맷json_pretty" data-for="113316-json-포맷json_pretty">11.3.3.16 JSON 포맷(JSON_PRETTY)</a></li><li class="depth-2"><a href="#113317-json-필드-크기json_storage_size" data-for="113317-json-필드-크기json_storage_size">11.3.3.17 JSON 필드 크기(JSON_STORAGE_SIZE)</a></li><li class="depth-2"><a href="#11338-json-필드-추출json_extract" data-for="11338-json-필드-추출json_extract">11.3.3.8 JSON 필드 추출(JSON_EXTRACT)</a></li><li class="depth-2"><a href="#113319-json-오브젝프-포함-여부-확인json_contains" data-for="113319-json-오브젝프-포함-여부-확인json_contains">11.3.3.19 JSON 오브젝프 포함 여부 확인(JSON_CONTAINS)</a></li><li class="depth-2"><a href="#113320-json-오브젝트-생성json_object" data-for="113320-json-오브젝트-생성json_object">11.3.3.20 JSON 오브젝트 생성(JSON_OBJECT)</a></li><li class="depth-2"><a href="#113321-json-칼럼으로-집계-json_objectagg--json_arrayagg" data-for="113321-json-칼럼으로-집계-json_objectagg--json_arrayagg">11.3.3.21 JSON 칼럼으로 집계 (JSON_OBJECTAGG &amp; JSON_ARRAYAGG)</a></li><li class="depth-2"><a href="#113322-json-데이터를-테이블로-변환json_table" data-for="113322-json-데이터를-테이블로-변환json_table">11.3.3.22 JSON 데이터를 테이블로 변환(JSON_TABLE)</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/데이터베이스와-sql" class="internal">데이터베이스와 SQL</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

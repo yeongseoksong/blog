@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>8. 인덱스</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="8. 인덱스"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="8. 인덱스"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-1/8.-인덱스"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-1/8.-인덱스"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/real-mysql-1/8.-인덱스" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-126" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-126" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/real-mysql-1/">real mysql 1</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>8. 인덱스</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">8. 인덱스</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-08-19T00:00:00.000Z">2024년 8월 19일</time><span>31 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/database" class="internal tag-link">topic/database</a></li><li><a href="../../tags/concept/indexing" class="internal tag-link">concept/indexing</a></li><li><a href="../../tags/concept/mysql" class="internal tag-link">concept/mysql</a></li><li><a href="../../tags/concept/query-optimization" class="internal tag-link">concept/query-optimization</a></li><li><a href="../../tags/concept/transactions" class="internal tag-link">concept/transactions</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="81-디스크-읽기-방식">8.1 디스크 읽기 방식<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#81-디스크-읽기-방식" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="811-hdd-와-ssd">8.1.1 HDD 와 SSD<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#811-hdd-와-ssd" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>순차 I/O 의 경우 HDD 와 SSD 의 성능차이가 거의 없다.</li>
+<li>랜덤 I/O 시 차이가 극명해지는데, 당연히 SSD 성능이 좋다.</li>
+</ul>
+<h2 id="812--랜덤-io-와-순차-io"><span id="812-랜덤-io-와-순차-io" class="heading-alias"></span>8.1.2  랜덤 I/O 와 순차 I/O<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#812--랜덤-io-와-순차-io" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>랜덤 I/O 는 3개의 페이지를 저장해야하는 상황에서 3번의 시스템 콜을 요청한다. 디스크 헤드가 3번 움직이게 된다.</li>
+<li>순차적 I/O 의 경우 3개의 페이지를 한번의 시스템 콜에 처리해 디스크 헤드가 1 번 움직인다.</li>
+<li>SSD 는 HDD 보다 랜덤 I/O 와 순차 I/O의 성능 차이가 적다.</li>
+<li>인덱스 레인지 스캔은 랜덤 I/O 를 사용하며, 풀 테이블 스캔은 순차 I/O를 사용한다.</li>
+</ul>
+<h1 id="82-인덱스란">8.2 인덱스란<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#82-인덱스란" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li><strong>인덱스</strong> : sorted list 와 유사해 정렬되어 있으며, 리프 노드에 레코드의 주소 값을 갖는다.</li>
+<li><strong>데이터 파일</strong> : array list 와 같이 정렬되어 있지 않다</li>
+<li>DBMS 는 인덱스를 사용해 데이터 <code>insert,update,delete</code> 시 항상 정렬 작업을 해야 하기 때문에 <code>select</code> 에 비해 속도가 느리다. 즉, DBMS 는 읽기 속도를 위해 나머지 작업의 처리 속도를 희생한 셈이다.</li>
+<li><strong>전문 검색용 인덱스, 공간 검색용 인덱스</strong> 등 으로 인덱스를 분류할 수 있다.</li>
+</ul>
+<h1 id="83-b-tree-인덱스">8.3 B-Tree 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#83-b-tree-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="831-구조-및-특성">8.3.1 구조 및 특성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#831-구조-및-특성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<p><img src="../../assets/images/database/b-tree-index.png" alt="b tree index.png"/></p>
+<ul>
+<li><strong>루트 노드, 브랜치 노드, 리프 노드</strong>로 구성된다.</li>
+<li><strong>리프 노드</strong>는 실제 데이터 레코드의 주소로 이루어져 있다.</li>
+<li>인덱스는 항상 정렬되어 저장되어 있지만 데이터 파일의 레코드는 정렬되어 있지 않다.
+<ul>
+<li><strong>MyISAM</strong> : 리프 노드의 값에 데이터 파일에 실제 저장된 레코드 주소를 저장한다.</li>
+<li><strong>InnoDB</strong> : 리프 노드의 값에 pk를 저장한다. 데이터 파일에는 pk를 키로 갖는 B-Tree가 존재한다. </li>
+</ul>
+</li>
+<li>pk index 의 리프 노드에는 레코드 값을 저장하고 있다.</li>
+</ul>
+<h2 id="832-b-tree-인덱스-키-추가-및-삭제">8.3.2 B-Tree 인덱스 키 추가 및 삭제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#832-b-tree-인덱스-키-추가-및-삭제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="인덱스-키-추가">인덱스 키 추가<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-키-추가" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>
+<p>B-Tree 특성으로 인해 리프노드에 추가될 때 브랜치 노드로 분리되어야 하는 경우가 발생해 쓰기 작업 비용이 많이 발생한다.</p>
+</li>
+<li>
+<p><strong>InnoDB</strong> 에서 성능 개선을 위하여 인덱스 키 추가 작업을 <strong>체인지 버퍼</strong>  에 저장한 후 처리를 지연시킬 수 있다.<br/>
+[4. 아키텍처](/%EC%B1%85/real%20mysql%201/4.%20%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.md#4.2.10 체인지 버퍼)</p>
+</li>
+<li>
+<p>만약 추가하는 인덱스 키가 <strong>unique, pk</strong> 라면, 중복 체크가 필요하기 때문에 즉시 B-Tree 에 추가한다.</p>
+</li>
+</ul>
+<h4 id="인덱스-키-삭제">인덱스 키 삭제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-키-삭제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>리프 노드를 찾아서 삭제</li>
+<li>버퍼링 되어 지연 처리 가능</li>
+</ul>
+<h4 id="인덱스-키-변경">인덱스 키 변경<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-키-변경" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>기존의 키 값을 삭제 후 새로운 키를 추가한다.</li>
+<li><strong>체인지 버퍼</strong>를 사용하여 지연 처리 된다.</li>
+</ul>
+<h4 id="인덱스-키-검색">인덱스 키 검색<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-키-검색" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><code>update, delete</code> 시에도 레코드 검색을 위해 사용한다.</li>
+<li>부등호 쿼리 탐색이 가능하다.</li>
+<li>인덱스를 구성하는 일부 값으로만 검색하는 것은 불가능하다.<br/>
+<em>”DataBase” 인덱스를 찾기 위해 “Data” 만으로 검색하는 경우</em> </li>
+<li>넥스트 키락을 사용해 잠금을 하는 InnoDB 에서 적절한 인덱스가 존재하지 않으면 불필요한 잠금이 요구된다.</li>
+</ul>
+<h2 id="833-b-tree-인덱스-사용에-영향을-미치는-요소">8.3.3 B-Tree 인덱스 사용에 영향을 미치는 요소<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#833-b-tree-인덱스-사용에-영향을-미치는-요소" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="인덱스-키-값의-크기">인덱스 키 값의 크기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-키-값의-크기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>디스크에 저장하는 가장 기본이 되는 단위를 <strong>block ( page )</strong> 라 한다.</li>
+<li>인덱스 역시 page 단위를 사용해 관리된다.</li>
+<li>Page는 기본값 16KB 를 갖는다. 즉 페이지 하나에는 <strong>16KB / (키 값 크기+주소 값 크기)</strong> 개수 만큼 키를 저장할 수 있다.</li>
+<li>키의 값이 커짐에 따라 페이지 하나에 저장할 수 있는 키의 개수가 줄어들고 결국 <strong>Disk I/O 를 두번 처리</strong>해야하는 상황이 발생한다.</li>
+<li>또한, 버퍼 풀에 인덱스를 페이지 단위로 캐시하는데 인덱스 키 값이 커지면 캐시해둘 수 있는 레코드 수도 줄어들어 <strong>메모리 효율을 떨어치는 결과</strong>를 초래한다.</li>
+</ul>
+<h4 id="b-tree-깊이">B-Tree 깊이<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#b-tree-깊이" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>키 값이 커지면 <strong>인덱스 페이지</strong>가 담을 수 있는 인덱스 키 값의 개수가 적어지고, 이로 인해 같은 레코드 건수라도 더 많은 B-tree 깊이가 요구된다. </li>
+<li>B-Tree 깊이의 증가는 페이지의 증가를 의미하고 이는 더 많은 Disk I/o 가 발생한다.</li>
+<li>인덱스 키 값의 크기는 가능한 작은것이 성능에 유리하다.</li>
+</ul>
+<h4 id="선택도--기수성-">선택도 ( 기수성 )<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#선택도--기수성-" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>기수성</strong> : 인덱스 키 값 가운데 유니크한 값의 수를 의미한다.</li>
+<li>키 값에 중복된 값과 기수성은 반비례한다.<br/>
+<em>중복 키 값이 많으면 기수성은 낮아진다.</em></li>
+<li>기수성이 높으면 검색 대상이 적음을 의미함으로 처리 속도가 향상된다.</li>
+</ul>
+<h4 id="읽어야-하는-레코드의-건수">읽어야 하는 레코드의 건수<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#읽어야-하는-레코드의-건수" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>옵티마이저는</strong> 인덱스를 이용해 레코드를 읽는 작업은 테이블에서 직접 레코드를 읽는 작업보다 4~5배 더 많은 비용이 든다 예측한다.</li>
+<li>테이블의 전체 20%~25% 이상 레코드를 읽어야하는 경우 인덱스를 사용하지 않고 테이블을 모두 직업 읽어 <strong>필요한 레코드만 읽어 필터링 하는 방식이 더 효율적</strong>이다.</li>
+</ul>
+<h2 id="834-b-tree-인덱스를-통한-데이터-읽기">8.3.4 B-Tree 인덱스를 통한 데이터 읽기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#834-b-tree-인덱스를-통한-데이터-읽기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="인덱스-레인지-스캔">인덱스 레인지 스캔<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-레인지-스캔" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>
+<p>검색해야할 인덱스의 범위가 정해졌을 때 사용된다.</p>
+</li>
+<li>
+<p><strong>인덱스 탐색 :</strong> 브랜치 노드를 통해 <strong>시작 범위</strong>의 리프노드를 찾는다.</p>
+</li>
+<li>
+<p><strong>인덱스 스캔</strong> : 시작 리프 노드부터 시작해 리프노드들을 스캔한다. 인덱스의 범위 끝의 리프 노드에 도달하면 중단한다.</p>
+</li>
+<li>
+<p><strong>인덱스 레인지 스캔 절차</strong></p>
+<ol>
+<li>인덱스 탐색</li>
+<li>인덱스 스캔</li>
+<li>레코드가 저장된 페이지를 가져온다.</li>
+</ol>
+</li>
+<li>
+<p>3번 과정에서 테이블 풀 스캔 [8. 인덱스](/%EC%B1%85/real%20mysql%201/8.%20%EC%9D%B8%EB%8D%B1%EC%8A%A4.md#읽어야 하는 레코드의 건수) 가 실행될 수 있다.</p>
+</li>
+<li>
+<p><strong>커버링 인덱스를</strong> 사용하여 3번 과정이 생략될 수 있다.</p>
+<blockquote>
+<p><strong> 커버링 인덱스</strong><br/>
+쿼리를 충족시키는데 필요한 모든 데이터를 가지고 있는 인덱스를 <strong>커버링 인덱스(Covering Index)</strong>라 한다.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="인덱스-풀-스캔">인덱스 풀 스캔<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-풀-스캔" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>리프 노드의 맨 앞 혹은 뒤에서부터 링크드 리스트를 타고 리프노드들을 처음부터 끝까지 스캔하는 방식</li>
+<li>데이터 검색을 위한 최적의 인덱스가 없을 때 차선으로 선택해 전체 데이터 중 필터된 데이터를 반환</li>
+<li>인덱스의 전체 크기는 테이블 자체의 크기보다는 작으므로 테이블 풀 스캔 보다 적은 디스크 I/O 로 쿼리 처리 가능</li>
+</ul>
+<h4 id="루스-loose-인덱스-스캔">루스 (Loose) 인덱스 스캔<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#루스-loose-인덱스-스캔" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>오라클의 <strong>인덱스 스킵 스캔</strong> 과 유사하게 동작</li>
+<li>인덱스 레인지 스캔과 비슷하게 동작하며 스캔 도중 필요하지 않은 인덱스 키 값은 스킵 하고 다음으로 넘아감</li>
+<li><strong>인덱스 레인지 스캔, 인덱스 풀 스캔</strong> 은 <strong>tight index scan</strong> 으로 분류</li>
+<li><strong>group by 또는 min(),max() 집합함수</strong> 최적화에 사용</li>
+</ul>
+<h4 id="인덱스-스킵-스캔">인덱스 스킵 스캔<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-스킵-스캔" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>다중 칼럼 인덱스</strong>를 갖는 테이블에서 인덱스를 where 절에 사용할 때, 인덱스의 두번째 칼럼을 조건절에 사용할때 사용되는 최적화 기능이다.</li>
+<li><strong>인덱스 스킵 스캔</strong> 적용시 첫번째 칼럼의 값 별로 쿼리 문을 여러개 실행한다</li>
+<li><strong>선행 칼럼의 유니크한 값 개수가 적을 경우에만 사용가능한 최적화 이다.</strong></li>
+</ul>
+<p><em>gender,birth_date 순으로 인덱스가 설정되된 employees 테이블 을 조회하는 예시이다.</em> 옵티마이저에 의해 아래 쿼리와 비슷한 형태로 수행된다.</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">  select</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> gender,birth_date </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> employees </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> birth_date</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">>=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'1965-02-01'</span></span>
+<span data-line> </span></code></pre></figure>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">  select</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> gender,birth_date </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> employees </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> gender</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'M'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> birth_date</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">>=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'1965-02-01'</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    select</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> gender,birth_date </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> employees </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> gender</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'W'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> birth_date</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">>=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'1965-02-01'</span></span></code></pre></figure>
+<p>  <strong>인덱스 스킵 스캔 제약조건</strong></p>
+<ul>
+<li><strong>where 조건절의 첫번째 칼럼의 유니크한 값의 개수가 적어야한다.</strong><br/>
+<em>위의 쿼리와 비슷하게 최적화를 수행해야하는데 유니크한 값의 개수가 많으면 첫번째 인덱스를 스캔해야할 시작 지점을 검색하는데 비용이 많이 들기 때문</em></li>
+<li><strong>쿼리가 인덱스에 존재하는 칼럼만으로 처리 가능해야한다.</strong><br/>
+<em>커버링 인덱스가 불가능한 경우 테이블 풀 스캔을 사용하게 된다.</em></li>
+</ul>
+<h2 id="836-b-tree-인덱스의-정렬-및-스캔-방향">8.3.6 B-Tree 인덱스의 정렬 및 스캔 방향<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#836-b-tree-인덱스의-정렬-및-스캔-방향" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="인덱스의-정렬">인덱스의 정렬<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스의-정렬" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">CREATE</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> index</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> ix_teamname_userscore</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> ON</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> employees (team_name </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">ASC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,user_score </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">DESC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">);</span></span></code></pre></figure>
+<h4 id="인덱스-스캔-방향">인덱스 스캔 방향<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-스캔-방향" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>
+<p>인덱스는 내림차순 혹은 오름차순으로정렬되어 저장되는데 스캔 시에 인덱스를 어느 방향으로 읽을지 <strong>옵티마이저가</strong> 실시간으로 만들어내는 <strong>실행 계획</strong>에 의해 결정딘다.</p>
+</li>
+<li>
+<p><code>Forward index scan</code> (Forward scan) : 인덱스 키의 크고 작음에 관계없이 인덱스 리프 노드의 왼쪽 페이지부터 오른쪽으로 스캔</p>
+</li>
+<li>
+<p><code>Backward index scan</code> (Backward scan) : 인덱스 키의 크고 작음에 관계없이 인덱스 리프 노드의 오른쪽 페이지부터 왼쪽으로 스캔</p>
+</li>
+</ul>
+<h4 id="내림-차순-인덱스">내림 차순 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#내림-차순-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>ASC 로 정렬된 index 를 <code>order by desc</code> 로 조회하는 쿼리는 <code>backward index scan</code> 을 사용해 데이터를 조회한다.</li>
+<li><code>order by asc</code> 시 <code>forward index scan</code> 을 통해 조회하는데, <code>backward index scan</code> 보다 나은 성능을 보인다. 이유는 아래와 같다.
+<ul>
+<li>페이지 잠금이 <code>Forward index scan</code>에 적합한 구조</li>
+<li>페이지 내에서 인덱스 레코드는 <strong>단방향</strong>으로만 연결된 구조 (Forwarded single linked link)</li>
+</ul>
+</li>
+<li><strong>내림 차순으로 조회해 <code>backward index scan</code> 을 사용하게되는 쿼리가 빈번한경우 내림 차순 인덱스를 고려해야 한다.</strong></li>
+</ul>
+<h2 id="837-b-tree-인덱스의-가용성과-효율성">8.3.7 B-Tree 인덱스의 가용성과 효율성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#837-b-tree-인덱스의-가용성과-효율성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="비교-조건의-종류와-효율성">비교 조건의 종류와 효율성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#비교-조건의-종류와-효율성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>다중 칼럼 인덱스에서 각 <strong>칼럼의 순서</strong>와 <strong>그 칼럼에 사용된 조건</strong>이 동등 비교(”=“)인지 아니면 크다(”>”) 또는 작다(”&lt;“)와 같은 범위 조건인지에 따라 각 <strong>인덱스 칼럼의 활용 형태가 달라지며 그 효율 또한 달라진다</strong>.</li>
+</ul>
+<p><img src="../../assets/images/database/작업-결정조건과-필터링-조건.png" alt="작업 결정조건과 필터링 조건.png"/></p>
+<ul>
+<li>
+<p><strong>케이스 A</strong> : dept_no + emp_no<br/>
+<strong>케이스 A</strong>의 경우 “dept_no = d002 AND emp_no>=1004”인 레코드를 찾고, 그 이후에는 dept_no가 ‘d002’가 아닐 떄까지 인덱스를 그냥 쭉 읽기만 하면 된다. </p>
+</li>
+<li>
+<p><strong>케이스 B</strong> : emp<em>no </em> dept_no<br/>
+<strong>케이스 B</strong> 우선 “emp_no>=10144” AND dept_no=‘d002’인 레코드를 찾고, 그 이후 모든 레코드에 대해 dept_no=‘d002’인지 비교하는과정을 거쳐야 한다. </p>
+</li>
+<li>
+<p><strong>작업 범위 결정 조건</strong> : 케이스 A의 두 조건과 같이 작업의 범위를 결정하는 조건을</p>
+</li>
+<li>
+<p><strong>필터링 조건(체크 조건)</strong> : 케이스 B의 dept_no=‘d002’ 조건과 같이 비교 작업의 범위를 줄이지 못하고 단순히 거름종이 역할만 하는 조건을 “필터링 조건 또는 체크 조건 이라고 표현</p>
+</li>
+</ul>
+<blockquote>
+<p><strong>작업 범위 결정 조건</strong> 이 많을 수록 쿼리 처리 성능이 좋아진다.</p>
+</blockquote>
+<h4 id="인덱스의-가용성">인덱스의 가용성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스의-가용성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>B-Tree 인덱스는 왼쪽값에 기준해서 (Left-most) 오른쪽 값이 정렬돼 있다. 칼럼 내부 뿐만 아니라 다중 칼럼 인덱스에도 적용되는 규칙이다.</li>
+<li>인덱스 내부에서 또한 left-most 에 따라 정렬 되므로  first_name 이 index 로 설정된 아래의 쿼리는 인덱스의 효과를 얻을 수 없다. </li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> employees </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> first_name </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">like</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> '%mer'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">//</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> 왼 쪽부터 한 글자씩 비교해가며 레코드를 찾아야 하는데 %mer 은 왼쪽 부분이 항상 다르다.</span></span></code></pre></figure>
+<ul>
+<li>다중 칼럼 인덱스에서 또한 left-most 에 따라 정렬 된다.  where 절에 비교 조건으로 사용되는 인덱스가 인덱스의 n 번째 값을 사용한다면,  <strong>n-1 번째 인덱스로 우선 정렬되는 인덱스 특성상 (left-most)</strong> 인덱스를 효율적으로 사용할 수 없다.</li>
+</ul>
+<h4 id="가용성과-효율성-판단">가용성과 효율성 판단<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#가용성과-효율성-판단" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>기본적으로 B-TREE 인덱스의 특성상 다음 조건에서는 사용할 수 없다. 여기서 사용할 수 없다는 것은 작업 범위 결정 조건으로 사용할 수 없다는 것을 의미</p>
+<p>하며, 경우에 따라서는 체크 조건으로 인덱스를 사용할 수는 있다.</p>
+<ul>
+<li>NOT-EQUAL로 비교된 경우 (”&lt;>”, “NOT IN”, “NOT BETWEEN”, “IS NOT NULL”)</li>
+<li>LIKE ’%??’ (앞부분 비교가 아닌 뒷부분 일치) 형태로 문자열 패턴이 비교된 경우</li>
+<li>스토어드 함수나 다른 연산자로 인덱스 칼럼이 변형된 후 비교된 경우 (ex. SUBSTRING, DAYOFMONTH)</li>
+<li>NOT-DETERMINISTIC 속성의 스토어드 함수가 비교 조건에 사용된 경우</li>
+<li>데이터 타입이 서로 다른 비교(인덱스 칼럼의 타입을 변환해야 비교가 가능한 경우)</li>
+<li>문자열 데이터 타입의 콜레이션이 다른 경우(UTF8, EUCKR)</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">index</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (column_1,column_2...column_n)</span></span></code></pre></figure>
+<ul>
+<li>
+<p><strong>작업 범위 결정 조건으로 인덱스를 사용하지 못하는 경우</strong></p>
+<ul>
+<li>column_1 칼럼에 대한 조건이 없는 경우</li>
+<li>column_1 칼럼의 비교 조건이 사용불가 조건 중 하나인 경우</li>
+</ul>
+</li>
+<li>
+<p><strong>작업 범위 결정 조건으로 인덱스를 사용하는 경우 (2&lt;i&lt;n)</strong></p>
+<ul>
+<li>column<em>1~column</em>(i-1) 칼럼까지 동등 비교(=,in) 로 비교</li>
+<li>column_i 칼럼에 대해 다음연산자 중 하나로 비교
+<ul>
+<li>Equal(”=” 또는 “IN”)</li>
+<li>크다 작다 형태(”>” 또는 ”&lt;”)</li>
+<li>LIKE로 좌측 일치 패턴(LIKE ‘승환%’)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> .... </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_1 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_2 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">In</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">)  </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_3 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;></span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 2</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">//</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  column_1,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> 는 작업 범위 결정 조건으로 </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">사용된다</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">column_3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> 은 인덱스 사용 불가 조건중 하나 이므로 필터링 조건에 해당한다.</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> .... column_1 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_2 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;></span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AND</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_3 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">//</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> column_1 까지만 작업 범위 결정 조건으로 </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">사용된다</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">.</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">column_2의</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> 조건 때문에 그 이후의 칼럼은 인덱스 사용 범위에서 제외된다.</span></span></code></pre></figure>
+<blockquote>
+<p>효율적인 인덱스 설계는 <strong>두 가지 요소를 모두 고려</strong>해야 한다.<br/>
+<strong>작업 범위 조건</strong>:<br/>
+쿼리에서 자주 사용되는 컬럼과 조건을 기준으로 설계.<br/>
+선두 컬럼부터 조건을 만족할 수 있도록 순서를 지정.<br/>
+<strong>기수성</strong>:<br/>
+선두 컬럼은 가능한 높은 기수성을 가지도록 선택.<br/>
+낮은 기수성을 가진 컬럼은 복합 인덱스의 후순위에 위치.</p>
+</blockquote>
+<blockquote>
+<p><strong>다중 칼럼 인덱스에서 기수성이 낮은 (범위가 큰) 칼럼을 선두 위치 시키자</strong> (단, 선두로 설정한 칼럼을 쿼리에서 사용해야 인덱스를 사용할 수 있다.)</p>
+</blockquote>
+<h1 id="85-전문-검색-인덱스">8.5 전문 검색 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#85-전문-검색-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li><strong>전문 검색</strong> : 문서의 내용 전체를 인덱스화 해서 특정 키워드가 포함된 문서를 검색하것
+<ul>
+<li>B-Tree 인덱스 사용 불가능</li>
+<li>전문 검색 인덱스를 사용해야함</li>
+</ul>
+</li>
+</ul>
+<h2 id="851-인덱스-알고리즘">8.5.1 인덱스 알고리즘<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#851-인덱스-알고리즘" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><strong>전문 검색</strong> 에는 문서 본문 내용에서 검색하게 될 키워드를 분석해 내고 빠른 검색용으로 사용할 수 있게 <strong>키워드로 인덱스</strong>를 구축함</li>
+<li><strong>키워드 인덱싱 방식에 따른 분류</strong>
+<ul>
+<li>단어 어근 분석 알고리즘</li>
+<li>n-gram 분석 알고리즘</li>
+</ul>
+</li>
+</ul>
+<h4 id="어근-분석-알고리즘">어근 분석 알고리즘<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#어근-분석-알고리즘" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ol>
+<li><strong>불용어 (stop word) 처리 </strong>
+<ul>
+<li>검색에서 별 가치가 없는 단어를 모두 제거하는 작업</li>
+</ul>
+</li>
+<li><strong>어근 분석 ( stemming )</strong>  
+<ul>
+<li>검색어 단어의 뿌리인 원형을 찾는 작업</li>
+<li>한글이나 일본어는 단어의 변형이 거의 없어 문장의 <strong>형태소를</strong> 분석해 명사,조사를 구분하는 기능이 중요</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>형태소 분석은 문장을 이해하는 알고리즘</li>
+</ul>
+<h4 id="n-gram-알고리즘">n-gram 알고리즘<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#n-gram-알고리즘" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>n-gram 은 단순히 키워드를 검색해내기 위한 인덱싱 알고리즘</li>
+<li>리소스가 많이 들어가는 형태소 분석 알고리즘의 단점을 보완하기 위해 도입됨</li>
+<li>본문을 무조건 몇 글자씩 잘라서 인덱싱해 인덱스의 크기가 크다.</li>
+<li>n-gram 의 n은 인덱싱할 키워드의 최소 글자 수 ( n=2 일때, bi-gram)</li>
+<li><strong>절차</strong>
+<ul>
+<li>문장을 단어로 분리 후 n크기의 글자 수 만큼 중첩해 토큰으로 분리한다.</li>
+<li>n=2 일떄, <code>&quot;question&quot;</code>  은 <code>qu,ue,es,st,ti,io,on</code> 으로 분리된다.</li>
+<li>토큰 집합 중 불용어와 같거나 포함하는 경우 제외한다.</li>
+<li>남겨진 토큰을 B-Tree (혹은 merge) 트리에 저장한다.</li>
+</ul>
+</li>
+</ul>
+<h4 id="불용어-변경-및-삭제">불용어 변경 및 삭제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#불용어-변경-및-삭제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>불용어를 포함하는 토큰들이 삭제되는 과정에서 <code>&quot;ha&quot;</code> 가 불용어 <code>&quot;a&quot;</code> 를 포함해 삭제되는 상황이 존재해 <strong>불용어 처리를 무시</strong>하거나 <strong>사용자 정의 불용어를 사용</strong>하는 방법이 존재한다.</li>
+</ul>
+<h4 id="852-전문-검색-인덱스의-가용성">8.5.2 전문 검색 인덱스의 가용성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#852-전문-검색-인덱스의-가용성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><a href="../../메모/db/mysql-전문-검색" class="internal internal-link alias" data-slug="메모/db/mysql-전문-검색">Mysql 전문 검색</a></li>
+<li><a href="https://hoing.io/archives/16853#5-3_ft_min_word_len_ft_max_word_len" class="external external-link">추가 자료<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></li>
+<li>쿼리 문장이 전문 검색을 위한 문법 <code>match...againt</code> 사용</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> tb_test </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> match</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(doc_body) against(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'애플'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> IN</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> BOOLEAN</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> MODE)</span></span></code></pre></figure>
+<ul>
+<li>테이블 전문 검색 대상 칼럼에 대해서 전문 인덱스 보유</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">create</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> table</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> tb_test</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">	doc_id </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">INT</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> auto_increment,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">	doc_body </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">TEXT</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	PRIMARY KEY</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(doc_id),</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	FULLTEXT</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> KEY</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> fx_docbody(doc_body) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">WITH</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> PARSER ngram</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) Engine</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">innoDB;</span></span></code></pre></figure>
+<h1 id="87-멀티-밸류-인덱스">8.7 멀티 밸류 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#87-멀티-밸류-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>하나의 데이터 레코드가 <strong>여러개의 키</strong> 값을 가질 수 있는 형태의 인덱스</li>
+<li>정규화에 위배되지만, json 의 배열타입 필드에 대한 인덱싱을 지원하기 위해 지원하기 시작<br/>
+<em>하나의 레코드에 여러개의 데이터 값을 저장 후 그 값을 인덱싱 하므로 제1정규형 위배</em></li>
+<li>아래의 함수를 사용해야 옵티마이저가 멀티 밸류 인덱스를 인식 
+<ul>
+<li>member of()</li>
+<li>json_contains()</li>
+<li>json_overlaps()</li>
+</ul>
+</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">CREATE</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> TABLE</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> user</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> (</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">id </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">BIGINT</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> AUTO_INCREMENT </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">PRIMARY KEY</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">test_json </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">JSON</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">INDEX</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> index1( (</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="function">CAST</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">(test_json </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> '$.test1'</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> AS</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> UNSIGNED </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">ARRAY</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">))))</span></span></code></pre></figure>
+<ul>
+<li><code> INDEX index1( (CAST(test_json -> '$.credit_scores' AS UNSIGNED ARRAY))</code> “test1”  필드에 대해 index 생성</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th><strong>연산자</strong></th><th><strong>설명</strong></th><th><strong>반환 값</strong></th><th><strong>예시 값</strong></th></tr></thead><tbody><tr><td><strong>-></strong></td><td>JSON 데이터에서 특정 값을 조회</td><td>JSON 형태</td><td>“부산”</td></tr><tr><td><strong>->></strong></td><td>JSON 데이터에서 특정 값을 조회</td><td>일반 텍스트 형태</td><td>부산</td></tr></tbody></table></div>
+<h1 id="88-클러스터링-인덱스">8.8 클러스터링 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#88-클러스터링-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="881-클러스터링-인덱스-클러스터링-테이블">8.8.1 클러스터링 인덱스 (클러스터링 테이블)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#881-클러스터링-인덱스-클러스터링-테이블" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>InnoDB 에서만 지원한다.</li>
+<li>비슷한 값은 동시에 조회하는 경향이 많다는 점에 착안함</li>
+<li>pk (<strong>클러스터링 키</strong>) 대해서만 적용된다. 즉, 테이블당 1 개 존재한다.</li>
+<li>pk 값이 비슷한 레코드끼리 묶어서 저장하는 인덱스 방식</li>
+<li>pk 값에 의해 레코드가 저장되는 물리 저장 위치가 결졍 및 변경된다.</li>
+<li><strong>B-tree의 리프노드와 달리 클러스터링 인덱스의 리프 노드는 레코드의 모든 값이 저장되어 있다.</strong></li>
+</ul>
+<h2 id="882-세컨더리-인덱스에-미치는-영향">8.8.2 세컨더리 인덱스에 미치는 영향<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#882-세컨더리-인덱스에-미치는-영향" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<p><img src="../../assets/images/database/innodb-clustering-index.png" alt="InnoDB Clustring index.png"/></p>
+<ul>
+<li>세컨더리 인덱스의 리프노드의 값은 클러스터 키 값을 가지고 있다. 그래서 세컨더리 인덱스 값을 조건절로 <code>select</code> 쿼리를 수행하면 세컨더리 인덱스에서 클러스터 키 값을 확인후, 클러스터 인덱스를 검색해 최종 결과를 받아온다.</li>
+<li>만약, 클러스터링 되지 않는 MyISAM, MEMORY 테이블 ( 단말 노드에 레코드의 실제 저장위치를 내부적으로 기록하는 ROWID 값을 사용한다.) 에서 클러스터링 키 값이 변경되면  해당 테이블의 모든 인덱스에 저장된 주소 값을 변경해야한다.</li>
+</ul>
+<blockquote>
+<p>  <strong>os 가상 페이지 페이지 테이블과 클러스터링 인덱스 유사점</strong><br/>
+메모리의 물리 주소 위치와 disk 의 물리주소 위치를 저장하고 있는 테이블이라는 점에서 유사하다. 즉 <strong>논리적인 주소를 제공</strong>해 하드웨어와의 결합도를 낮춘다.<br/>
+논리 주소를 사용하는 만큼 동적 변경에 용이하다.</p>
+</blockquote>
+<h2 id="883-클러스터링-인덱스-장단점">8.8.3 클러스터링 인덱스 장단점<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#883-클러스터링-인덱스-장단점" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>장점</th><th>단점</th></tr></thead><tbody><tr><td>pk 로 검색시 처리 속도가 빠르다.</td><td>세컨더리 인덱스가 클러스터링 키 값을 가지므로 키 값의 pk 크기에 비례해 커진다.</td></tr><tr><td>테이블의 모든 세컨더리 인덱스가 pk 를가지고 있어 인덱스만으로 처리되는 경우가 많다.</td><td>세컨더리 인덱스 사용시 클러스터링 인덱 한번더 검색해야하는 오버해드 존재</td></tr><tr><td></td><td><code>insert</code> 프라이머 키에 의해 레코드의 저장 위치가 결정돼 성능이 저하된다.</td></tr><tr><td></td><td>pk키를 변경시 레코드 <code>insert, delete</code> 작업이 필요해 처리 성능이 느리다.</td></tr></tbody></table></div>
+<h1 id="89-유니크-인덱스">8.9 유니크 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#89-유니크-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="891-유니크-인덱스와-일반-세컨더리-인덱스-비교">8.9.1 유니크 인덱스와 일반 세컨더리 인덱스 비교<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#891-유니크-인덱스와-일반-세컨더리-인덱스-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><strong>유니크 제약 조건 설정시 유니크 인덱스가 생성된다.</strong></li>
+<li>MyISAM,MEMORY 테이블에서 not null 유니크 키는 pk 와 동일하다.</li>
+<li><strong>InnoDB 에서 pk 는 클러스터링 키의 역할도 하므로 유니크 인덱스와 근본적으로 다르다.</strong></li>
+</ul>
+<h4 id="인덱스-읽기">인덱스 읽기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-읽기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>세컨더리 인덱스에서 칼럼 값을 비교하는 작업이 한번 더 추가된다. 그러나 cpu 작업이므로 실질적인 성능 차이가 없다. </li>
+<li>세컨더리 인덱스의 결과 값의 개수 n 개 만큼 n 배 차이 난다.</li>
+<li>실행 계획이 서로 다르다는 차이점이 있다.</li>
+</ul>
+<h4 id="인덱스-쓰기">인덱스 쓰기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#인덱스-쓰기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>새로운 레코드 삽입, 인덱스 칼럼 값 수정 시 인덱스 쓰기 작업이 필요하다.</li>
+<li><strong>유니크 인덱스</strong>에서는 중복된 값의 <strong>존재 유무를 확인하는 작업이 한번 더 필요</strong>해 세컨더리 인덱스의 쓰기보다 느리다.</li>
+<li>유니크 인덱스에서는 읽기 잠금, 쓰기 잠금이 필요해 <strong>교착 상태가 빈번</strong>하다.</li>
+<li>인덱스 키를 버퍼링 하기 위해 <strong>체인지 버퍼를</strong> 보통 사용해 성능을 향상 시키는데, 유니크 인덱스는 중복 체크를 해야 하므로 <strong>체인지 버퍼를 사용하지 못해</strong> 성능이 느리다.</li>
+</ul>
+<h2 id="892-유니크-인덱스-사용-시-주의사항">8.9.2 유니크 인덱스 사용 시 주의사항<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#892-유니크-인덱스-사용-시-주의사항" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><strong>유일성</strong>을 꼭 보장해야 하는 경우에만 유니크 인덱스 생성</li>
+<li>유니크 인덱스는 일반 인덱스와 같은 역할을 하므로 중복해 인덱스를 생성하지 않아도 된다.</li>
+</ul>
+<h1 id="89-외래키">8.9 외래키<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#89-외래키" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>외래키 제약 조건 설정 시 연관되는 테이블의 칼럼에도 <strong>자동으로 인덱스가 생성</strong>된다.</li>
+</ul>
+<h2 id="8101-자식-테이블의-변경이-대기하는-경우">8.10.1 자식 테이블의 변경이 대기하는 경우<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#8101-자식-테이블의-변경이-대기하는-경우" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>자식 테이블에서 <strong>외래키 칼럼의 변경 시</strong> 부모 테이블의 확인이 필요하다. </li>
+<li>이때, 부모 테이블에 해당 레코드에 <strong>쓰기 잠금</strong>이 걸려 있다면, 자식 테이블을 변경하는 트랜잭션은 부모테이블을 변경하는 트랜잭션이 종료될 때 까지 기다려야한다.</li>
+<li>자식 테이블에서 외래키를 변경하지 않고 <strong>다른 칼럼을 변경 시</strong>에 <strong>잠금 경합</strong>은 발생하지 않는다. </li>
+</ul>
+<h2 id="8102-부모-테이블-변경-작업이-대기하는-경우">8.10.2 부모 테이블 변경 작업이 대기하는 경우<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#8102-부모-테이블-변경-작업이-대기하는-경우" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>자식 테이블을 변경하는 트랜잭션이 <strong>쓰기 잠금</strong>을 획득한 후종료되지 않은 상황이다.</li>
+<li>이때 다른 트랜잭션에서 변경중인 자식 레코드의 외래키 값을 갖는 부모 테이블 레코드를 변경하는 경우 <strong>( on delete cascade, on update cascade 적용 시 )</strong>  자식 테이블에 걸려있는 <strong>쓰기 잠금</strong>을 대기해야한다.</li>
+<li><strong>자식 테이블에 레코드가 추가되는 경우 부모 테이블에 해당 참조 키가 존재하는지 확인한다. 이때, 읽기 잠금이 걸려 발생하는 잠금 경합을 고려해야 한다.</strong></li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/데이터베이스와-sql" class="internal internal-link alias" data-slug="탐색/주제/데이터베이스와-sql">데이터베이스와 SQL</a></li>
+</ul>
+<h2 id="함께-읽기">함께 읽기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#함께-읽기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../메모/db/분포도란" class="internal internal-link alias" data-slug="메모/db/분포도란">분포도란</a></li>
+<li><a href="../../메모/db/인덱스-풀-스캔,-풀-테이블-스캔" class="internal internal-link alias" data-slug="메모/db/인덱스-풀-스캔,-풀-테이블-스캔">인덱스 풀 스캔, 풀 테이블 스캔</a></li>
+<li><a href="../../메모/db/mysql-전문-검색" class="internal internal-link alias" data-slug="메모/db/mysql-전문-검색">Mysql 전문 검색</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-90" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#81-디스크-읽기-방식" data-for="81-디스크-읽기-방식">8.1 디스크 읽기 방식</a></li><li class="depth-1"><a href="#811-hdd-와-ssd" data-for="811-hdd-와-ssd">8.1.1 HDD 와 SSD</a></li><li class="depth-1"><a href="#812--랜덤-io-와-순차-io" data-for="812--랜덤-io-와-순차-io">8.1.2  랜덤 I/O 와 순차 I/O</a></li><li class="depth-0"><a href="#82-인덱스란" data-for="82-인덱스란">8.2 인덱스란</a></li><li class="depth-0"><a href="#83-b-tree-인덱스" data-for="83-b-tree-인덱스">8.3 B-Tree 인덱스</a></li><li class="depth-1"><a href="#831-구조-및-특성" data-for="831-구조-및-특성">8.3.1 구조 및 특성</a></li><li class="depth-1"><a href="#832-b-tree-인덱스-키-추가-및-삭제" data-for="832-b-tree-인덱스-키-추가-및-삭제">8.3.2 B-Tree 인덱스 키 추가 및 삭제</a></li><li class="depth-1"><a href="#833-b-tree-인덱스-사용에-영향을-미치는-요소" data-for="833-b-tree-인덱스-사용에-영향을-미치는-요소">8.3.3 B-Tree 인덱스 사용에 영향을 미치는 요소</a></li><li class="depth-1"><a href="#834-b-tree-인덱스를-통한-데이터-읽기" data-for="834-b-tree-인덱스를-통한-데이터-읽기">8.3.4 B-Tree 인덱스를 통한 데이터 읽기</a></li><li class="depth-1"><a href="#836-b-tree-인덱스의-정렬-및-스캔-방향" data-for="836-b-tree-인덱스의-정렬-및-스캔-방향">8.3.6 B-Tree 인덱스의 정렬 및 스캔 방향</a></li><li class="depth-1"><a href="#837-b-tree-인덱스의-가용성과-효율성" data-for="837-b-tree-인덱스의-가용성과-효율성">8.3.7 B-Tree 인덱스의 가용성과 효율성</a></li><li class="depth-0"><a href="#85-전문-검색-인덱스" data-for="85-전문-검색-인덱스">8.5 전문 검색 인덱스</a></li><li class="depth-1"><a href="#851-인덱스-알고리즘" data-for="851-인덱스-알고리즘">8.5.1 인덱스 알고리즘</a></li><li class="depth-0"><a href="#87-멀티-밸류-인덱스" data-for="87-멀티-밸류-인덱스">8.7 멀티 밸류 인덱스</a></li><li class="depth-0"><a href="#88-클러스터링-인덱스" data-for="88-클러스터링-인덱스">8.8 클러스터링 인덱스</a></li><li class="depth-1"><a href="#881-클러스터링-인덱스-클러스터링-테이블" data-for="881-클러스터링-인덱스-클러스터링-테이블">8.8.1 클러스터링 인덱스 (클러스터링 테이블)</a></li><li class="depth-1"><a href="#882-세컨더리-인덱스에-미치는-영향" data-for="882-세컨더리-인덱스에-미치는-영향">8.8.2 세컨더리 인덱스에 미치는 영향</a></li><li class="depth-1"><a href="#883-클러스터링-인덱스-장단점" data-for="883-클러스터링-인덱스-장단점">8.8.3 클러스터링 인덱스 장단점</a></li><li class="depth-0"><a href="#89-유니크-인덱스" data-for="89-유니크-인덱스">8.9 유니크 인덱스</a></li><li class="depth-1"><a href="#891-유니크-인덱스와-일반-세컨더리-인덱스-비교" data-for="891-유니크-인덱스와-일반-세컨더리-인덱스-비교">8.9.1 유니크 인덱스와 일반 세컨더리 인덱스 비교</a></li><li class="depth-1"><a href="#892-유니크-인덱스-사용-시-주의사항" data-for="892-유니크-인덱스-사용-시-주의사항">8.9.2 유니크 인덱스 사용 시 주의사항</a></li><li class="depth-0"><a href="#89-외래키" data-for="89-외래키">8.9 외래키</a></li><li class="depth-1"><a href="#8101-자식-테이블의-변경이-대기하는-경우" data-for="8101-자식-테이블의-변경이-대기하는-경우">8.10.1 자식 테이블의 변경이 대기하는 경우</a></li><li class="depth-1"><a href="#8102-부모-테이블-변경-작업이-대기하는-경우" data-for="8102-부모-테이블-변경-작업이-대기하는-경우">8.10.2 부모 테이블 변경 작업이 대기하는 경우</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="depth-1"><a href="#함께-읽기" data-for="함께-읽기">함께 읽기</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../메모/db/mysql-전문-검색" class="internal">Mysql 전문 검색</a></li><li><a href="../../메모/db/분포도란" class="internal">분포도란</a></li><li><a href="../../메모/db/인덱스-풀-스캔,-풀-테이블-스캔" class="internal">인덱스 풀 스캔, 풀 테이블 스캔</a></li><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/데이터베이스와-sql" class="internal">데이터베이스와 SQL</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

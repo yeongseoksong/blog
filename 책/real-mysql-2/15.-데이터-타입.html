@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>15. 데이터 타입</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="15. 데이터 타입"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="15. 데이터 타입"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-2/15.-데이터-타입"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-2/15.-데이터-타입"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/real-mysql-2/15.-데이터-타입" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-131" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-131" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/real-mysql-2/">real mysql 2</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>15. 데이터 타입</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">15. 데이터 타입</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2025-03-19T00:00:00.000Z">2025년 3월 19일</time><span>17 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/database" class="internal tag-link">topic/database</a></li><li><a href="../../tags/concept/binary-data" class="internal tag-link">concept/binary-data</a></li><li><a href="../../tags/concept/indexing" class="internal tag-link">concept/indexing</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="151-문자열-char와-varchar">15.1 문자열 (CHAR와 VARCHAR)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#151-문자열-char와-varchar" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1511-저장-공간">15.1.1 저장 공간<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1511-저장-공간" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>varchar</code> 타입은 가변 공간을 사용해 전체 길이를 저장하기위한 1~2Byte 의 오버헤드 가 필요하다.</li>
+<li><code>char</code> 는 공간이 정해져 나머지 공간은 공백 문자로 채운다.</li>
+<li><code>varchar</code> 의 경우 문자열을 <code>update</code> 할 때 특이사항이 있다.
+<ul>
+<li><code>update</code> 할때 더 큰 길이의 값으로 변경하면 레코드를 다른 공간에 옮겨서 저장해야 한다.</li>
+</ul>
+</li>
+<li>MySQL 에서 <code>varchar()</code> 에 들어가는 숫자는 문자 열의 길이를 의미한다. 다른 DB는 바이트 크기를 의미한다.</li>
+</ul>
+<h2 id="1512-저장-공간과-스키마-변경online-ddl">15.1.2 저장 공간과 스키마 변경(Online DDL)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1512-저장-공간과-스키마-변경online-ddl" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>varchar(60)</code> 인 칼럼을 <code>varchar(63)</code> 으로 변경하면 잠금 없이 빠르게 스키마를 변경 가능하다.</li>
+<li>반면에 <code>varchar(64)</code> 로 변경하려면 <code>copy</code> 알고리즘과 읽기 잠금이 필요하다.</li>
+<li>이는 <code>utf8mb64</code> 의 바이트가 4 바이트 인데, <code>varchar(63)</code> 은 254 바이트로 문자열의 길이를 저장할 때 1바이트로 충분하기 때문이다.</li>
+<li>반면에, <code>varchar(64)</code> 는 문자열 길이를 저장하는 바이트를 2 바이트로 늘려주어야 한다.</li>
+<li>문자열 길이 저장 공간을 변경할 때는 스키마를 변경하면서 아무도 데이터를 변경하지 못하도록 막고 테이블의 레코드를 복사해 처리해야 한다.</li>
+</ul>
+<h2 id="1514-콜레이션">15.1.4 콜레이션<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1514-콜레이션" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>문자열 칼럼 값에 비교나 정렬 순서를 위한 규칙</li>
+<li>모든 문자열 타입의 칼럼은 독립적인 문자열 집합, 콜레이션을 갖는다.
+<ul>
+<li>다른 콜레이션을 갖는 두 칼럼의 조인은 성능 저하를 일으킨다.</li>
+</ul>
+</li>
+<li>문자열은 인코딩된 바이트 값에 해당하고 비교가 필요할 경우에 콜레이션 값으로 매칭한 후에 비교한다. 
+<ul>
+<li>문자열이 저장된 바이트 값은 직접적인 비교 대상이 아니다.</li>
+</ul>
+</li>
+<li>문자열 칼럼은 <code>char</code>, <code>varchar</code> 같이 타입 이름과 길이만 같다 해서 서로 동일하다 판단해선 안되고, 문자 집합 (chracter set) 과 콜레이션 또한 일치 해야 동일 하다 판단할 수 있다.</li>
+</ul>
+<h2 id="1515-비교-방식">15.1.5 비교 방식<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1515-비교-방식" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>varchar</code> 과 <code>char</code> 비교 시에 공백 문자를 뒤에 붙여 동일한 길이로 만든 후에 비교를 수행한다.
+<ul>
+<li>문자열 앞의 공백의 차이는 동일하다 판단하지 않는다.</li>
+</ul>
+</li>
+<li><code>utf8mb4</code> 의 UCA 버전 9.0.0 (<code>utf8mb4_0900_XX</code>) 는 공백 문자 비교 방식이 다르다.
+<ul>
+<li>문자열 뒤의 공백이 존재해도 동일하지 않다 판단한다.</li>
+<li><code>select 'a' = 'a '</code> 는 0 을 반환한다. (이전 버전에선 1 반환)</li>
+<li><code>pad_attribute</code> 의 값이 <code>no pad</code> 인 경우 공백을 채워 넣어 동일한 길이로 만들지 않고, 문자열을 있는 그대로 비교한다.</li>
+</ul>
+</li>
+<li><code>like</code> 연산의 경우 예외적으로 공백 문자를 유효 문자로 취급한다.
+<ul>
+<li><code>select 'abc   ' like 'abc' </code> 는 0 을 반환한다.</li>
+</ul>
+</li>
+</ul>
+<h1 id="152-숫자">15.2 숫자<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#152-숫자" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>
+<p>근삿 값 (부동 소수점)</p>
+<ul>
+<li><code>float</code></li>
+<li><code>doulbe</code></li>
+</ul>
+</li>
+<li>
+<p>참 값 </p>
+<ul>
+<li><code>integer</code></li>
+<li><code>demical</code></li>
+</ul>
+</li>
+<li>
+<p>표기 법으로 <strong>이진 표기법</strong>, <strong>십진 표기법</strong> 으로 분류 가능하다.</p>
+<ul>
+<li><code>demical</code> 타입만 <strong>십진 표기법</strong> 이며, 그 외는 모두 <strong>이진 표기법</strong></li>
+<li><strong>십집 표기법</strong> 은 한 숫자를 표기하기 위해 4 비트나 한 바이트를 사용한다.</li>
+</ul>
+</li>
+</ul>
+<h2 id="1521-정수">15.2.1 정수<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1521-정수" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>tinyint</code></li>
+<li><code>smallint</code></li>
+<li><code>mediumint</code></li>
+<li><code>int</code></li>
+<li><code>bigint</code></li>
+<li>저장 가능한 숫자 값의 범위만 다르고 그외에는 거의 차이가 없다.</li>
+<li><code>unsinged</code> 옵션을 통해 양수만 저장할 수 있는데, <code>unsinged</code> 와 <code>signed</code> 가 조인 되더라도 인덱스를 사용할 수 있다.</li>
+</ul>
+<h2 id="1522-부동-소수점">15.2.2 부동 소수점<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1522-부동-소수점" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>부동 소수점은 근사 값을 저장하는 방식이여서 <code>equal</code> 비교를 할 수 없고, 크다 작다를 비교하기도 쉽지 않다.</li>
+<li>부동 소수점을 사용해야 하는 경우 유효 소수점의 자릿수만큼 10을 곱한 후 정수 칼럼에 저장해 문제를 해결할 수 있다.</li>
+</ul>
+<h2 id="1523-demical">15.2.3 DEMICAL<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1523-demical" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>고정 소수점 타입을 제공한다.</li>
+<li>소수점 이하의 값을 정확하게 관리하기 위한 타입이다.</li>
+<li>숫자 하나를 저장하는데 1/2 바이트가 필요하다.</li>
+<li>정수 값을 저장할 땐 공간 효율이 나쁘므로 사용 x</li>
+<li><code>demical(20,5)</code> 정수 15 자리, 소수 5 자리를 의미한다.</li>
+<li><code>demical</code> 은 <strong>저장 공간 크기가 가변적</strong>이고, 그외의 정수 타입들은 <strong>고정형 데이터 타입</strong> 이다.
+<ul>
+<li><code>bigint(10)</code> 과 같은 경우는 저장 공간 크기를 지정하는 것이 아닌, 화면에 표시할 자릿수를 의미한다.</li>
+</ul>
+</li>
+</ul>
+<h1 id="153-날짜와-시간">15.3 날짜와 시간<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#153-날짜와-시간" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>
+<p><strong>날짜, 시간 타입 종류</strong></p>
+<ul>
+<li><code>year</code></li>
+<li><code>date</code></li>
+<li><code>time</code></li>
+<li><code>datetime</code></li>
+<li><code>timestamp</code> </li>
+</ul>
+</li>
+<li>
+<p><code>time, datetime, timestamp</code> 는 밀리초 단위를 저장할 수 있다. 밀리는 2자리당 1바이트 공간이 필요하다.</p>
+<ul>
+<li><code>datetime(6)</code> = 5 + 3 바이트의 저장 공간이 필요하다.</li>
+</ul>
+</li>
+<li>
+<p><code>datetime</code>, <code>timestamp</code> 는 같은 역할을 하나, <strong>UTC 타임존</strong> 적용 유무의 차이가 존재한다.</p>
+<ul>
+<li><code>datetime</code> : <code>time_zone</code> 값에 대해 아무런 변환 처리 없이 저장된다. (커넥션 입력 값 그대로 저장)</li>
+<li><code>timestamp</code> : 커넥션의 <code>time_zone</code>에 알맞게 값이 저장된다.</li>
+</ul>
+</li>
+<li>
+<p><code>system_time_zone</code> : 일반적으로 운영체제의 타임존을 상속 받는다.</p>
+</li>
+<li>
+<p><code>time_zone</code> : <code>timestamp</code> 는 이 값에만 영향을 받는다. <code>time_zone</code> 값이 <code>SYSTEM</code> 이라면, <code>system_time_zone</code> 의 영향을 받게된다.</p>
+</li>
+<li>
+<p><code>default current_timestamp</code>, <code>on update current_timestamp</code> 로 초기 값을 지정하고,  수정 시점을 자동으로 업데이트 할 수 있다.</p>
+</li>
+</ul>
+<h1 id="154-enum-과-set">15.4 ENUM 과 SET<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#154-enum-과-set" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>내부적으로 숫자 값을 매핑 해서 관리한다.</li>
+</ul>
+<h2 id="1542-enum">15.4.2 ENUM<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1542-enum" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>테이블 구조 (메타 데이터) 에 나열된 목록 중 하나를 값 으로 가진다.</li>
+<li>실제 디스크에 저장될 때는 메타데이터에 매핑된 정숫값을 사용한다.</li>
+<li><code>enum</code> 타입은 새로운 값을 추가할 때 테이블의 구조를 변경해야 한다는 단점 이 있다.
+<ul>
+<li><code>enum</code> 타입 제일 마지막에 값을 추가하면 <code>instant</code> 알고리즘으로 변경 가능하다. (메타 데이터만 변경)</li>
+<li>그러나, 그 외의 위치에 새로운 값을 추가하면 전체 테이블을 <code>copy</code> 알고리즘 과 읽기 잠금이 필요하다.</li>
+</ul>
+</li>
+<li>정렬을 수행하면 매핑된 코드 (정숫값) 을 기준으로 정렬된다.</li>
+<li><strong><code>enum</code> 타입의 장점은  정숫값을 저장 하기 때문에 디스크 저장 공간 크기가 줄어든다는 점이다.</strong>
+<ul>
+<li>디스크 저장 공간의 크기는 결국 버퍼 풀로 적재 되어야 하기 때문에 쿼리 성능에 영향을 준다.</li>
+</ul>
+</li>
+</ul>
+<h2 id="1542-set">15.4.2 SET<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1542-set" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>enum</code> 과 같은 방식으로 테이블의 구조에 정의된 아이템을 정숫값으로 매핑해 저장한다.</li>
+<li>그러나, <code>set</code> 은 한 칼럼에 1개 이상의 값을 저장할 수 있다.</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> tb_set </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> find_in_set(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'golf'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,fd);</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">select</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> *</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> from</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> tb_set wehre fd_set </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">like</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> '%golf%'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<ul>
+<li>위와 같이 여러 세트가 저장 된 칼럼을 검색할 수 있다.</li>
+<li>동등 비교 시엔  칼럼에 저장된 순서대로 문자열을 나열해야 한다.</li>
+<li><code>set</code> 타입의 새로운 아이템을 추가하는 것 또한 <code>enum</code> 과 동일한데, 
+<ul>
+<li>마지막에 추가하는 경우 메타데이터만 수정해 빠르게 처리되지만, 중간 위치에 새로운 아이템을 추가하면 읽기 잠금과 리빌드 작업이 필요하다. (copy, shared lock)</li>
+</ul>
+</li>
+</ul>
+<h2 id="155-text-와-blob">15.5 TEXT 와 BLOB<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#155-text-와-blob" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>대량의 데이터를 저장할 때 사용된다.</li>
+<li>다음과 같은 경우에 <code>text</code>, <code>blob</code> 타입을 사용한다.
+<ul>
+<li>칼럼 하나에 저장되는 문자열이나 이진 값의 길이를 예측할 수 없을 때</li>
+<li>레코드의 전체 크기가 64KB 를 넘어서서 더 큰 칼럼을 추가할 수 없을 때, 일부 칼럼을 <code>text</code>,<code>blob</code> 타입으로 변경</li>
+</ul>
+</li>
+<li><strong>저장 방식</strong>
+<ul>
+<li>저장 방식은 테이블의 <code>row_format</code> 옵션에 의해 결정된다.</li>
+<li><code>row_format</code> 의 값은 다음과 같다.
+<ul>
+<li><code>redundant</code></li>
+<li><code>compact</code> -> 다른 규칙들의 근간</li>
+<li><code>dynamic</code> -> MySQL5.7 이후부터의 기본 값</li>
+<li><code>compressed</code></li>
+</ul>
+</li>
+<li>레코드와 <code>text</code>,<code>blob</code> 을 <strong>같은 위치 (프라이머리 키 페이지)에 저장하려고 노력</strong>하나, 레코드 최대 길이 제한에 의해 불가능하다.
+<ul>
+<li>레코드의 최대 길이를 초과 하면, <code>text</code>,<code>blob</code> <strong>데이터는 외부 페이지에 저장</strong>된다.</li>
+<li>외부 페이지로 저장될 때 <code>text</code>,<code>blob</code> 16KB 크기를 넘기는 경우 여러개의 외부 페이지로 저장하고 각 <strong>페이지를 체인으로 연결한다</strong>.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="157-json-타입">15.7 JSON 타입<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#157-json-타입" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li><code>jons</code> 타입은 원래는 <code>blob</code>,<code>text</code> 타입에 문자열로 저장되던 방식에서 <strong>BSON(Binary JSON)</strong> 형식으로 변환해 저장할 수 있게 해준다.</li>
+</ul>
+<h2 id="1571-저장-방식">15.7.1 저장 방식<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1571-저장-방식" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>json</code> 타입은 저장될 때 <strong>BSON</strong> 으로 변환되어 내부적으로 <code>blob</code> 타입으로 저장된다.</li>
+<li><code>json</code> 칼럼에 저장 될 때는 이진 데이터로 저장되는데, 모든 키에 대한 키와, 이름이 앞 쪽에 저장되고 그 뒤에 필드의 값이 저장된다.
+<ul>
+<li>이러한 구조로, 특정 필드의 값만 업데이트, 참조할 때 <code>json</code> 칼럼의 값을 모두 읽어보지 않아도 즉시 원하는 필드의 이름을 읽거나 변경 할 수 있다. </li>
+<li><strong>부분 업데이트</strong> 라 한다.</li>
+</ul>
+</li>
+<li><code>json</code> 또한 <code>blob</code> 과 같이 여러 데이터 페이지로 나뉘어 저장된다.
+<ul>
+<li>부분 업데이트를 효율적으로 처리하기 위해선 링크드 리스트 (체인) 형태로는 불가능하다.</li>
+<li>그래서, <code>blob</code> 페이지들의 인덱스를 관리하고 각 인덱스를 페이지들을 링크 하는 방식을 사용한다.</li>
+<li><code>json</code> 의 부분 업데이트가 필요할 때, <code>blob</code> 페이지 인덱스와 <code>json</code> 칼럼의 각 필드의 주소 정보를 이용해 필요한 부분만 변경 가능 하다.</li>
+</ul>
+</li>
+</ul>
+<h2 id="1572-부분-업데이트-성능">15.7.2 부분 업데이트 성능<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1572-부분-업데이트-성능" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">update</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> tb_json </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">set</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> fd </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> JSON_SET(fd, </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">'$.user_id'</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">,</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;12345678901&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> id </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">2</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">;</span></span></code></pre></figure>
+<ul>
+<li>정수 타입의 필드라면 항상 부분 업데이트가 적용 될 수 있다.</li>
+<li>그러나 문자열 타입의 필드라면 저장 되는 문자열의 길이에 따라 부분 업데이트가 사용되지 못할 수 있다.
+<ul>
+<li>10BYTE 의 공간을 가자는 기존 레코드를 위의 쿼리로 11BYTE 로 변경한다면, 최초 할당 했던 공간으로 부족하기 때문에 <code>json</code> 레코드를 통째로 복사해 다른 위치에 저장한다.</li>
+<li>즉 부분 업데이트를 사용 못할 수 있는데, 특정 필드의 용량이 자주 길이가 다른 값으로 변경된다면 다음과 같이 해결해야 한다.
+<ul>
+<li>예상되는 최대 값으로 초기화 해두거나</li>
+<li>어플리케이션에서 패딩을 추가해 고정 길이 문자열로 만들어야 한다.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="1573-json-타입의-콜레이션-비교">15.7.3 JSON 타입의 콜레이션 비교<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1573-json-타입의-콜레이션-비교" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>json</code> 칼럼에서 나온 결과 값은 모두 <code>utf8mb4</code>와 <code>utfmb4_bin</code> 콜레이션을  갖는다.</li>
+<li>따라서, 대소문자 구분 및 액센트 문자 등도 모두 구분해서 비교한다.</li>
+</ul>
+<h2 id="1574-json-칼럼-선택">15.7.4 JSON 칼럼 선택<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1574-json-칼럼-선택" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>정규화된 테이블과 <code>json</code> 칼럼을 중 어떤 것을 선택해야 할지 고민 해보아야한다.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th></th><th>정규화된 칼럼</th><th>JSON</th></tr></thead><tbody><tr><td>칼럼명</td><td>칼럼의 이름을 메타 정보로만 저장, 데이터 파일의 공간 차이 x</td><td>필드 이름이 매번 데이터 파일에 저장되어야 한다.</td></tr><tr><td>저장 방식</td><td><code>blob</code>,<code>text</code> 같은 대용량 데이터의 경우 <strong>외부 페이지로 관리</strong> 된다.</td><td>모든 데이터를 <code>json</code> 칼럼에 저장하기 때문에 필요한 데이터를 선별적으로 접근 할 수 없다. 정수 값을 하나 참조 하더라도 <code>json</code> <strong>칼럼 전체를 읽어 봐야한다</strong>.</td></tr><tr><td>데이터 구조</td><td>정형 데이터 저장에 적합하다.</td><td>비정형 데이터 저장에 적합하며, 중요도가 낮은 데이터에 사용하면 좋다. (검색조건에 사용이 드문)</td></tr></tbody></table></div>
+<h1 id="158-가상-칼럼파생-칼럼">15.8 가상 칼럼(파생 칼럼)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#158-가상-칼럼파생-칼럼" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>가상 칼럼은 기존 칼럼의 값을 계산해서 관리하는 <strong>파생 칼럼</strong> 이다</li>
+<li>아래 두가지로 구분할 수 있다.
+<ul>
+<li>virtual column</li>
+<li>stored column</li>
+</ul>
+</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>virtual column</th><th>stored column</th></tr></thead><tbody><tr><td>칼럼 값이 디스크에 저장 x</td><td>칼럼 값이 <strong>디스크에 저장</strong>된다.</td></tr><tr><td>칼럼의 구조 변경이 테이블 리빌드 x</td><td>칼럼의 구조 변경이 테이블 리빌드 필요</td></tr><tr><td>레코드가 읽히기전 또는 before 트리거 <strong>실행 직후에 계산되어 만들어 진다</strong>.</td><td><code>insert</code>, <code>unpdate</code> 시점에 칼럼 값이 계산된다.</td></tr><tr><td><code>total_price demical(10,2) as (quantity*price) as virtual</code></td><td><code>total_price demical(10,2) as (quantity*price) as stored</code></td></tr></tbody></table></div>
+<ul>
+<li>가상 칼럼은 조회 시점에 매번 계산되고 스토어드 칼럼은 저장 공간을 많이 차지한다.</li>
+<li>즉, <strong>cpu 사용량을 높여 다스크 부하를 낮출 것인지 아니면 디스크의 사용량을 높여 cpu 사용량을 낮출 것인지 선택</strong>해야 한다.</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/데이터베이스와-sql" class="internal internal-link alias" data-slug="탐색/주제/데이터베이스와-sql">데이터베이스와 SQL</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-95" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#151-문자열-char와-varchar" data-for="151-문자열-char와-varchar">15.1 문자열 (CHAR와 VARCHAR)</a></li><li class="depth-1"><a href="#1511-저장-공간" data-for="1511-저장-공간">15.1.1 저장 공간</a></li><li class="depth-1"><a href="#1512-저장-공간과-스키마-변경online-ddl" data-for="1512-저장-공간과-스키마-변경online-ddl">15.1.2 저장 공간과 스키마 변경(Online DDL)</a></li><li class="depth-1"><a href="#1514-콜레이션" data-for="1514-콜레이션">15.1.4 콜레이션</a></li><li class="depth-1"><a href="#1515-비교-방식" data-for="1515-비교-방식">15.1.5 비교 방식</a></li><li class="depth-0"><a href="#152-숫자" data-for="152-숫자">15.2 숫자</a></li><li class="depth-1"><a href="#1521-정수" data-for="1521-정수">15.2.1 정수</a></li><li class="depth-1"><a href="#1522-부동-소수점" data-for="1522-부동-소수점">15.2.2 부동 소수점</a></li><li class="depth-1"><a href="#1523-demical" data-for="1523-demical">15.2.3 DEMICAL</a></li><li class="depth-0"><a href="#153-날짜와-시간" data-for="153-날짜와-시간">15.3 날짜와 시간</a></li><li class="depth-0"><a href="#154-enum-과-set" data-for="154-enum-과-set">15.4 ENUM 과 SET</a></li><li class="depth-1"><a href="#1542-enum" data-for="1542-enum">15.4.2 ENUM</a></li><li class="depth-1"><a href="#1542-set" data-for="1542-set">15.4.2 SET</a></li><li class="depth-1"><a href="#155-text-와-blob" data-for="155-text-와-blob">15.5 TEXT 와 BLOB</a></li><li class="depth-0"><a href="#157-json-타입" data-for="157-json-타입">15.7 JSON 타입</a></li><li class="depth-1"><a href="#1571-저장-방식" data-for="1571-저장-방식">15.7.1 저장 방식</a></li><li class="depth-1"><a href="#1572-부분-업데이트-성능" data-for="1572-부분-업데이트-성능">15.7.2 부분 업데이트 성능</a></li><li class="depth-1"><a href="#1573-json-타입의-콜레이션-비교" data-for="1573-json-타입의-콜레이션-비교">15.7.3 JSON 타입의 콜레이션 비교</a></li><li class="depth-1"><a href="#1574-json-칼럼-선택" data-for="1574-json-칼럼-선택">15.7.4 JSON 칼럼 선택</a></li><li class="depth-0"><a href="#158-가상-칼럼파생-칼럼" data-for="158-가상-칼럼파생-칼럼">15.8 가상 칼럼(파생 칼럼)</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/데이터베이스와-sql" class="internal">데이터베이스와 SQL</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

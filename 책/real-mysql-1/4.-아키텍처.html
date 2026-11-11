@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>4. 아키텍처</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="4. 아키텍처"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="4. 아키텍처"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-1/4.-아키텍처"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/real-mysql-1/4.-아키텍처"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/real-mysql-1/4.-아키텍처" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-124" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-124" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/real-mysql-1/">real mysql 1</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>4. 아키텍처</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">4. 아키텍처</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-07-08T00:00:00.000Z">2024년 7월 08일</time><span>29 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/database" class="internal tag-link">topic/database</a></li><li><a href="../../tags/concept/indexing" class="internal tag-link">concept/indexing</a></li><li><a href="../../tags/concept/memory" class="internal tag-link">concept/memory</a></li><li><a href="../../tags/concept/mysql" class="internal tag-link">concept/mysql</a></li><li><a href="../../tags/concept/query-optimization" class="internal tag-link">concept/query-optimization</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="41-mysql-엔진-아키텍처">4.1 mysql 엔진 아키텍처<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#41-mysql-엔진-아키텍처" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="411-mysql의-전체-구조">4.1.1 MySql의 전체 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#411-mysql의-전체-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="mysql-엔진">MySql 엔진<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#mysql-엔진" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>sql 문장을 분석하거나 최적화 , 요청을 받아들이는 역할을 한다.
+<ul>
+<li>커넥션 핸들러</li>
+<li>sql 파서</li>
+<li>전처리기</li>
+<li>옵티 마이저</li>
+</ul>
+</li>
+</ul>
+<h4 id="스토리지-엔진">스토리지 엔진<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#스토리지-엔진" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>실제 데이터를 디스크에 저장,읽기 작업을 수행한다.</li>
+<li>mysql 엔진은 하나지만, 스토리지 엔진은 여러 스토리지 엔진을 사용할 수 있다.</li>
+</ul>
+<h4 id="핸들러-api">핸들러 API<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#핸들러-api" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>mysql 엔진에서 스토리지 엔진에 읽기,쓰기 요청들을 handler 요청이라 한다.</li>
+<li>여기 사용되는 handler들을 handler api 이다. </li>
+</ul>
+<h2 id="412-mysql-스레딩-구조">4.1.2 Mysql 스레딩 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#412-mysql-스레딩-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>포그라운드 스레드 백그라운드 스레드로 나누어진다. <code>thread/sql/one_connection</code> (실제 사용자의 요청을 처리하는 포그라운드 스레드)를 제외하곤 모두 백그라운드 프로레스이다.</li>
+</ul>
+<h4 id="포그라운드-스레드-사용자-스레드-">포그라운드 스레드 (사용자 스레드 )<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#포그라운드-스레드-사용자-스레드-" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>접속된 클라이언트 수 만큼 존재, 요청 쿼리를 실행하는 역할</li>
+<li>mysql의 데이터 버퍼나, 케시로부터 데이터를 가져오거나 직접 디스크의 데이터나 인덱스 파일로 부터 데이터를 읽어와서 작업을 처리한다.<br/>
+<em>innodb 는 데이터를 읽어오는 작업은 백그라운드 스레드가 처리</em></li>
+</ul>
+<h4 id="백그라운드-스레드">백그라운드 스레드<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#백그라운드-스레드" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>데이터를 버퍼에서 디스크로 혹은 디스크에서 버퍼로 쓰는 작업들에 해당한다. </li>
+<li>InnoDb에서 사용자 요청 처리중 읽는 작업은 주로 사용자 스레드에서 처리된다. </li>
+<li>읽기 작업은 지연 처리될 수 없다.</li>
+<li>쓰기 작업은 버퍼링되어 처리될 수 있다.</li>
+<li>따라서, 사용자는 <code>update,insert,delete</code> 쿼리를 디스크의 처리를 기다리지 않아도 된다.</li>
+</ul>
+<h2 id="413-메모리-할당-및-사용-구조">4.1.3 메모리 할당 및 사용 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#413-메모리-할당-및-사용-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="글로벌-메모리-영역">글로벌 메모리 영역<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#글로벌-메모리-영역" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>mysql 서버 시작 시 운영체제로부터 할당된다.</li>
+<li>모든 스레드에 의해 공유 된다.
+<ul>
+<li>테이블 캐시</li>
+<li>innoDb 버퍼 풀</li>
+<li>innoDb 어댑티브 해시 인덱스</li>
+<li>innoDb 리두 로드 버퍼</li>
+</ul>
+</li>
+</ul>
+<h4 id="로컬-세션클라이언트-메모리-영역">로컬 (세션,클라이언트) 메모리 영역<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#로컬-세션클라이언트-메모리-영역" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>클라이언트 스레드가 쿼리를 처리하는 데 사용하는 메모리 영역</li>
+<li>각 스레드별로 독립적이며 공유되지 않는다.</li>
+<li>쿼리 용도 별로 필요할 때만 공간이 할당되고 필요하지 않은 경우 할당되지 않는 경우도 있다.
+<ul>
+<li>조인 버퍼</li>
+<li>정렬 버퍼</li>
+<li>바이너리 로그 캐시</li>
+<li>네트워크 버퍼</li>
+</ul>
+</li>
+</ul>
+<h2 id="416-쿼리-실행-구조">4.1.6 쿼리 실행 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#416-쿼리-실행-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="쿼리-파서">쿼리 파서<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#쿼리-파서" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>SQL 을 토큰으로 분해후 <strong>파서트리</strong> 생성</li>
+<li>SQL 문법 오류를 사용자에게 반환</li>
+</ul>
+<h4 id="전처리기">전처리기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#전처리기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>파서 트리를 기반으로 쿼리 문장의 구조적 오류 확인</li>
+<li>토큰을 테이블명, 칼럼명, 내장 함수에 매핑 후 객체 존재 여부 확인</li>
+<li>객체의 접근 권한 확인</li>
+</ul>
+<h4 id="옵티마이저">옵티마이저<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#옵티마이저" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>쿼리 문장을 빠르게 처리할 수 있는 방법을 결정</li>
+<li>실행 계획 수립</li>
+</ul>
+<h4 id="실행엔진">실행엔진<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#실행엔진" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>만들어진 계획대로 각 핸들러에게 요청하고 그 결과를 또 다른 핸들러에 요청하는 역할을 한다.</li>
+</ul>
+<h4 id="핸들러--스토리지-엔진-">핸들러 ( 스토리지 엔진 )<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#핸들러--스토리지-엔진-" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>실행 엔진의 요청에 따라 데이터를 디스크에 읽고 쓴다.</li>
+<li>테이블이 어떤 스토리지 엔진을 사용하느냐에 따라 스토리지 엔진은 변경된다.<br/>
+<em>InnoDB에 실행엔진이 핸들러를 호출하는 경우 핸들러는 InnoDB 스토리지 엔진이된다.</em></li>
+</ul>
+<h2 id="418-쿼리-캐시">4.1.8 쿼리 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#418-쿼리-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>SQL 실행 결과를 저장하고 동일한 쿼리가 실행 시 캐시에서 결과를 반환함</li>
+<li>캐시 불일치 문제가 발생해 9.0부터 <strong>제거</strong>되었다.</li>
+</ul>
+<h2 id="419-스레드-풀">4.1.9 스레드 풀<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#419-스레드-풀" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>cpu 프로세서 친화도를 높이려면 코어 개수만큼 <code>thread_pool_size</code> 설정해야한다.<br/>
+<em>I/O 요청 위주이면 더 큰 값을 설정할 수 있다.</em></li>
+<li>스레드 풀이 처리 중인 작업이 있는 경우 <code>thread_pool_oversubscribe</code> 의 개수만큼 추가로 요청을 받아들여서 처리한다. <strong>스레드 스케줄링</strong>이 촉발된다.</li>
+<li>스레드 그룹이 모두 작업 중이라면 워커 스레드를 추가할지 기존 스레드 그룹에서 스케줄링 할지 판단한다
+<ul>
+<li><code>thread_pool_stall_limit</code> :  정의한 ms 만큼 작업 스레드가 지금 처리중인 작업을 처리하지 못하면 스레드 그룹에 스레드를 추가한다.<code>thread_pool_max_threads</code> 값 이상 스레드 개수를 초과할 수 없다.</li>
+</ul>
+</li>
+<li>우선순위 큐와 후순위 큐를 사용해 특정 트랙잭션이나 쿼리를 우선적으로 처리한다.</li>
+</ul>
+<h2 id="4110-트랜잭션-지원-메타데이터">4.1.10 트랜잭션 지원 메타데이터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#4110-트랜잭션-지원-메타데이터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>테이블 구조 정보, 스토어드 프로그램 정보에 해당한다.</li>
+<li>테이블이 깨지는 현상을 해결하기 위해 메타데이터를 InnoDB 테이블에 저장한다.</li>
+</ul>
+<h1 id="42-innodb-스토리지-엔진-아키텍처">4.2 InnoDB 스토리지 엔진 아키텍처<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#42-innodb-스토리지-엔진-아키텍처" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="421-프라이머리-키에-의한-클러스터링">4.2.1 프라이머리 키에 의한 클러스터링<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#421-프라이머리-키에-의한-클러스터링" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="innodb">InnoDB<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#innodb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>프라이머리 키를 기준으로 클러스터링 되어 저장된다.</li>
+<li>디스크에 프라이머리 키 값 순서대로 저장된다. </li>
+<li>쿼리 실행 계획에서 pk 가 다른 보조 인덱스 보다 높은 우선 순위로 설정되어있어  pk가 선택된다.</li>
+</ul>
+<h4 id="myisam">MyISAM<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#myisam" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>클러스터링 키를 지원하지 않는다. pk와 세컨더리 인덱스는 구조적 차이가 없다.</li>
+<li>pk 를 포함한 모든 인덱스는 물리적인 레코드의 주소 값을 가진다.</li>
+</ul>
+<h2 id="422-외래-키-지원">4.2.2 외래 키 지원<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#422-외래-키-지원" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>InnoDB에서 외래 키는 부모 테이블과 자식 테이블 모두 해당 칼럼에 인덱스 생성을 한다.</li>
+<li>변경 시에는 부모 테이블, 자식 테이블에 데이터가 있는지 체크하는데 이때 잠금이 여러 테이블로 전파된다.그래서 데드락이 발생한다.</li>
+</ul>
+<blockquote>
+<p>자식 테이블이 FK를 설정하는 테이블 이다.</p>
+</blockquote>
+<h2 id="423-mvcc-multi-version-concurrency-control">4.2.3 MVCC (multi version concurrency control)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#423-mvcc-multi-version-concurrency-control" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>레코드에 대해 여러 버전을 동시에 관리해 <strong>잠금을 사용하지 않는 일관된 읽기</strong>를 제공한다.</li>
+</ul>
+<ol>
+<li><code>update</code> 실행시 <code>commit</code> 실행 여부와 관계 없이 InnoDB 버퍼플은 새로운 값으로 <code>update</code> 된다.</li>
+<li>undo log 에 <code>update</code> 이전의 값을 저장한다.</li>
+<li>데이터 파일 ( 디스크 ) 는 백그라운드 스레드에 의해 갱신된다.</li>
+</ol>
+<ul>
+<li><code>update</code> 이후에 해당 레코드를 조회하면 어디에 존재하는 데이터를 조회하는가에 대해서는 두가지 방식이 있다.
+<ul>
+<li><strong>READ_UNCOMMITED</strong>  : InnoDB 버퍼풀에서 데이터를 가져온다.</li>
+<li><strong>READ_COMMITD, REPEATABLE_READ, SERAIALIZABLE</strong> : undo log 영역에서 데이터를 반환한다.</li>
+</ul>
+</li>
+<li><code>commit</code> 실행시에 현재의 상태를 영구적인 데이터로 만든다.</li>
+<li><code>rollback</code> 실행시에  undo log 영역에 내용에 관련된 트랜잭션 유무를 확인한 후에 undo log 영역에서 삭제한다. </li>
+</ul>
+<h2 id="424-잠금-없는-일관된-읽기-non-loacking-consitent-read">4.2.4 잠금 없는 일관된 읽기 (non-loacking consitent read)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#424-잠금-없는-일관된-읽기-non-loacking-consitent-read" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>MVCC 를 이용해 잠금 없이 읽기 작업을 수행한다.</li>
+<li><strong>SERIALIZABLE</strong> 외의 잠금 수준에서는 순수한 <code>select</code> 작업은 다른 트랜잭션의 <code>update</code> 작업과 관계 없이 항상 읽기 작업을 수행 가능하다.</li>
+</ul>
+<h2 id="425-자동-데드락-감지">4.2.5 자동 데드락 감지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#425-자동-데드락-감지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>InnoDB 스토리지 엔진은 <strong>데드락 감지 스레드</strong>가 존재한다.</li>
+<li>데드락 감지 스레드는 교착상태에 빠진 트랜잭션을 <strong>잠금 대기 그래프 (Wait-for List)</strong> 를 사용해 검사 후 트랜잭션중 하나를 종료시킨다.</li>
+<li>종료시킬 트랜잭션은 undo log의 양이 적은 트랜잭션이다.</li>
+<li>동시처리가 많은 시스템에서 데드락 감지 스레드는 CPU 성능 저하를 일으킨다.</li>
+<li><code>innodb_deadlock_detect</code> 를 끄면 데드락 감지 스레드가 실행되지 않는데, 이때 데드락은 여전한 상태이므로 <code>innodb_lock_wait_timeout</code> 값을 충분히 낮게 설정 해야한다.</li>
+</ul>
+<h2 id="426-자동화된-장애-복구">4.2.6 자동화된 장애 복구<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#426-자동화된-장애-복구" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>MySql 서버 재시작시 완료되지 못한 트랜잭션이나 디스크에 일부만 기록된 데이터 페이지들에 대해 복구작업이 자동으로 수행된다.</li>
+<li>자동으로 복구작업이 진행되지 않은경우 <code>innodb_force_recovery</code> 값을 1~6으로 설정에 수동으로 복구해야한다.</li>
+</ul>
+<h2 id="427-innodb-버퍼-풀">4.2.7 InnoDB 버퍼 풀<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#427-innodb-버퍼-풀" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<p><img src="../../assets/images/database/innodb-architecture.png" alt="InnoDB architecture.png"/></p>
+<ul>
+<li>디스크 데이터 파일, 인덱스 정보를 메모리에 캐시하는 공간</li>
+<li>버퍼풀에 데이터가 존재하지 않으면 디스크에 무작위로 저장된 레코드에 대해 I/O 작업이 발생한다.</li>
+<li>버퍼풀은 이러한 변경 데이터를 모아서 처리해 디스크 작업의 횟수를 감소시킨다.</li>
+</ul>
+<h4 id="버퍼풀의-크기-설정">버퍼풀의 크기 설정<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버퍼풀의-크기-설정" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>레코드 버퍼</strong> : 클라이언트 세션에서 테이블의 레코드를 읽고 쓸 때 사용되는 버퍼</li>
+<li>커넥션이 많은 경우 레코드 버퍼에 사용되는 메모리 공간이 많이 요구된다.</li>
+<li>동적으로 버퍼풀 크기를 할당할 수 있다.</li>
+<li>경합을 줄이기 위해서 버퍼풀은 <strong>버퍼 풀 인스턴스</strong> 여러개로 분리되어 관리된다.</li>
+</ul>
+<h4 id="버퍼풀의-구조">버퍼풀의 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버퍼풀의-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>버퍼 풀의 메모리 공간을 <strong>페이지 크기</strong>로 조각을 나누어 스토리지 엔진이 데이터가 필요할 때 데이터 페이지를 읽어들여 각 조각에 저장한다.
+<ul>
+<li><strong>LRU list</strong> : LRU (Old 서브리스트), MRU (New 서브리스트) 두가지 리스트로 구성되어 있다.<br/>
+레코드가 오래될수록 LRU 의 끝으로 이동해 제거되거나 <strong>aging</strong> 이 적용되어 제거된다. 레코드가 자주 사용되면 MRU 공간에서 계속 살아 남는다. </li>
+<li><strong>flush list</strong> : 디스크로 동기화 되지 않은 데이터를 가진 페이지 목록으로 변경이 가해진 데이터 페이지를 <strong>flush list</strong>에 저장한다. 특정 시점에 플러시 리스트 들은 디스크에 기록된다.</li>
+<li><strong>free list</strong> : 할당되지 않은 페이지 공간을 관리</li>
+</ul>
+</li>
+</ul>
+<h4 id="버퍼풀과-리두-로그">버퍼풀과 리두 로그<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버퍼풀과-리두-로그" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>버퍼풀은 데이터 <strong>캐시 기능</strong>과 <strong>쓰기 버퍼링 기능</strong>을 한다.
+<ul>
+<li><strong>데이터 캐시 기능</strong>: 자주 읽거나 쓰는 데이터를 메모리에 보관하여 디스크 접근을 최소화</li>
+<li><strong>쓰기 버퍼링 기능</strong>: 데이터를 디스크에 즉시 기록하지 않고, 메모리에서 일정 기간 동안 유지하다가 적절한 시점에 디스크에 기록</li>
+</ul>
+</li>
+<li><strong>쓰기 버퍼링 기능</strong>은 <strong>리두 로그</strong>와 밀접하다. </li>
+<li><strong>버퍼풀의 페이지 상태</strong> 
+<ul>
+<li>clean page : 버퍼 풀에서 데이터 변경이 되지 않은 페이지 </li>
+<li>dirty page :  디스크와 버퍼 풀 의 데이터 상태가 달라 디스크로 기록되어야 한다.</li>
+</ul>
+</li>
+</ul>
+<p><img src="../../assets/images/database/4.-아키텍처-1.png" alt="4. 아키텍처-1.png"/></p>
+<ul>
+<li><strong>활성 리두 로그</strong> : 리두 로그 중 재사용 불가능한 공간이다.<br/>
+( 이미지의 리두 로그에서 화살표를 가진 부분에 해당한다. )</li>
+<li>더티 페이지는 특정 리두 로그 엔트리와 관계를 갖는다.즉, <strong>더티 페이지가 생성된 시점에 해당 변경사항이 리두 로그에 기록된다.</strong></li>
+<li>체크포인트가 발생하면 체크포인트의 LSN보다 작은 리두로그 엔트리와 더티 페이지 모두 디스크로 동기화돼야한다. <strong>체크 포인트 시점까지의 모든 변경사항을 디스크에 반영함을 의미한다.</strong></li>
+</ul>
+<h4 id="버퍼-풀-플러시">버퍼 풀 플러시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버퍼-풀-플러시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>더티 페이지 플러시</strong>는 더티 페이지를 디스크에 동기화하는 부분이다.</li>
+<li>더티 페이지 플러시가 성능에 영향에 없게 하기 위해 아래 두가지 방법을 사용한다.</li>
+</ul>
+<ol>
+<li><strong>플러시 리스트 플러시</strong>
+<ul>
+<li>리두 로그 공간을 지우기 위해 버퍼풀의 더티 페이지를 디스크로 동기화 해야한다.</li>
+<li>버퍼풀에 더티 페이지가 많을 수록 disk i/o 를 한번으로 줄일 수 있다.</li>
+<li><strong>Disk I/o Burst</strong> : 버퍼풀에 더티 페이지가 90% 이상 존재하면 즉시 더티 페이지를 disk i/o 를 수행하는 현상</li>
+<li><strong>adpative flush</strong> : redo log 증가속도를 분석해 적절한 수준의 더티 페이지가 버퍼풀에 유지될 수 있는 수준에서 disk i/o 수행</li>
+</ul>
+</li>
+<li><strong>LRU 리스트 플러시</strong>
+<ul>
+<li>LRU 리스트에서 사용 빈도가 낮은 데이터 페이지를 제거해 새로운 페이지를 읽어올 공간을 만드는 과정에서 사용한다.</li>
+</ul>
+</li>
+</ol>
+<h4 id="버퍼-풀-상태-백업-및-복구">버퍼 풀 상태 백업 및 복구<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버퍼-풀-상태-백업-및-복구" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>warming up</strong> : 디스크의 데이터가 버퍼풀에 적재되어 있는 상태</li>
+<li>MySql 이 재시작될때 warming 상태를 유지하기 위해 현재 buffer pool 상태를 덤프 할 수 있다. </li>
+</ul>
+<h2 id="428-double-write-buffer">4.2.8 Double Write Buffer<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#428-double-write-buffer" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><strong>Partial page , Torn Page</strong> : 더티 페이지를 디스크로 flush 하는 과정에서 하드웨어의 오작동이나 시스템의 비정상 종료가 발생으로 인하여 디스크에 일부만 기록되어 해당 페이지의 내용을 복구 할 수 없는 현상</li>
+<li>Partial page, Torn page 현상을 방지 하기 위해 <strong>Double-Write</strong> 기법 사용</li>
+</ul>
+<p><strong>더티 페이지 디스크 플러시 절차</strong></p>
+<ol>
+<li>데이터 변경 내용을 기록하기 전에 우선 시스템 테이블 스페이스의 Double Write Buffer 에 기록</li>
+<li>각 더티 페이지들을 데이터 파일의 적당한 위치에 하나씩 랜덤으로 쓴다.</li>
+</ol>
+<ul>
+<li>InnoDb 스토리지 엔진은 재시작 될 때 항상 DoubleWrite buffer의 내용과 데이터 파일 내용을 모두 비교해 다른 내용이 존재할 경우 DoubleWrite buffer의 내용을 데이터 파일로 복사한다.</li>
+<li>Double Write buffer 은 안전성을 위해 사용해 데이터 무결성이 중요한 서비스에서 활성화를 고려한다.</li>
+</ul>
+<h2 id="429-언두-로그">4.2.9 언두 로그<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#429-언두-로그" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>트랜 잭션과 격리 수준을 보장하기 위해 DML 로 변경되기 이전 버전의 데이터를 별도로 백업한다.
+<ul>
+<li><strong>트랜잭션 보장</strong><br/>
+트랜잭션이 롤백시 언두 로그에 백업해둔 이전 버전의 데이터를 이용해 복구</li>
+<li><strong>격리 수준 보장</strong><br/>
+데이터에 여러 커넥션이 접근하면 트랜잭션 격리 수준에 맞게 변경중인 레코드 대신 언두 로그에 백업해둔 데이터를 읽어 반환</li>
+</ul>
+</li>
+<li><strong>데이터 변경시 변경 이전 데이터가 로그 데이터로 생성</strong>된다.
+<blockquote>
+<p>트랜잭션 내에서 데이터가 변경될 때마다 undo log 는 생성되며 (commit이 없어도) rollback 시에 이전 상태로 복구할 수 있게 해준다.</p>
+</blockquote>
+</li>
+</ul>
+<h4 id="언두-로그-모니터링">언두 로그 모니터링<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#언두-로그-모니터링" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>트랜잭션이 장시간 실행되면 언두 로그에 저장해야하는 데이터 양이 증가 한다. </li>
+<li>스토리지 엔진은 이 언두 로그 이력을 스캔해 필요한 레코드를 찾을 수 있기때문에 쿼리 성능이 저하된다.</li>
+<li>따라서, 언두 로그 건수를 확인해 언두 로그 급증 여부를 모니터링 해야 한다.</li>
+<li><code>update, delete</code>  : 언두 로그는 <strong>mvcc 와 데이터 복구에 사용</strong>된다.</li>
+<li><code>insert</code> : mvcc에 사용되지 않고 롤백이나 <strong>데이터 복구만을 위해 사용</strong>된다.</li>
+</ul>
+<h4 id="언두-테이블스페이스-관리">언두 테이블스페이스 관리<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#언두-테이블스페이스-관리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>테이블 스페이스</strong> : 언두 로그가 저장되는 공간
+<ul>
+<li>8.0 이전 버전 : 서버 초기화 시에 시스템 테이블 스페이스에 저장되었다.</li>
+<li>8.0 이후 버전 : 언두 로그는 항상 시스템 테이블 스페이스 외부의 별도 로그 파일에 기록 </li>
+</ul>
+</li>
+<li>언두 스페이스의 구조는 아래와 같다.
+<ul>
+<li><strong>언두 테이블 스페이스</strong>
+<ul>
+<li><strong>롤백 세그먼트 집합</strong>
+<ul>
+<li><strong>언두 슬롯 집합</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>언두 로그 슬롯</strong>은 트랜잭션이 실행하는 문장에 따라 최대 4개 사용가능하다. </li>
+<li><strong>언두 로그 슬롯</strong> 부족은 트랜잭션 실행을 불가능하게 한다.</li>
+<li><strong>언두 테이블 스페이스</strong>는 8.0 이후 부터 동적으로 추가 삭제 가능하다.</li>
+<li><strong>undo tablespace truncate</strong> : 언두 테이블 스페이스 공간을 필요한 만큼만 남기고 불필요하거나 과도하게 할당된 공간을 운영체제에 반납하는 것</li>
+</ul>
+<h2 id="4210-체인지-버퍼">4.2.10 체인지 버퍼<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#4210-체인지-버퍼" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>
+<p><mark style="background:#FFB86CA6;">체인지 버퍼는 특정 데이터 페이지가 버퍼 풀에 없을 때 <strong>secondary-index 페이지에 대한 변경 사항</strong>을 캐시하는 특수한 데이터 구조이다.</mark></p>
+</li>
+<li>
+<p><code>insert, update</code> 는 데이터 파일 변경 뿐만 아니라 해당 테이블의 secondary index 또한 업데이트 해야 한다.</p>
+</li>
+<li>
+<p>인덱스를 업데이트 하는 작업은 랜덤하게 디스크를 읽는 작업이 필요한데 이는 많은 자원을 사용한다는  문제점이 존재한다.</p>
+</li>
+<li>
+<p>따라서, InnoDB 는 보조 인덱스 페이지가 버퍼 풀에 있으면 바로 업데이트를 수행하고, 디스크에서 읽어와서 업데이트를  해야 한다면 즉시 실행하지 않고 임시 공간 (<strong>체인지 버퍼</strong>)에 저장 해 두고 바로 사용자에게 결과를 반환해 성능을 향상 시킨다.</p>
+</li>
+<li>
+<p><strong>체인지 버퍼 머지 스레드</strong> : 백그라운드에서 체인지 버퍼에 임시로 저장된 인덱스 레코드 조각을 병합하는 스레드</p>
+</li>
+</ul>
+<h2 id="4211-리두-로그-및-로그-버퍼">4.2.11 리두 로그 및 로그 버퍼<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#4211-리두-로그-및-로그-버퍼" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>트랜잭션의 <strong>영속성</strong>을 보장하기 위해 리두 로그를 사용한다.</li>
+<li><strong>데이터 변경시 변경 사항이 로그 데이터로 생성</strong>된다.</li>
+<li><strong>리두 로그는</strong> mysql이 비정상 적으로 종료되었을때 장애 복구를 위해 사용된다.</li>
+<li>DBMS 데이터 파일은 쓰기보다 읽기 성능을 고려한 자료구조를 가져 데이터 파일 쓰기는 디스크 랜덤 엑세스가 필요한데, 이로 인한 성능 저하를 막기 위해 쓰기 비용이 낮은 <strong>리두 로그</strong>를 가지고 있다.</li>
+<li><strong>로그 버퍼</strong> : 데이터 파일과 리두 로그를 버퍼링할 수 있는 InnoDB 버퍼풀과 마찬가지로 <strong>리두 로그를 버퍼링할 수 있는 자료구조로 성능</strong>을 위해 사용한다.</li>
+<li>리두 로그는 트랜잭션 <code>commit</code> 시 마다 즉시 디스크로 갱신하는 방식을 사용해야 장애 복구에 사용 가능한데 이는 부하를 유발한다. 그래서 리두 로그를 동기화 하는 주기를 설정할 수 있는 시스템 변수<code> innodb_flush_log_at_trx_commit</code> 를 제공한다.</li>
+</ul>
+<blockquote>
+<p>트랜잭션의 변경 내용을 적용할 수 있도록 redo log를 기록하며 commit 시에 변경사항이 redo log에 기록된다.</p>
+</blockquote>
+<h4 id="어댑티브-해시-인덱스">어댑티브 해시 인덱스<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#어댑티브-해시-인덱스" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>어댑티브 해시 인덱스</strong> : 사용자가 수동으로 생성하는 인덱스 ( B-tree ) 가 아닌, 자주 사용되는 데이터에 대해 InnoDB 스토리지 엔진이 자동으로 생성하는 인덱스</li>
+<li>B-Tree 인덱스는 검색을 해야하므로 많은 스레드에서 동시 요청시 쿼리 성능 저하가 있다. <strong>어댑티브 해시 인덱스는</strong> <strong>인덱스 키 값, 데이터 페이지 주소 쌍</strong>의 <strong>해시 테이블</strong>이므로 탐색하는 과정이 없어 쿼리 성능이 향상된다.</li>
+<li>또, B-Tree 검색 과정에서 내부 잠금 (세마포어)의 수도 줄어든다.</li>
+<li>메모리 공간 <em>( 어댑티브 해시 인덱스도 메모리 공간을 점유하기때문)</em>, cpu 사용량, 해시 인덱스 히트율을 고려해 사용해야한다.</li>
+</ul>
+<p><strong>단점</strong></p>
+<ul>
+<li><strong>버퍼 풀에 존재하는 데이터에 대한 검색 속도를 빠르게 하는 것</strong>이므로 디<strong>스크 읽기가 많은 경우</strong> 효과가 없다.</li>
+<li>인덱스 키 값이 해시 인덱스에 없는 경우에도 우선적으로 어탭티브 해시 인덱스를 우선 사용해야 한다.</li>
+<li><code>delete table,alter table</code> 시 처리 과정이 늘기 때문에 성능이 저하된다.</li>
+</ul>
+<h1 id="44-mysql-로그-파일">4.4 MySQL 로그 파일<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#44-mysql-로그-파일" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="441-에러-로그-파일">4.4.1 에러 로그 파일<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#441-에러-로그-파일" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="mysql-이-시작되는-과정과-관련된-정보성-및-에러-메시지">MySQL 이 시작되는 과정과 관련된 정보성 및 에러 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#mysql-이-시작되는-과정과-관련된-정보성-및-에러-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>설정 파일 변경, 데이터 베이스 비정상 종료된 이후 다시 시작 하는 경우에 에러 로그 파일을 확인 해야한다.</li>
+</ul>
+<h4 id="마지막으로-종료할-때-비정상적으로-종료된-경우-나타나는-innodb-트랜잭션-복구-메시지">마지막으로 종료할 때 비정상적으로 종료된 경우 나타나는 InnoDB 트랜잭션 복구 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#마지막으로-종료할-때-비정상적으로-종료된-경우-나타나는-innodb-트랜잭션-복구-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>MySQL 서버가 비정상적, 강제 종료 후 다시 시작될 때 완료하지 못한 트랜잭션 작업을 정리하는 작업을 하는데 처리 과정을 메시지로 출력한다.</li>
+</ul>
+<h4 id="쿼리-처리-도중에-발생하는-문제에-대한-에러-메시지">쿼리 처리 도중에 발생하는 문제에 대한 에러 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#쿼리-처리-도중에-발생하는-문제에-대한-에러-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<h4 id="비정상적으로-종료된-커넥션-메시지">비정상적으로 종료된 커넥션 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#비정상적으로-종료된-커넥션-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>커넥션이 비정상적으로 종료된 경우 에러 로그가 쌓인다.</li>
+<li>클라이언트당 비정상 종료 횟수를 카운트 하는데 임계 값을 넘으면 접속이 차단된다.</li>
+</ul>
+<h4 id="innodb-모니러팅-또는-상태-조회-명령의-결과-메시지">InnoDB 모니러팅 또는 상태 조회 명령의 결과 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#innodb-모니러팅-또는-상태-조회-명령의-결과-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<h4 id="mysql-종료-메시지">MySQL 종료 메시지<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#mysql-종료-메시지" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>MySQL 이 종료시 메시지를 남겨 원인을 파악할 수 있다.</li>
+<li>메시지가 없거나 스택 트레이스 의 경우 <strong>세그멘테이션 폴트</strong>로 비정상 졸료된 것이다.</li>
+</ul>
+<h2 id="442-제너럴-쿼리-로그-파일">4.4.2 제너럴 쿼리 로그 파일<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#442-제너럴-쿼리-로그-파일" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>MySQL 서버에서 실행되는 쿼리의 전체 목록을 시간 단위로 조회할 수 있다.</li>
+<li>쿼리 실행전 로그 파일에 먼저 기록하기 떄문에 쿼리에 오류가 발생한 경우에도 기록된다.</li>
+</ul>
+<h2 id="443-슬로우-쿼리-로그">4.4.3 슬로우 쿼리 로그<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#443-슬로우-쿼리-로그" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>운영중인 MySQL 서버의 쿼리 튜닝이 필요한 경우 사용하면 용이하다.</li>
+<li><strong>정상적으로 실행</strong>된 쿼리에 한해 로그 파일에 기록한다.</li>
+<li><strong>실제 소요된 시간</strong>을 기준으로 기록 여부를 판단한다.</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/데이터베이스와-sql" class="internal internal-link alias" data-slug="탐색/주제/데이터베이스와-sql">데이터베이스와 SQL</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-88" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#41-mysql-엔진-아키텍처" data-for="41-mysql-엔진-아키텍처">4.1 mysql 엔진 아키텍처</a></li><li class="depth-1"><a href="#411-mysql의-전체-구조" data-for="411-mysql의-전체-구조">4.1.1 MySql의 전체 구조</a></li><li class="depth-1"><a href="#412-mysql-스레딩-구조" data-for="412-mysql-스레딩-구조">4.1.2 Mysql 스레딩 구조</a></li><li class="depth-1"><a href="#413-메모리-할당-및-사용-구조" data-for="413-메모리-할당-및-사용-구조">4.1.3 메모리 할당 및 사용 구조</a></li><li class="depth-1"><a href="#416-쿼리-실행-구조" data-for="416-쿼리-실행-구조">4.1.6 쿼리 실행 구조</a></li><li class="depth-1"><a href="#418-쿼리-캐시" data-for="418-쿼리-캐시">4.1.8 쿼리 캐시</a></li><li class="depth-1"><a href="#419-스레드-풀" data-for="419-스레드-풀">4.1.9 스레드 풀</a></li><li class="depth-1"><a href="#4110-트랜잭션-지원-메타데이터" data-for="4110-트랜잭션-지원-메타데이터">4.1.10 트랜잭션 지원 메타데이터</a></li><li class="depth-0"><a href="#42-innodb-스토리지-엔진-아키텍처" data-for="42-innodb-스토리지-엔진-아키텍처">4.2 InnoDB 스토리지 엔진 아키텍처</a></li><li class="depth-1"><a href="#421-프라이머리-키에-의한-클러스터링" data-for="421-프라이머리-키에-의한-클러스터링">4.2.1 프라이머리 키에 의한 클러스터링</a></li><li class="depth-1"><a href="#422-외래-키-지원" data-for="422-외래-키-지원">4.2.2 외래 키 지원</a></li><li class="depth-1"><a href="#423-mvcc-multi-version-concurrency-control" data-for="423-mvcc-multi-version-concurrency-control">4.2.3 MVCC (multi version concurrency control)</a></li><li class="depth-1"><a href="#424-잠금-없는-일관된-읽기-non-loacking-consitent-read" data-for="424-잠금-없는-일관된-읽기-non-loacking-consitent-read">4.2.4 잠금 없는 일관된 읽기 (non-loacking consitent read)</a></li><li class="depth-1"><a href="#425-자동-데드락-감지" data-for="425-자동-데드락-감지">4.2.5 자동 데드락 감지</a></li><li class="depth-1"><a href="#426-자동화된-장애-복구" data-for="426-자동화된-장애-복구">4.2.6 자동화된 장애 복구</a></li><li class="depth-1"><a href="#427-innodb-버퍼-풀" data-for="427-innodb-버퍼-풀">4.2.7 InnoDB 버퍼 풀</a></li><li class="depth-1"><a href="#428-double-write-buffer" data-for="428-double-write-buffer">4.2.8 Double Write Buffer</a></li><li class="depth-1"><a href="#429-언두-로그" data-for="429-언두-로그">4.2.9 언두 로그</a></li><li class="depth-1"><a href="#4210-체인지-버퍼" data-for="4210-체인지-버퍼">4.2.10 체인지 버퍼</a></li><li class="depth-1"><a href="#4211-리두-로그-및-로그-버퍼" data-for="4211-리두-로그-및-로그-버퍼">4.2.11 리두 로그 및 로그 버퍼</a></li><li class="depth-0"><a href="#44-mysql-로그-파일" data-for="44-mysql-로그-파일">4.4 MySQL 로그 파일</a></li><li class="depth-1"><a href="#441-에러-로그-파일" data-for="441-에러-로그-파일">4.4.1 에러 로그 파일</a></li><li class="depth-1"><a href="#442-제너럴-쿼리-로그-파일" data-for="442-제너럴-쿼리-로그-파일">4.4.2 제너럴 쿼리 로그 파일</a></li><li class="depth-1"><a href="#443-슬로우-쿼리-로그" data-for="443-슬로우-쿼리-로그">4.4.3 슬로우 쿼리 로그</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/데이터베이스와-sql" class="internal">데이터베이스와 SQL</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

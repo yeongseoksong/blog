@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>8. 바이트 코드 실행 엔진</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="8. 바이트 코드 실행 엔진"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="8. 바이트 코드 실행 엔진"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/8.-바이트-코드-실행-엔진"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/8.-바이트-코드-실행-엔진"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/jvm-밑바닥까지-파헤치기/8.-바이트-코드-실행-엔진" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-108" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-108" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/jvm-밑바닥까지-파헤치기/">Jvm 밑바닥까지 파헤치기</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>8. 바이트 코드 실행 엔진</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">8. 바이트 코드 실행 엔진</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-06-04T00:00:00.000Z">2024년 6월 04일</time><span>13 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/java" class="internal tag-link">topic/java</a></li><li><a href="../../tags/concept/jvm" class="internal tag-link">concept/jvm</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><p>가상 머신의 실행 엔진이 바이트 코드를 실행하기 위해 두가지 방법을 채택할 수 있다.</p>
+<ol>
+<li>해석 실행 (인터프리터)</li>
+<li>컴파일 실행 (Jit컴파일러 로 네이티브 코드 생성후 실행)</li>
+</ol>
+<p>실행 엔진은 어떠한 입력(바이트 코드)도 동일한 실행결과로 출력할 수 있다.</p>
+<h2 id="82-런타임-스택-프레임-구조">8.2 런타임 스택 프레임 구조<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#82-런타임-스택-프레임-구조" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>메서드 호출 시작부터 실행 종료까지 과정은 스택 프레임을 가상 머신 스택으로 푸시하는 작업임</li>
+<li><strong>현재 스택 프레임</strong> : 실행 엔진 관점에서 활성 스레드의 스택 맨위의 프레임</li>
+<li><strong>현재 메서드</strong> : 현재 스택 프레임의 메서드</li>
+<li>실행 엔진이 실행 하는 모든 바이트 코드 명령어는 <strong>현재 스택 프레임</strong>에서만 작동</li>
+</ul>
+<p><strong>구성</strong></p>
+<ul>
+<li><strong>지역 변수 테이블</strong>
+<ul>
+<li>매서드의 매개변수와 메서드 안에서 정의된 지역 변수를 저장하는 공간</li>
+<li>지역 변수 테이블은 스레드 스택에 스레드 별로 따로 만들어진다.</li>
+<li>매개 변수 또한 지역 변수 테이블에 포함된다. 이 테이블에 변수가 추가되는 순서
+<ol>
+<li>this ( 암묵적 매개변수 )</li>
+<li>매서드 매개 변수</li>
+<li>메서드 본문의 지역 변수들</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><strong>피연산자 스택</strong>
+<ul>
+<li>메서드가 실행될 때 해당 메서드의 <strong>피연산자 스택</strong>은 비어있음</li>
+<li>실행중 바이트 코드 명령어가 <strong>피연산자 스택</strong>에 <code>push , pop</code> 작업 수행</li>
+</ul>
+</li>
+<li><strong>동적 링크</strong>
+<ul>
+<li>메서드에 이용하는 외부 객체를 가리키는 참조는 <strong>런타임 상수 풀</strong>을 참조하는데 이것이 동적 링크를 가능하게 해준다.</li>
+<li><strong>정적 해석</strong> : 클래스 로딩 해석 단계에서 심벌 참조가 직접 참조로 변환된다</li>
+<li><strong>동적 링크</strong> : 실행중에 심벌 참조가 직접 참조로 변환된다.</li>
+</ul>
+</li>
+<li><strong>메서드 반환 주소</strong>
+<ul>
+<li><strong>갑작스러운 메서드 호출 완료</strong> : 예외처리 안되었을 경우 반환값 전달 x </li>
+<li><strong>정상적인 메서드 호출 완료</strong>  : 호출 메서드에 현재 메서드의 메서드 반환 명령어에 따라 알맞은 반환 값 타입을 반환한다.</li>
+<li>메서드가 종료시 메서드를 호출한 위치로 돌아가야한다.</li>
+<li>일반적으로는 호출자의 프로그램 카운터 값을 반환 주소로 사용한다.</li>
+<li>예외 발생시에는 예외 핸들러 테이블에 의해 반환 주소가 결정된다.</li>
+</ul>
+</li>
+</ul>
+<h2 id="83-메서드-호출">8.3 메서드 호출<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#83-메서드-호출" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<p>메서드 호출 단계에서 수행하는 일은 오직 호출할 메서드의 버전을 선택하는 것이다.<br/>
+<em>오버라이딩한 함수가 존재할때 부모 클래스에 1개, 자식 클래스에 1개의 버전이 존재한다.</em></p>
+<p><strong>해석</strong></p>
+<ul>
+<li>메서드 호출 대상은 모두 클래스 파일의 상수풀에 심벌 참조로 기록되어 있다.</li>
+<li>메서드 호출 대상은 <mark style="background:#FFB86CA6;">클래스 로딩 단계</mark>에서 일부 <strong>심벌참조 -> 직접 참조</strong> 작업을 수행한다. ( 정적 해석 으로 private, static 가 해당  )</li>
+<li><strong>메서드 호출 바이트 코드 명령어</strong>
+<ul>
+<li><strong>invokestatic, invokespecial</strong><br/>
+정적 및 비가상 메서드를 호출하며, 클래스 로딩 시 직접 참조로 변환될 수 있다.<br/>
+(<strong>비기상 메서드</strong> : static, private, 인스턴스 생성자, 부모 클래스의 메서드)</li>
+<li><strong>invokedynamic,invokeinterface,invokevirtual</strong><br/>
+가상 메서드 호출 및 동적 호출로, 런타임에 호출 대상이 결정된다.</li>
+</ul>
+</li>
+<li><strong>비가상 메서드</strong> 해석은 <strong>컴파일 타임에 완전히 정해진다</strong>.</li>
+<li><strong>가상 메서드</strong>의 호출은 동적 호출로 런타임에 결정된다.</li>
+</ul>
+<p><strong>디스패치</strong></p>
+<ul>
+<li>메서드 호출의 또다른 형태로 (단일/다중,동적,정적) 의 조합으로 구성된다.</li>
+<li>다형성의 가장 기본에 해당하는 내용, 가상 머신이 옳바른 메서드 버전을 결정하는 방법</li>
+</ul>
+<p><strong>정적디스패치 ( 메서드 오버로드 해석 )</strong></p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">Human child</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=new</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> Man</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(); </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">// 상속 관계이다.</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//Human : 정적타입, 겉보기 타입 : 컴파일 타임에 결정</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//Man : 실제타입, 런타임 타입 : 런타임에 결정</span></span></code></pre></figure>
+<ul>
+<li>컴파일러는 오버로딩 함수를 정적타입을 통해 어떤 메서드를 호출할지 결정한다.</li>
+<li><strong>정적디스패치 :</strong> 메서드 버전 선택에 정적 타입을 참고 하는 모든 디스패치작업 메서드 오버로딩이 대표적</li>
+<li>컴파일 타임에 이루어진다. 따라서 해석이라고 표현하기도 한다</li>
+<li><mark style="background:#FFB86CA6;">정적 메서드는 컴파일 타임에 확정, 클래스 로딩중 해석, 오버로딩된 정적메서드는 정적 디스패치를 통해 이루어진다.</mark></li>
+</ul>
+<p><strong>동적 디스패치</strong><br/>
+<img src="../../assets/images/java/8.-바이트-코드-실행-엔진-1.png" alt="8. 바이트 코드 실행 엔진-1.png"/></p>
+<ul>
+<li>17,21에서 사용된 <code>invokevirtual</code> 바이트코드 명령어는 후보 메서드들을 찾아 그중 하나를 특정해 다형성을 구현한다. 그 절차는 아래와 같다
+<ol>
+<li>피연산자 스택 상단 첫 요소의 객체의 실제 타입 ( woman,man )을 찾음</li>
+<li>객체와, <code>foo()</code> 라는 일치하는 이름이 있으면 접근권한 검사</li>
+<li>존재하지 않는다면 다음 부모 클래스로 이동후 2를 반복</li>
+<li>최상위 클래스에서 메서드를 찾지 못하면 <code>AbstratMethodError</code></li>
+</ol>
+</li>
+<li>invokevirtual 은 런타임 수신 객체 ( Human )의 실제 타입을 해석함</li>
+<li><mark style="background:#FFB86CA6;">이렇게 런타임에 실제 타입을 해석해 메서드 버전을 결정하는 방식이 동적 디스패치임</mark></li>
+</ul>
+<p><strong>단일 디스패치 / 다중 디스패치</strong></p>
+<ul>
+<li><strong>메서드 볼륨</strong> : 메서드의 수신 객체, 매개 변수의 합</li>
+<li>볼륨 수에 따라 단일 / 다중 구분</li>
+<li><strong>단일</strong> : 한 볼륨 안에서 대상 메서드 선택 </li>
+<li><strong>다중</strong> : 여러 볼륨에서 대상 메서드 선택</li>
+<li>오버로딩 하는 부모 객체의 경우 알맞은 함수를 선택하기 위해 2가지 이상의 볼륨을 사용해 <strong>다중 디스패치</strong>이고, 오버라이딩 하는 자식 객체의 경우 이미 컴파일 타임에 메서드의 시그니처가 결정 되었기 때문에 여러 볼륨을 선택에 이용하지 않아 <strong>단일 디스 패치</strong>이다.</li>
+</ul>
+<p><strong>가상 머신의 동적 디스패치 구현</strong></p>
+<ul>
+<li>동적 디스패치는 프로그램이 실행 중에 매우 자주 일어난다.</li>
+<li>그래서 jvm 은 메타 데이터 조회 대신 <strong>가상 메서드 테이블</strong> 인덱스를 사용해 적절한 메서드를 찾는 착업의 속도를 개선했다.</li>
+<li><strong>가상 메서드 테이블</strong> : 
+<ul>
+<li>클래스에서 오버라이딩 하지 않은 메서드들은 부모클래스의 메서드 주소를 가르킨다. </li>
+<li>클래스 로딩중 링킹 (준비 단계에서 클래스 변수들의 초기값이 설정된 이후) 작업에서 초기화 된다. </li>
+</ul>
+</li>
+</ul>
+<h2 id="84-동적-타입-언어-지원">8.4 동적 타입 언어 지원<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#84-동적-타입-언어-지원" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<p>invokedynamic 바이트 명령어에 해당하며 람다식을 매끄럽게 구현하는 토대가 되었음<br/>
+<strong>동적 타입 언어</strong> :타입 검사 과정중 주요 단계들이 런타임에 수행된다.</p>
+<p><strong>자바의 동적 타이핑</strong></p>
+<ul>
+<li>메서드 호출 바이트 코드 명령어는 컴파일타임에 생성되는 CONSTANT_Methodref_info,  CONSTANT_InterfaceMethodref_info 두가지의 심벌 참조만을  매개변수로 사용할 수 있었다.</li>
+<li>그러나, 동적타이핑은 런타임에 호출대상을 결정할 수 있어야 하는 특징이 있다.</li>
+<li>또한, 인라인 최적화를 수행할 수 없었다.</li>
+</ul>
+<p><strong>java.lang.invoke</strong></p>
+<ul>
+<li>자바는 함수를 매개변수로 전달할 방법이 없어, 인터페이스를 사용한 객체를 매개변수로 전달하였다.</li>
+<li>해당 패키지에서 추가된 <strong>메서드 핸들</strong>을 사용하면 C의 함수 포인터, c#의 delegate 와 같이 함수를 전달할 수 있다.</li>
+</ul>
+<p><strong>invokedynamic</strong></p>
+<ul>
+<li>메서드 핸들과 유사한 기능을 하는데, 메서드 해석의 책임음 jvm 에서 사용자 코드로 옮긴다.</li>
+<li>다만, 메서드 핸들은 api 수준에서 구현되고 invokedynamic 은 바이트코드와 클래스의 속성 및 상수 수준에서 구현된다.</li>
+<li>invokedynamic 은 디스패치 로직을 가상머신이 아닌 개발자가 결정한다.즉, 위의 단일 디스패치, 다중 디스패치 결정 방식이 아닌 사용자가 함수의 디스패치를 결정할 수 있다.</li>
+</ul>
+<h2 id="85-스택-기반-바이트코드-해석-및-실행-엔진">8.5 스택 기반 바이트코드 해석 및 실행 엔진<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#85-스택-기반-바이트코드-해석-및-실행-엔진" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ol>
+<li>해석 실행
+<ul>
+<li>인터프리터를 의미하나 자바는 JIT 컴파일 , 인터프리터 두 가지 방식을 스스로 판단해 실행한다.</li>
+<li>JAVAC 는 어휘 분석, 구문 분석, 추상 구문 트리 생성, 구문 트리를 탐색해 바이트 코드 명령어를 생성하는 과정을 담당한다.</li>
+</ul>
+</li>
+<li>스택 기반 명령어 집합과 레지스터 기반 명령어 집합
+<ul>
+<li>자바는 스택 기반 명령어 집합 아키텍처를 따른다</li>
+<li>스택 기반 명령어 집합은 특정 하드웨어에 의존하지 않는 장점이 있다.</li>
+<li>코드가 간결해지는 반면, 레지스터 기반 아키텍처보다 명령어의 총 개수가 많아지고 메모리 접근 빈도가 늘어 난다는 단점이 존재한다.</li>
+<li>메모리 접근을 줄이기 위해 자주 사용 되는 작업을 레지스터 에 매핑 하여 성능 하락을 감소시킨다. </li>
+</ul>
+</li>
+<li>스택 기반의 해석 실행 과정
+<ul>
+<li>피연산자 스택을 통해 데이터를 교환 하는 방식을 사용한다.</li>
+<li>jit 컴파일러로 최적화 되거나,  해석 실행 성능 최적화로 실제로는 개념 모델과 같이 실행되지는 않는다.</li>
+</ul>
+</li>
+</ol>
+<p><img src="../../assets/images/java/8.-바이트-코드-실행-엔진-2.png" alt="8. 바이트 코드 실행 엔진-2.png"/><br/>
+피연산자 스택에 <code>istore,iload</code> 다시 넣는 작입이 반복된 후에 메서드 호출자에 <code>ireturn</code> 결과값 반환</p>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/java와-jvm" class="internal internal-link alias" data-slug="탐색/주제/java와-jvm">Java와 JVM</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-73" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#82-런타임-스택-프레임-구조" data-for="82-런타임-스택-프레임-구조">8.2 런타임 스택 프레임 구조</a></li><li class="depth-0"><a href="#83-메서드-호출" data-for="83-메서드-호출">8.3 메서드 호출</a></li><li class="depth-0"><a href="#84-동적-타입-언어-지원" data-for="84-동적-타입-언어-지원">8.4 동적 타입 언어 지원</a></li><li class="depth-0"><a href="#85-스택-기반-바이트코드-해석-및-실행-엔진" data-for="85-스택-기반-바이트코드-해석-및-실행-엔진">8.5 스택 기반 바이트코드 해석 및 실행 엔진</a></li><li class="depth-0"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/jvm-밑바닥까지-파헤치기/" class="internal">Jvm 밑바닥까지 파헤치기</a></li><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/java와-jvm" class="internal">Java와 JVM</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

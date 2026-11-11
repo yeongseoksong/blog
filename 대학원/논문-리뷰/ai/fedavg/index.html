@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>fedavg</title><meta charset="utf-8"/><link rel="preload" href="../../../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="fedavg"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="fedavg"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/대학원/논문-리뷰/ai/fedavg/index"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/대학원/논문-리뷰/ai/fedavg/index"/><link rel="icon" href="../../../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../../../static/", location.href).href</script></head><body data-slug="대학원/논문-리뷰/ai/fedavg/index" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../../../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-16" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-16" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../대학원/">대학원</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../대학원/논문-리뷰/">논문 리뷰</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../대학원/논문-리뷰/ai/">ai</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>fedavg</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">fedavg</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2026-10-14T00:00:00.000Z">2026년 10월 14일</time><span>21 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../../../tags/topic/ai" class="internal tag-link">topic/ai</a></li><li><a href="../../../../tags/concept/federated-learning" class="internal tag-link">concept/federated-learning</a></li></ul></div></div><div class="popover-hint" data-quartz-plugin="folder-page" data-quartz-component="FolderPage"><article class><div class="markdown-preview-view markdown-rendered"><h2 id="1-abstract">1. Abstract<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1-abstract" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>모바일의 발전으로 방대한 양의 데이터가 생겼지만, 그 데이터들은 개인 정보에 민감하거나 데이터 센터로 전송하기에 제약사항들이 있다.<br/>
+따라서 로걸 디바이스에 학습 데이터들을 분산해 저장하고 학습을 진행하여, 최종적으로는 서버의 글로벌 모델을 학습시키는 “Federated Learning”을 제안한다. </p>
+<ul>
+<li>nonIID 데이터에서도 모델이 잘 학습된다.</li>
+<li>커뮤니케이션 비용이 크게 감소한다 10~100배</li>
+</ul>
+<h2 id="2-introduction">2. Introduction<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#2-introduction" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>스마트폰의 발달로 전례없는 양의 데이터가 발생하며, 이는 민감한 개인정보를 포함한다.</p>
+<ul>
+<li>이 데이터의 학습은 모델을 더 발전시킬 수는 있지만, 중앙 집중식 저장소에 보관하는데는 위험과 책임을 져야한다는 부담이 있다.<br/>
+<strong>Federated Learning</strong> 은 이문제를 해결할 수 있다. 학습이 중앙 서버에 의해 클라이언트들이 조정되며 클라이언트들의 데이터는 서버로 절대 업로드 되지 않는다.<br/>
+대신, 클라이언트들은 매번 서버의 <strong>전역 모델</strong>을 업데이트 한다.</li>
+<li>모델학습과 개인정보를 디커플링 한다.</li>
+<li>공격 표면이 클라우드는 사라지고 클라이언트의 기기만 존재하게 되므로 보안 위험을 크게 줄인다.<br/>
+구체적으로는 클라이언트의 SGD 와 서버상의 평균을 결합한 FedAvg 알고리즘을을 제안한다.</li>
+<li>비독립동일분포(non-IID)인 데이터 분포에서도 견고하게 작동함</li>
+<li>통신 횟수를 수십 배 이상 단축할 수 있음을 확인</li>
+</ul>
+<h3 id="21-federated-learning">2.1 Federated Learning<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#21-federated-learning" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>연합학습을 적용하기에 최적화된 문제는 다음 세 가지 조건을 만족해야 합니다.</p>
+<ol>
+<li><strong>실제 모바일 데이터의 우위:</strong> 데이터센터의 프록시 데이터(위키피디아, Flickr 등)와 달리 실제 모바일 환경(채팅 언어, 직접 촬영한 사진 등) 데이터 분포가 현저히 달라 실기기 데이터 학습의 이점이 명확함.</li>
+<li><strong>프라이버시 민감도 및 대용량:</strong> 비밀번호, 메시지, 개인 사진 등 민감한 정보이거나 모델 크기 대비 데이터가 방대하여 집중 수집 원칙(Focused collection)상 중앙 서버 전송이 부적합함.</li>
+<li><strong>자연스러운 라벨 생성:</strong> 사용자 인터랙션을 통해 정답 라벨이 자동으로 확보됨 (언어 모델의 다음 단어 입력, 사진 앱에서의 저장·삭제·공유 행위).</li>
+</ol>
+<blockquote>
+<p><strong>대표 적용 모델 (당시 SOTA 신경망):</strong></p>
+<ul>
+<li><strong>이미지 분류:</strong> 합성곱 신경망(CNN)</li>
+<li><strong>언어 모델링:</strong> 순환 신경망(LSTM)</li>
+</ul>
+</blockquote>
+<h3 id="22-프라이버시-이점">2.2 프라이버시 이점<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#22-프라이버시-이점" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>익명화된 데이터셋이라도 타 데이터와 결합(Join) 시 식별 위험이 존재하지만, 연합학습은 <strong>학습에 필요한 최소한의 모델 업데이트(가중치/그래디언트)만 일시적(Ephemeral)으로 전송</strong>함.</li>
+<li><strong>데이터 처리 부등식(Data Processing Inequality):</strong> 가중치 업데이트에 포함된 정보량은 원본 데이터보다 결코 많을 수 없음.</li>
+<li>집계 알고리즘에는 클라이언트의 식별 메타데이터가 필요하지 않아 Mixnet(Tor)이나 신뢰할 수 있는 제3자를 통해 안전하게 전송 가능함</li>
+</ul>
+<h3 id="23-연합-최적화federated-optimization">2.3 연합 최적화(Federated Optimization)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#23-연합-최적화federated-optimization" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>기존 데이터센터의 분산 최적화와 구별되는 연합 최적화만의 고유한 제약 조건입니다.</p>
+<ul>
+<li><strong>Non-IID (비독립동일분포):</strong> 특정 사용자의 로컬 데이터는 전체 모집단 분포를 대변하지 못함<br/>
+사용자에 따라 편향된 데이터가 존재</li>
+<li><strong>Unbalanced (불균형):</strong> 사용자마다 앱/기기 사용량이 달라 로컬 데이터 수 편차가 매우 큼.</li>
+<li><strong>Massively Distributed (대규모 분산):</strong> 참여 클라이언트 수(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span></span></span></span>)가 클라이언트당 보유한 평균 데이터 수보다 훨씬 많음.</li>
+<li><strong>Limited Communication (제한된 통신 환경):</strong> 모바일 기기는 오프라인 상태가 잦고, 업로드 대역폭이 1 MB/s 이하로 극도로 제한됨. 클라이언트가 응답하지 않을 수 있다</li>
+</ul>
+<p>클라이언트 가용성, 데이터 불균형, 비독립항등분포(non-IID) 데이터라는 핵심 문제를 다룰 수 있는 통제된 환경을 사용</p>
+<ul>
+<li><strong>핵심 트레이드오프:</strong>
+<ul>
+<li>데이터센터 최적화는 연산 비용이 지배적이지만, 연합학습은 통신 비용이 절대적인 병목(Bottleneck)임.</li>
+<li>최신 스마트폰 프로세서는 충분히 빠르므로, <strong>기기 내 연산량(Local Computation)을 늘려 전체 통신 라운드(Communication Rounds) 수를 줄이는 것</strong>이 본 논문의 핵심 목표임.</li>
+<li>병렬 클라이언트 수 확대와 로컬 연산량 증대 중, <strong>각 클라이언트가 통신 라운드 사이에 로컬 스텝(에포크)을 더 많이 수행하도록 하는 것</strong>이 통신 비용 절감의 핵심 동인임.</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-federatedaveraging-algorithm">3. FederatedAveraging Algorithm<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#3-federatedaveraging-algorithm" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><img src="../../../../assets/images/research/fedavg/fedavg-algorithm.png" alt="fedavg-algorithm.png"/></p>
+<ol>
+<li>K개의 클라이언트가 고정된 로컬 데이터셋을 보유한 채 존재한다. 각 라운드가 시작될 때 무작위로 선택된 C 비율의 클라이언트에게 서버가 현재의 전역 알고리즘 상태(ex. 전역 모델 업데이트 가능)를 전송한다.</li>
+</ol>
+<pre><code>뒤의 실험결과에서 나오겠지만, k 개의 클라이언트를 선택한 이유는 10% 이상 선택해도 효율이 떨어진다.
+또한, 네트워크 장애 및 클라이언트의 오프라인 상태에서도 잘 동작함을 보여주기 위한걸로 추정
+</code></pre>
+<ol start="2">
+<li>
+<p>선택된 각 클라이언트는 전역 상태와 로컬 데이터셋을 기반으로 로컬 연산을 수행한 뒤 서버로 업데이트를 전송</p>
+</li>
+<li>
+<p>서버가 이 업데이트를 전역 상태에 적용</p>
+</li>
+</ol>
+<ul>
+<li>같은 시드 사용 = epoch !=1 , batch != ∞ 인 FedAvg</li>
+<li>FedAvg 에서 epoch=1 batch=∞  이면 FedSGD = FegAvg</li>
+</ul>
+<p><strong>모든 클라이언트가 서버가 배포한 동일한 전역 가중치(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)에서 출발해야하는 이유는 Figure 1이 증명한다.</strong></p>
+<h3 id="figure-1">FIGURE 1<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#figure-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><img src="../../../../assets/images/research/fedavg/fedavg-figure-1.png" alt="fedavg-figure-1.png"/></p>
+<p>MNIST 학습 세트중 다른 학습세트로 학습된 모델 w, w1 파라미터가 존재한다 </p>
+<ul>
+<li>각 클라이언트가 다른 학습 데이터를 가지고 클라이언트에서 w 를 구한것과 동일하다.</li>
+<li>θ 는 w, w1 중 선택 비율을 의미한다</li>
+<li>각 모델의 가중치를 뒤섞은후 데이터 예측에대한 손실 함수를 나타냅니다.</li>
+</ul>
+<h4 id="왼쪽">왼쪽<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#왼쪽" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>각 클라이언트가 서로 다른 무작위 초기 가중치(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel"><span class="mrel"><span class="mord vbox"><span class="thinbox"><span class="rlap"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="inner"><span class="mord"><span class="mrel"></span></span></span><span class="fix"></span></span></span></span></span><span class="mspace nobreak"></span><span class="mrel">=</span></span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.2481em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.7519em;"><span style="top:-2.4519em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2481em;"><span></span></span></span></span></span></span></span></span></span>)에서 학습을 시작한 뒤 나중에 가중치를 섞은 경우입니다.</li>
+<li><strong>의미:</strong> 각자 다른 난수 시드로 출발하면 각 모델 자체는 학습이 잘 되었더라도, 중간 지점(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mord mathnormal" style="margin-right:0.0278em;">θ</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0.5</span></span></span></span>, 가중치 평균)에서 오차 장벽(Loss Barrier)이 심하게 치솟아 모델이 파괴됩니다.</li>
+</ul>
+<h4 id="오른쪽">오른쪽<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#오른쪽" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>두 클라이언트가 <strong>서버로부터 완전히 동일한 초기 가중치(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.5806em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.0269em;">w</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0269em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>)를 받아서</strong> 각자 로컬 학습(여러 스텝)을 돌린 뒤 가중치를 섞은 경우입니다.</li>
+<li><strong>의미:</strong> “비록 비볼록(Non-convex) 신경망이고 서로 다른 데이터로 여러 스텝을 학습했더라도, <strong>동일한 초기 모델에서 출발했다면 가중치를 평균 내도 안전하며 오히려 전체 데이터에 대한 손실이 떨어진다.</strong></li>
+</ul>
+<h2 id="4--experimental-results">4 . Experimental Results<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#4--experimental-results" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th><strong>데이터셋</strong></th><th><strong>구분</strong></th><th><strong>분할 기준</strong></th><th><strong>클라이언트 수</strong></th><th><strong>클라이언트별 데이터 특성</strong></th><th><strong>현실 반영/목적</strong></th></tr></thead><tbody><tr><td><strong>MNIST</strong><br/><br/>  <br/><br/>(이미지 분류)</td><td><strong>IID</strong></td><td>전체 이미지 셔플 후 균등 분할</td><td>100명</td><td>인당 600장<br/><br/>  <br/><br/>(0~9번 숫자 라벨 골고루 보유)</td><td>알고리즘 기본 수렴 성능 검증 (이상적 환경)</td></tr><tr><td></td><td><strong>Non-IID</strong></td><td>라벨 정렬 후 300장짜리 샤드 2개씩 배분</td><td>100명</td><td>인당 600장<br/><br/>  <br/><br/>(단 2개의 숫자 라벨만 편향 보유)</td><td>인위적 극단 편향(Pathological) 환경에서의 강건성 검증</td></tr><tr><td><strong>Shakespeare</strong><br/><br/>  <br/><br/>(다음 글자 예측)</td><td><strong>IID</strong></td><td>전체 대사 라인 셔플 후 균등 분할</td><td>1,146명</td><td>균등한 데이터 양<br/><br/>  <br/><br/>(전체 어휘/문체 분포 동일 공유)</td><td>Non-IID 대비 성능 저하 폭 측정을 위한 대조군</td></tr><tr><td></td><td><strong>Non-IID</strong></td><td>희곡 내 등장인물(Role) 단위 분할</td><td>1,146명</td><td>극단적 불균형 데이터 양<br/><br/>  <br/><br/>(인물별 어휘·어투 편향)</td><td>모바일 키보드(Gboard) 등 현실 자연 데이터(Natural) 모사</td></tr></tbody></table></div>
+<h3 id="1-shakespeare-non-iid-버전---현실-반영">1. Shakespeare (Non-IID 버전 - 현실 반영)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1-shakespeare-non-iid-버전---현실-반영" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>분할 기준:</strong> 실제 희곡의 <strong>등장인물(Speaking Role)</strong> 단위.</li>
+<li>각 클라이언트가 특정 인물의 대사만 가집니다.</li>
+<li>앞서 다룬 대로 데이터 양도 제각각(Unbalanced)이고, 인물마다 어휘와 어투가 완전히 다릅니다(Non-IID).</li>
+</ul>
+<h3 id="2-shakespeare-iid-버전---대조군">2. Shakespeare (IID 버전 - 대조군)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#2-shakespeare-iid-버전---대조군" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>분할 기준:</strong> 셰익스피어 희곡 전체 텍스트 라인을 <strong>무작위로 골고루 섞은(Shuffle) 뒤 균등하게 분할</strong>.</li>
+<li>텍스트 라인들을 완전히 무작위로 섞어서 1,146명의 가상 클라이언트에게 골고루 나누어 줍니다</li>
+<li>결과적으로 모든 클라이언트가 전체 셰익스피어 어휘와 문장 스타일을 동일한 통계적 확률 분포로 나눠 갖게 됩니다(IID).</li>
+</ul>
+<h3 id="mnist-데이터-분할-방식-총-60000개-훈련-데이터-100개-클라이언트">MNIST 데이터 분할 방식 (총 60,000개 훈련 데이터, 100개 클라이언트)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#mnist-데이터-분할-방식-총-60000개-훈련-데이터-100개-클라이언트" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>IID 분할:</strong>
+<ul>
+<li>전체 60,000개의 손글씨 이미지를 무작위로 셔플(Shuffle)한 뒤, 100명의 클라이언트에게 균등하게 600장씩 분배합니다.</li>
+<li>모든 클라이언트가 0부터 9까지의 모든 숫자 라벨을 거의 동일한 비율로 고르게 보유합니다.</li>
+</ul>
+</li>
+<li><strong>Non-IID 분할 (인위적 극단 조건 - Pathological Non-IID):</strong>
+<ul>
+<li>전체 데이터를 <strong>숫자 라벨(0~9) 순서대로 정렬</strong>합니다.</li>
+<li>정렬된 데이터를 각각 300장 크기의 200개 조각(Shard)으로 나눕니다 (각 조각은 단 1가지 숫자 라벨로만 구성됨).</li>
+<li>100명의 클라이언트에게 이 조각을 <strong>무작위로 2개씩만 배분</strong>합니다.</li>
+<li><strong>결과:</strong> 각 클라이언트는 단 2개의 숫자 라벨(총 600장)만 보유합니다 (예: 어떤 기기는 오직 숫자 1과 7만 가짐).</li>
+</ul>
+</li>
+</ul>
+<h3 id="increasing-parallelism">Increasing parallelism<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#increasing-parallelism" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="table1">table1<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#table1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><img src="../../../../assets/images/research/fedavg/fedavg-table-1.png" alt="fedavg-table-1.png"/></p>
+<p>정화도를 cnn 99, 2nn 97% 까지 학습 시키는데 필요한 통신 라운드 수 를 의미한다.</p>
+<ul>
+<li>epoch=1 batch사이즈가 너무 크고 클라이언트를 전체 참여한경우 시간내에 97% 정확도에 미치지 못했다  (FedSGD)</li>
+<li>즉, C 증가만으로 학습을 위한 통신효율을 개선할 수 없다</li>
+<li>통신량은 로컬에서 여러번 SGD를 수행하는 FedAvg 에서 급감 했다</li>
+<li>마지막으로, FedAvg 의 C 는 10% 로 샘플링해도 최적의 가까운 속도를 얻을 수 있다.</li>
+<li>앞으로 실험에서 C는 10%를 사용</li>
+</ul>
+<h3 id="increasing-computation-per-client">Increasing computation per client<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#increasing-computation-per-client" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><img src="../../../../assets/images/research/fedavg/fedavg-table-2.png" alt="fedavg-table-2.png"/></p>
+<p>C는 10%로 고정한 후에 클라이언트의 로컬 연산 량을 각 라운드에서 증가 시켰다.</p>
+<ul>
+<li>
+<p>라운드당 로컬 SGD 업데이트 횟 수를 늘리면 통신 비용이 획기적으로 감소할 수 있음을 보여주며</p>
+</li>
+<li>
+<p>각 기기가 서로 다른 2개 숫자 라벨만 가진 극단적인 데이터 편향 환경에서도 <strong>2.8배 ~ 3.7배</strong>의 유의미한 라운드 절감(속도 향상)을 달성함.</p>
+</li>
+<li>
+<p>완전히 다른 데이터로 학습된 파라미터들을 단순 평균 냈음에도 모델이 발산(Divergence)하지 않고 오히려 성능 이점을 얻었다는 점은, <strong>FedAvg(가중치 평균화) 접근법이 데이터 불균형 환경에서도 매우 견고하게 작동함</strong>을 보여주는 강력한 증거임.</p>
+</li>
+<li>
+<p>우리는 FedAvg가 통신 비용을 절감 할 뿐만 아니라, 드롭아웃(dropout) 과 유사한 정규화 효과를 제공한다고 추측한다<br/>
+<em>첨부 자료가 준비되지 않았습니다.</em></p>
+</li>
+<li>
+<p>그림 2: C= 0.1 및 최적화된 ⌘를 사용한 MNIST CNN(IID 및 병리적 non-IID)과 Shakespeare LSTM(IID 및 Play&amp;Role 기준)의 통신 라운드 대비 테스트 세트 정확도. 회색 선은 표 2에 사용된 목표 정확도를 나타낸다. 2NN에 대한 그래프는 부록 A의 그림 7에 제시되어 있다</p>
+</li>
+</ul>
+<h3 id="can-we-over-optimize-on-the-client-datasets">Can we over-optimize on the client datasets<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#can-we-over-optimize-on-the-client-datasets" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><img src="../../../../assets/images/research/fedavg/fedavg-figure-3.png" alt="fedavg-figure-3.png"/><br/>
+로컬 에폭(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span></span></span></span>)을 무작정 늘려 클라이언트 데이터에 과도하게 최적화(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord">∞</span></span></span></span>)하면 글로벌 최적점에 도달할 것이라는 직관과 달리,<br/>
+셰익스피어 LSTM처럼 편향(Non-IID)이 심한 환경에서는 각 기기의 가중치가 서로 다른 방향으로 지나치게 멀어져 평균화 시 성능이 정체(Plateau)되거나 발산(Divergence)하는 현상이 발생하므로,<br/>
+학습 후반부에는 학습률을 줄이듯 로컬 에폭(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span></span></span></span>)을 줄이거나 배치 크기(<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span></span></span></span>)를 키워 로컬 연산량을 감쇠(Decay)시키는 전략이 필요하지만,<br/>
+MNIST CNN처럼 구조가 단순한 태스크에서는 큰 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span></span></span></span> 값에서도 성능 저하 없이 강건하게 수렴하는 차이를 보인다.</p>
+<h3 id="cifar-10-실험-cifar-experiments">CIFAR-10 실험 (CIFAR experiments)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#cifar-10-실험-cifar-experiments" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>데이터셋 및 환경 구성</strong>
+<ul>
+<li>CIFAR-10(10개 클래스, 32×32 RGB, 학습용 50,000장 / 테스트용 10,000장)을 사용.</li>
+<li>데이터 분할: 총 100명의 클라이언트에게 균등하게 IID(독립동일분포) 형태로 분할(클라이언트당 학습 데이터 500장, 테스트 데이터 100장).</li>
+<li>모델: 약 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span>(100만)개의 파라미터를 가진 표준 CNN(2 Conv + 2 FC + Linear).</li>
+<li>전처리: 24×24 크롭, 좌우 반전, 명암/밝기 조절 및 화이트닝 적용.</li>
+</ul>
+</li>
+<li><strong>실험 결과 및 성능 비교 (Table 3 기준)</strong>
+<ul>
+<li><strong>통신 라운드 대폭 감소:</strong>
+<ul>
+<li>목표 정확도 80% 달성 시: baseline SGD 18,000회 vs FedSGD 3,750회(4.8배 개선) vs <strong>FedAvg 280회(64.3배 개선)</strong></li>
+<li>목표 정확도 85% 달성 시: baseline SGD 99,000회 vs FedSGD 달성 실패 vs <strong>FedAvg 2,000회(49.5배 개선)</strong></li>
+</ul>
+</li>
+<li>클라이언트당 로컬 업데이트(Epoch <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">5</span></span></span></span>, 미니배치 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">50</span></span></span></span>)를 수행하는 FedAvg가 통신 횟수 측면에서 압도적인 가속 효과를 입증함.</li>
+<li>클라이언트 참여 비율 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">C</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">0</span></span></span></span>(라운드당 1개 클라이언트)일 때는 정확도 진동이 심하지만, 여러 클라이언트의 평균을 취하면 안정화됨.</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-대규모-언어-모델-실험-large-scale-lstm-experiments">2. 대규모 언어 모델 실험 (Large-scale LSTM experiments)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#2-대규모-언어-모델-실험-large-scale-lstm-experiments" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>데이터셋 및 환경 구성</strong>
+<ul>
+<li>대규모 소셜 네트워크의 공개 게시물 1,000만 개를 작성자별로 그룹화하여 50만 명 이상의 클라이언트로 구성 (실제 모바일 텍스트 환경 모사).</li>
+<li>클라이언트당 최대 5,000단어로 제한, 10,000단어 어휘집 기반의 다음 단어 예측(Next-word prediction) 태스크.</li>
+<li>모델: 256 노드 LSTM, 임베딩 크기 192 (총 약 495만 파라미터).</li>
+</ul>
+</li>
+<li><strong>실험 결과</strong>
+<ul>
+<li>라운드당 200명의 클라이언트 참여, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0502em;">B</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">8</span></span></span></span>, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span> 설정.</li>
+<li>목표 정확도(10.5%) 도달 기준:
+<ul>
+<li><strong>FedSGD:</strong> 820 라운드 필요 (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">η</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">18.0</span></span></span></span>)</li>
+<li><strong>FedAvg:</strong> 단 <strong>35 라운드</strong>만에 도달 (<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.0359em;">η</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">9.0</span></span></span></span>, FedSGD 대비 <strong>23배 빠른 통신 효율</strong>)</li>
+</ul>
+</li>
+<li><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">5</span></span></span></span> 설정보다 <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0576em;">E</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span> 설정이 이 태스크에서는 약간 더 나은 성능을 보임.</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-결론-및-향후-연구-conclusions-and-future-work">3. 결론 및 향후 연구 (Conclusions and Future Work)<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#3-결론-및-향후-연구-conclusions-and-future-work" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>결론:</strong> FedAvg는 MLP, 2종류의 CNN, 문자/단어 단위 LSTM 등 다양한 구조에서 매우 적은 통신 라운드만으로 고품질 모델을 학습시킬 수 있어 연합학습의 실용성을 증명함.</li>
+<li><strong>향후 연구 방향:</strong> 연합학습의 프라이버시 보장을 강화하기 위해 차분 프라이버시(Differential Privacy), 보안 다자간 연산(SMPC, Secure MPC) 및 이들의 결합 프로토콜 연구가 유망하며, 이는 FedAvg와 같은 동기식(Synchronous) 알고리즘에 자연스럽게 적용 가능함.</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../../../탐색/주제/인공지능과-머신러닝" class="internal internal-link alias" data-slug="탐색/주제/인공지능과-머신러닝">인공지능과 머신러닝</a></li>
+</ul></div></article><div class="page-listing"><p>0건의 항목</p><div><ul class="section-ul"></ul></div></div></div><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

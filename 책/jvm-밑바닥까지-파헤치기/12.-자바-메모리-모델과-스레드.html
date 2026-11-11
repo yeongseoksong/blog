@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>12. 자바 메모리 모델과 스레드</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="12. 자바 메모리 모델과 스레드"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="12. 자바 메모리 모델과 스레드"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/12.-자바-메모리-모델과-스레드"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/12.-자바-메모리-모델과-스레드"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/jvm-밑바닥까지-파헤치기/12.-자바-메모리-모델과-스레드" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-101" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-101" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/jvm-밑바닥까지-파헤치기/">Jvm 밑바닥까지 파헤치기</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>12. 자바 메모리 모델과 스레드</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">12. 자바 메모리 모델과 스레드</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-06-12T00:00:00.000Z">2024년 6월 12일</time><span>12 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/java" class="internal tag-link">topic/java</a></li><li><a href="../../tags/concept/memory" class="internal tag-link">concept/memory</a></li><li><a href="../../tags/concept/concurrency" class="internal tag-link">concept/concurrency</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h2 id="122-하드웨어에서의-효율과-일관성">12.2 하드웨어에서의 효율과 일관성<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#122-하드웨어에서의-효율과-일관성" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>메모리 i/o 를 줄이기 위하여 캐시를 사용하는데 멀티 프로세서 시스템에서는 캐시의 일관성 문제가 발생한다.</li>
+<li>각 프로세서가 캐시를 동기화 하기 위해 정해진 프로토콜을 사용한다.</li>
+<li>비순차 실행 최적화 : 프로세서가 명령어를 실행하는 순서가 코드에 입력된 순서와 다르게 수행하는 기법</li>
+<li>명령어 재정렬 최적화 : Jit 컴파일러가 비순차 실행 최적화를 비슷하게 구현함</li>
+</ul>
+<h2 id="123-자바-메모리-모델">12.3 자바 메모리 모델<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#123-자바-메모리-모델" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>다양한 하드웨어, 운영체제의 서로 다른 메모리 모델로 부터 자바 프로그램을 보호 하고자 정의함</li>
+</ul>
+<h4 id="메인-메모리와-작업-메모리">메인 메모리와 작업 메모리<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#메인-메모리와-작업-메모리" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>자바 메모리 모델의 목적은 프로그램에서 변수에 접근하는 규칙을 정의 하는것</li>
+<li>이때 변수는 지역 변수, 메서드 매개 변수는 자바 스택의 지역 변수 테이블에 존재하므로 제외된다.</li>
+<li>자바 메모리 모델은 모든 변수가 메인 메모리 ( 물리적 메인 메모리가 아닌 가상 머신이 관리하는 메모리 )에 저장된다고 규정한다.</li>
+<li>각 스레드는 작업 메모리를 갖는다.</li>
+<li>자바 힙, 스택, 메서드 영역과 다른 수준의 구분 방식이다.</li>
+<li><strong>메인 메모리</strong>는 자바 힙의 인스턴스, 하드웨어에 메모리 대응 되며, </li>
+<li><strong>작업 메모리</strong>는 가상 머신의 스택, 하드웨어의 캐시와 레지스터에 대응된다.</li>
+</ul>
+<h4 id="메모리-간-상호-작용">메모리 간 상호 작용<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#메모리-간-상호-작용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>
+<p>작업 메모리와 메인 메모리 사이에는 프로토콜이 존재한다고 했는데 구체적인 방법은 8 가지로 정의된다.</p>
+<ol>
+<li>잠금 ( lock )</li>
+<li>잠금 해제 ( unlock )</li>
+<li><strong>읽기 ( read )</strong><br/>
+메인 메모리의 변수 값을 특정 스레드의 작업 메모리로 전송</li>
+<li><strong>적재 ( load )</strong><br/>
+<strong>읽기 연산</strong>으로 메인 메모리에서 얻어온 값을 작업 메모리의 변수에 복사</li>
+<li>사용 ( use )<br/>
+작업 메모리의 변수 값을 실행 엔진으로 전달</li>
+<li>할당 ( assgin )<br/>
+실행 엔진에서 받은 값을 작업 메모리의 변수에 할당</li>
+<li><strong>저장 ( store )</strong><br/>
+<strong>쓰기 연산</strong>을 위해 작업 메모리 변수값을 메인 메모리로 전송</li>
+<li><strong>쓰기 ( write )</strong><br/>
+<strong>저장 연산</strong>으로 작업 메모리에서 얻어온 값을 메인 메모리의 변수에 기록</li>
+</ol>
+</li>
+<li>
+<p>자바 메모리 모델의 연산은 <strong>읽기, 쓰기, 잠금, 잠금 해제</strong>로 단순화되어있음</p>
+</li>
+</ul>
+<h4 id="volatile-변수용-특별-규칙">volatile 변수용 특별 규칙<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#volatile-변수용-특별-규칙" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>volite 변수의 특징</strong></p>
+<ol>
+<li><strong>모든 스레드에서 이 변수를 투명하게 볼 수 있다. ( 가시성을 보장 )</strong></li>
+</ol>
+<ul>
+<li><em>자바의 산술 연산자가 원자적이 아니여서 멀티스레드 환경에서 완벽하게 안전하지는 못하다.</em></li>
+</ul>
+<ol start="2">
+<li>명령어 재정렬 최적화를 막아준다.
+<ul>
+<li><em>하드웨어가 기계어를 실행할때 의존적이지 않은 명령어 사이의 순서는 최적화 될 수 있어 실행 순서가 변경된다.</em></li>
+<li>volite은 메모리 장벽과 같은 기능을 하는 명령어를 사용해 재정렬을 할 수 없도록 막는다.</li>
+<li>네이티브 코드에 메모리 장벽 명령어를 다수 끼워 넣어 쓰기 성능이 일반 변수보다 느리다.</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>volite은 가시성 보장과, 명령어 재정렬을 막아주지만 원자성 ( lock )을 보장해주지는 못한다.<br/>
+바이트 코트 명령어가 여러개의 기계어로 변환될 수 있기때문에 반드시 원자적으로 수행되지 않기 때문이다.</p>
+</blockquote>
+<h4 id="원자성가시성-실행-순서">원자성,가시성, 실행 순서<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#원자성가시성-실행-순서" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>자바 메모리 모델은 동시성 처리에서 원자성, 가시성, 실행순서를 어떻게 처리하는가?</p>
+<ul>
+<li><strong>원자성</strong><br/>
+원자성은 연산의 원자성을 의미한다.자바 메모리 모델에서 원자적 변수 연산은 읽기,적재,할당,사용,저장,쓰기 이다. <mark style="background:#FFB86CA6;">즉, 작업 메모리에서 ++와 같은 연산을 수행할 때에는 원자성이 보장되지 않음을 의미하기도 한다.</mark><br/>
+원자성을 더 넓은 범위로 보장해야할때는 <code>synchronized()</code>  사용해야한다.</li>
+<li><strong>가시성</strong><br/>
+공유 변수의 값을 한 스레드가 수정하면 수정결과를 다른 스레드가 즉시 알 수 있다.<br/>
+일반 변수는 가시성을 제공 하지 않는다. 또한, 가시성을 확보용으로 아래를 사용할 수 있다.
+<ul>
+<li><code>volatile</code></li>
+<li><code>synchronized</code></li>
+<li><code>final</code></li>
+</ul>
+</li>
+<li><strong>실행순서</strong><br/>
+스레드 사이에서도 작업 순서를 보장하기 위해 <code>volatile,synchronized</code> 를 제공한다.<br/>
+<code>synchronized</code>는 <code>lock</code> 을 사용해 단 하나의 스레드만 변수에 접근할 수 있어 원자성,가시성,실행 순서를 모두 만족해야하는 상황에 적합하다. 그러나 프로그램 성능응 떨어뜨린다는 단점이 존재한다.</li>
+</ul>
+<h2 id="124-자바와-스레드">12.4 자바와 스레드<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#124-자바와-스레드" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="스레드-구현">스레드 구현<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#스레드-구현" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><code>java.lang.Thread</code> 의 핵심 메서드는 모두 네이티브 코드로 구현되어 있다.<br/>
+스레드를 구현하는 방법은 아래의 3가지이다.</p>
+<ul>
+<li>커널 스레드 구현 (1:1)</li>
+<li>사용자 스레드 구현 (1:N)</li>
+<li>하이브리드 구현 (M:N) , 사용자 스레드와 lwp 이용</li>
+</ul>
+<p><strong>커널 스레드 구현</strong></p>
+<ul>
+<li><strong>특징</strong>
+<ul>
+<li>운영체제 커널에서 직접 지원하는 스레드이다. </li>
+<li>스레드 작업을 각 프로세서에 매핑하는 역할을 함</li>
+<li>프로그램은 일반적으로 커널 스레드 대신 고수준의 인터페이스인 LWP 사용</li>
+</ul>
+</li>
+<li><strong>단점</strong>
+<ul>
+<li>시스템 호출로 커널 스레드를 생성해야하기 커널모드,사용자 모드 전환으로 비용발생</li>
+<li>lwp와 커널 스레드가 매핑 되기 위해서 커널 자원을 소모해 시스템이 지원할 수 있는 lwp의 개수에 제한이 존재한다.</li>
+</ul>
+</li>
+</ul>
+<p><strong>사용자 스레드 구현</strong></p>
+<ul>
+<li><strong>특징</strong>
+<ul>
+<li>온전히 사용자 공간에서 구현되는 스레드 라이브러리</li>
+<li>사용자 스레드 생성, 소멸, 동기화, 스케줄링이 커널의 도움 없이 처리된다.</li>
+</ul>
+</li>
+<li>단점
+<ul>
+<li>커널의 지원을 못받기 때문에 구현의 어려움</li>
+</ul>
+</li>
+</ul>
+<p><strong>하이브리드 구현</strong></p>
+<ul>
+<li><strong>특징</strong>
+<ul>
+<li>사용자 스레드, 경량 프로세스가 공존함</li>
+<li>lwp 가 KLT,UT를 연결해주는 역할을 함</li>
+</ul>
+</li>
+</ul>
+<h4 id="자바-스레드-스케줄링">자바 스레드 스케줄링<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#자바-스레드-스케줄링" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>선점형 스케줄링을 사용한다.</li>
+<li><code>Thread.MIN_PRIORITY, Thread.MAX_PIRORITY</code> 로 스케줄링 우선 순위를 지정할 수 있지만 운영체제의 스케줄링 우선순위 레벨과 항상 일치하지 않는다.</li>
+<li>우선순위 부스팅 : 매우 자주 실행된다고 판단되는 스레드의 우선순위를 시스템이 재정의해 실행 시간을 더 할당해줌</li>
+</ul>
+<p><strong>상태 전이</strong></p>
+<ul>
+<li>자바의 스레드의 상태는 6가지이다
+<ul>
+<li>신규</li>
+<li>실행중<br/>
+운영 체제 스레드 상태중 실행중, 준비에 해당
+<ul>
+<li>무기한 대기<br/>
+다른 스레드가 명시적으로 꺠워 주기를 기다리는 상태 <code>wait,join</code></li>
+</ul>
+</li>
+<li>시간 제한 대기<br/>
+다른 스레드가 꺠워주기를 기다릴 필요없이 시간이 지나면 꺠어난다.</li>
+<li>블록<br/>
+배타적 락을 얻기를 기다리는 상태 <code>synchroniozed</code></li>
+<li>종료</li>
+</ul>
+</li>
+</ul>
+<h2 id="125-자바와-가상-스레드">12.5 자바와 가상 스레드<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#125-자바와-가상-스레드" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="커널-스레드의-한계">커널 스레드의 한계<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#커널-스레드의-한계" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>MSA 의 등장 이후 요청당 실행 시간이 매우 짧아지고 요청의 수가 증가 했다. 그러나 기존의 1:1 커널 스레드 모델은 스케줄링 비용이 커져 자바의  기존 동시성 프로그래밍 메커니즘은 새로운 해결책이 필요했다.</p>
+<h4 id="코루틴의-귀환">코루틴의 귀환<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#코루틴의-귀환" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>문맥 교환 비용은 어플리케이션의 응답속도에 영향을 미친다. 그래서 호출 스택과 스케줄러 등 많은 것을 애플리케이션 수준에서 구현하는 코루틴이 다시 등장 했다.<br/>
+그러나, 자바로 풀스택 코루틴을 구현하기에 어려움이 존재했다.</p>
+<h4 id="가상-스레드-자바의-해법">가상 스레드: 자바의 해법<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#가상-스레드-자바의-해법" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>스택플 코루틴을 구현한 FIBER, 가상 스레드라고 불린다. 가상 스레드는 기존의 커널스레드방식을 완전히 대체 하는것이 아닌 공존 해 두 가지 동시성 프로그래밍 모델을 제공한다.</p>
+<ul>
+<li>가상 스레드는 플랫폼 스레드 ( 사용자 스레드 )와 n:1 관계이다.</li>
+<li>가상 스레드가 block 되면 다른 가상 스레드가 작업을 진행 하기 떄문에 커널 스레드는 문맥 교환 없이 쉬지 않고 실행될 수 있다.</li>
+<li>I/O 작업이 많아서 문맥 교환이 자주 일어나는 작업에서 이점이 있으며, 아닐 경우 효과가 없을 수 있다.</li>
+<li>가상 스레드는 후속문 ( continuation ) 과 스케줄러로 나누어 지는데 기본 스케줄러로 <code>ForkJoinPool</code> 을 사용한다.</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/java와-jvm" class="internal internal-link alias" data-slug="탐색/주제/java와-jvm">Java와 JVM</a></li>
+</ul>
+<h2 id="함께-읽기">함께 읽기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#함께-읽기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../책/운영체제/6장.-동기화-도구" class="internal internal-link alias" data-slug="책/운영체제/6장.-동기화-도구">6장. 동기화 도구</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-66" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#122-하드웨어에서의-효율과-일관성" data-for="122-하드웨어에서의-효율과-일관성">12.2 하드웨어에서의 효율과 일관성</a></li><li class="depth-0"><a href="#123-자바-메모리-모델" data-for="123-자바-메모리-모델">12.3 자바 메모리 모델</a></li><li class="depth-0"><a href="#124-자바와-스레드" data-for="124-자바와-스레드">12.4 자바와 스레드</a></li><li class="depth-0"><a href="#125-자바와-가상-스레드" data-for="125-자바와-가상-스레드">12.5 자바와 가상 스레드</a></li><li class="depth-0"><a href="#주제" data-for="주제">주제</a></li><li class="depth-0"><a href="#함께-읽기" data-for="함께-읽기">함께 읽기</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/jvm-밑바닥까지-파헤치기/" class="internal">Jvm 밑바닥까지 파헤치기</a></li><li><a href="../../책/운영체제/6장.-동기화-도구" class="internal">6장. 동기화 도구</a></li><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/java와-jvm" class="internal">Java와 JVM</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

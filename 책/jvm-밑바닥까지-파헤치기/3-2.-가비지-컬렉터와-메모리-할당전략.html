@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>3-2. 가비지 컬렉터와 메모리 할당전략</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="3-2. 가비지 컬렉터와 메모리 할당전략"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="3-2. 가비지 컬렉터와 메모리 할당전략"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/3-2.-가비지-컬렉터와-메모리-할당전략"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/jvm-밑바닥까지-파헤치기/3-2.-가비지-컬렉터와-메모리-할당전략"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/jvm-밑바닥까지-파헤치기/3-2.-가비지-컬렉터와-메모리-할당전략" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-105" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-105" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/jvm-밑바닥까지-파헤치기/">Jvm 밑바닥까지 파헤치기</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>3-2. 가비지 컬렉터와 메모리 할당전략</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">3-2. 가비지 컬렉터와 메모리 할당전략</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-06-19T00:00:00.000Z">2024년 6월 19일</time><span>32 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/java" class="internal tag-link">topic/java</a></li><li><a href="../../tags/concept/memory" class="internal tag-link">concept/memory</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h2 id="35-클래식-가비지-컬렉터">3.5 클래식 가비지 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#35-클래식-가비지-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>클래식 가비지 컬렉터는 고성능 저지연의 최첨단 기술이 아니지만 오랜기간 실전에서 사용되어왔음</li>
+<li><strong>신세대</strong>
+<ul>
+<li>시리얼</li>
+<li>파뉴</li>
+<li>패러렐 스캐빈지</li>
+</ul>
+</li>
+<li><strong>구세대</strong>
+<ul>
+<li>시리얼 올드</li>
+<li>CMS</li>
+<li>페러렐 올드</li>
+</ul>
+</li>
+<li><strong>신세대, 구세대 경계</strong>
+<ul>
+<li>G1</li>
+</ul>
+</li>
+</ul>
+<h4 id="시리얼-컬렉터">시리얼 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#시리얼-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>특징</strong></p>
+<ul>
+<li>가장 기초적이고 오래된 컬렉터</li>
+<li>단일 스레드로 동작한다. GC </li>
+<li><strong>마크 카피 알고리즘</strong> 사용</li>
+<li>가비지 컬렉션이 시직되면 회수가 완료될 때까지 모든 스레드가 멈춰 있어야 한다.</li>
+<li>“스톱 더 월드” 를 줄이기 위해 페러럴 컬렉터 , CMS ,G1, 섀년도어, ZGC 가 등장 했으나. 완벽하게 이 현상을 없앨 컬렉터는 등장하지 않았다.<br/>
+<strong>장점</strong></li>
+<li>다른 컬렉터의 단일 스레드 알고리즘이 간단하고 효율적</li>
+<li>가용 메모리가 적은 환경에서 알고리즘이 요구하는 메모리 샤용량이 가장 적다.</li>
+</ul>
+<h4 id="파뉴-컬렉터">파뉴 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#파뉴-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>특징</strong></p>
+<ul>
+<li>시리얼 컬렉터의 병렬화 버전으로 다중 스레드를 제외한 모든 특징이 <strong>시리얼 컬렉터</strong> 와 같다.</li>
+<li><strong>마크 카피 알고리즘 사용</strong></li>
+<li>가장 먼저 삭제된 가비지 컬렉터</li>
+<li>단일 코어 환경에서 시리얼 컬렉터보다 성능이 떨어질 뿐더러, 하이퍼 스레딩을 활용한 듀얼 코어 환경에서도 성능이 더 낫다는 보장이 없다.</li>
+<li>코어수가 늘어나면 가비지 컬렉션 중 시스템 자원을 효율적으로 사용할 가능성이 커진다.</li>
+</ul>
+<blockquote>
+<p><strong>가비지 컬렉터에서의 병렬과 동시</strong></p>
+<ul>
+<li><strong>parallel</strong> :Gc 스레드 사이의 관계를 설명한다. 스레드 다수가 동시에 작업을 수행함을 뜻한다. 이때 사용자 스레드는 정지 상태</li>
+<li><strong>concurrent</strong> : GC 스레드와 사용자 스레드의 관계를 설명한다. GC 스레드와 사용자 스레드가 동시에 일하며 사용자 스레드가 정지하지 않는다.</li>
+</ul>
+</blockquote>
+<h4 id="패러렐-스캐빈지-컬렉터--ps-컬렉터-">패러렐 스캐빈지 컬렉터 ( ps 컬렉터 )<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#패러렐-스캐빈지-컬렉터--ps-컬렉터-" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>특징</strong></p>
+<ul>
+<li>마크-카피 알고리즘 사용</li>
+<li>여러 스레드를 이용해 병렬로 컬렉팅 수행</li>
+<li>스톱 더 월드를 최소화 하는데 집중하는 CMS 와 같은 컬렉터들과 다르게 처리량을 제어하는 것이 주된 목표이다.</li>
+<li>사용자와 상호작용 프로그램보다 계산, 분석 프로그램에 적합</li>
+<li><strong>적응형 조율 전략</strong> : <code>-XX:+UseAdaptiveSizePolicy</code> 사용시 가상 머신이 모니터링을 통해 최대 처리량을 제공할 수 있는 신세대 크기, 에덴 생존자 공간의 비율, 구세대로 옮겨갈 객체의 크기 등을 자동으로 조율해준다.</li>
+</ul>
+<hr/>
+<h4 id="시리얼-올드-컬렉터">시리얼 올드 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#시리얼-올드-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>단일 스레드</li>
+<li>마크- 컴팩트 알고리즘 사용</li>
+</ul>
+<h4 id="페러렐-올드-컬렉터">페러렐 올드 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#페러렐-올드-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>ps 컬렉터의 구세대용 버전</li>
+<li>멀티 스레드로 병렬 컬렉팅 수행</li>
+<li>마크-컴팩트 알고리즘 사용</li>
+<li><strong>ps 컬렉터</strong> - <strong>페럴럴 올드 컬렉터</strong>의 조합으로 처리량을 극대화할 수 있다.</li>
+</ul>
+<h4 id="cms-concurrent-mark-sweep-컬렉터">CMS (concurrent mark sweep) 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#cms-concurrent-mark-sweep-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><img src="../../assets/images/java/cms-cycle.png" alt="cms-cycle.png"/><br/>
+<strong>특징</strong></p>
+<ul>
+<li>mark , sweep 과정이 모두 사용자 스레드와 동시에 수행된다.</li>
+<li>프로세스의 일<strong>시 정지 시간을 최소화 하는게 주된 목적</strong></li>
+<li><strong>응답 시간이 중요한 프로그램에 사용</strong>된다.</li>
+<li>마크 - 스윕 알고리즘을 개선하여 사용한다. 단계는 아래와 같다.
+<ol>
+<li>최초 표시 : GC 루트와 직접 연결된 객체들만 표시해 빠르게 끝난다.</li>
+<li>동시 표시 : GC 루트와 연결된 객체들로 그래프를 전체 탐색한다. 스레드가 멈추지 않는다.</li>
+<li>재표시 : 동시 표시 중 사용자 스레드가 참조 관계를 변경한 객체들을 ( 삼색 표시 알고리즘 중 증분업데이트 )를 사용하여 수정한다.</li>
+<li>동시 쓸기 : 사용자 스레드의 중지 없이 표시했던 객체들을 회수한다.</li>
+</ol>
+</li>
+<li>처리 시간이 오래걸리는 <strong>동시 표시, 동시 쓸기</strong> 를 스레드 중지없이 동작하기 때문에 “stop the world” 현상이 짧다.<br/>
+<strong>단점</strong></li>
+</ul>
+<ol>
+<li><strong>프로세서 자원에 민감하다</strong>. 동시 수행 단계에서 프로세서의 일부를 할당 받는것은 매한가지이기 때문, 운영체제의 <strong>선점형 스케줄링 기법</strong>을 적용한 <strong>점진적 동시 마크 스윕</strong> 사용하여 GC 스레드와 사용자 스레드를 교대로 실행해 GC 스레드가 프로세스를 독점하는 시간을 최소화 해 문제를 해결한다. 
+<ul>
+<li><em>이를 <strong>점진적 동시 마크 스윕 i-cms</strong> 라 하나 성과가 미미해 삭제되었다.</em></li>
+</ul>
+</li>
+<li>사용자 스레드는 멈추지 않고 계속해 동작해야하므로 메모리 공간이 충분히 확보되어야한다.  그러나, 동시 표시, 동시 쓸기 중 사용자 쓰레드가 생성하는 쓰레기들을 회수하지 못해 생성되는 <strong>부유 쓰레기</strong> 문제가 존재한다.<br/>
+따라서, 구세대가 일정 비율 이상 차게되면 CMS를 수행하게 하는<br/>
+<code>-XX:CMSInitiatingOccupancyFraction</code> 매개변수를 제공한다.</li>
+<li><mark style="background:#FFB86CA6;">CMS 는 마크-스윕 알고리즘을 기반으로 하기 때문에 메모리 단편화 문제가 존재한다. </mark> 단편화로 인해 객체를 할당할 연속된 공간이 존재하지 않으면 전체 GC를 수행 해야만해 성능이 저하된다. 따라서, <code>-XX:UseCmsCompactAtFullCollection</code> 을 제공해 CMS 가 전체 GC 수행시 조각모음을 수행한다.</li>
+</ol>
+<h4 id="g1-컬렉터--가비지-우선-컬렉터--garbege-first-">G1 컬렉터 ( 가비지 우선 컬렉터 , Garbege First )<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#g1-컬렉터--가비지-우선-컬렉터--garbege-first-" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>지연 시간을 제어하는 동시에 처리량을 최대한 높이는 것이 목적이다.</strong></li>
+<li>부분 회수, 리전을 회수 단위로 하는 <strong>메모리 레이아웃</strong>을 개척             </li>
+<li><strong>정지 시간 예측 모델</strong> : 목표시간을 설정하면 가비지 컬렉터가 쓰는 시간이 목표 시간을 넘지 않도록 통제하는 모델</li>
+<li>G1 은 정지 시간 예측 모델을 적용하고자 했는데 방법은 아래와 같다.
+<ul>
+<li>세대 별로 회수를 수행하지 않고 회수할 대상이 많은 영역을 회수 영역을 고르는 기준이된다.</li>
+<li>연속된 자바 힙을 동일한 크기의 여러 독립 리전으로 나누고, 각 리전은 필요에 따라 신세대 (에덴,생존자) 혹은 구세대 공간이 될 수 있다.<br/>
+<strong>G1 컬렉터 동작</strong></li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong>최초 표시</strong><br/>
+시작 단계 스냅숏생성, 사용자 스레드를 일시 정지하나 매우 짧은 시간에 끝난다.</li>
+<li><strong>동시 표시</strong><br/>
+객체들의 도달 가능성 분석, 전체 객체 그래프를 재귀적으로 스캔에 회수 대상을 찾는다. 사용자 스레드와 동시에 수행된다.</li>
+<li><strong>재표시</strong><br/>
+시작단계 스냅숏 이후 <strong>변경된 소수의 객체</strong>만 처리한다. 사용자 스레드가 잠시 정지되나 소수의 객체이므로 빠르게 끝난다.</li>
+<li><strong>복사 및 청소</strong><br/>
+통계 데이터를 기초해 리전들을 회수 가치와 비용에 따라 정렬하고 설정헀던 정지 시간에 부합하도록 회수 계획을 세운다.<br/>
+생존 객체들을 빈 리전으로 이동 하는데 이때 사용자 스레드는 잠시 정지된다. </li>
+</ol>
+<ul>
+<li>정지 시간의 기대값은 현실적인 값이어야한다. 너무 짧게 설정 할 경우에 아주 일부 리전만 회수하고 종료되는데, 메모리 할당 속도를 따라잡지 못하면 쓰레기가 점차 쌓여 힙이 가득 차게된다. 이경우 전체 GC가 일어나 전체 성능이 감소한다.</li>
+</ul>
+<blockquote>
+<p><strong>G1 대 CMS</strong><br/>
+<strong>공통점</strong></p>
+<ul>
+<li>일시 정지 시간을 제어하는데 집중</li>
+<li>세대간 참조를 다루기 위해 <strong>카드 테이블</strong>을 구현</li>
+<li>카드 테이블 관리를 위해 <strong>사후 쓰기 장벽</strong> 사용</li>
+</ul>
+</blockquote>
+<blockquote>
+<p><strong>차이점</strong></p>
+<ul>
+<li>G1 은 최대 정지 시간을 지정하고, 메모리 레이아웃을 리전 단위로 나눔</li>
+<li>G1 마크-컴팩트 기반, CMS 는 마크-스윕 기반임</li>
+<li>동시 작업을 위해 G1 은  시작 단계 스냅숏 알고리즘, CMS 증분 업데이트 알고리즘 사용</li>
+<li>G1 은 더 복잡한 카드 테이블로 많은 메모리를 사용하고, 이로 인해 작업량도 많아 컴퓨팅 자원도 많이 소비한다.</li>
+<li>CMS의 쓰기 장벽은 동기적이나, G1은 비동기적으로 동작한다.</li>
+<li>즉,  <strong>G1 은 메모리 가 많고 멀티 프로세서 환경에서 효율이 좋다.</strong></li>
+</ul>
+</blockquote>
+<p><img src="../../assets/images/java/가비지-컬렉터-특징-비교.png" alt="가비지 컬렉터 특징 비교.png"/></p>
+<h2 id="36-저지연-가비지-컬렉터">3.6 저지연 가비지 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#36-저지연-가비지-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>가비지 컬렉터 성능은 <strong>처리량, 지연시간, 메모리 사용량</strong> 세가지로 측정된다.</li>
+<li>세 지표를 모두 괄목할만한 성능을 내는 완벽한 컬렉터를 만들기는 어렵거나 불가능하다.</li>
+<li>하드웨어의 발전으로 컬렉터의 <strong>메모리 사용량</strong>은 문제가 되지 않는다.</li>
+<li><strong>처리량</strong> 은 사양이 좋은 하드웨어를 사용하면 그만큼 줄어든다.</li>
+<li><strong>지연 시간</strong> 은 메모리량 늘릴때 탐색할 영역이 커져 악영향을 주기 때문에 가비지 컬렉터에서 가장 중요한 성능 지표이다.</li>
+<li>G1, CMS 는 시작 단계 스냅샷, 증분 업데이트로 표시 단계를 동시에 수행할 수 있게되었으나 모든과정이 동시에 수행되지는 않는다.</li>
+<li>모든 과정이 동시에 수행 되는 컬텍터는 셰넌 도어와 zgc 이다. </li>
+</ul>
+<h4 id="셰넌도어">셰넌도어<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#셰넌도어" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>오라클 jdk 에서 사용 불가능하다</li>
+<li>힙 크기와 상관 없이 가비지 컬렉션으로 인한 일시정지를 10ms 이내로 동작하게 하는것이 목표</li>
+<li>표시 단계, 객체 회수 후 마무리 작업까지 동시 수행한다.</li>
+<li>G1의 메모리 레이아웃 ( 리전, 거대 리전 )을 오라클의 ZGC 보다 잘 계승했다.</li>
+</ul>
+<p><strong>개선 사항</strong></p>
+<ul>
+<li><strong>동시 모으기 지원</strong>, G1은 모으기 단계를 병렬로 수행했지만 사용자 스레드는 정지되어야 했다.</li>
+<li>세대 단위 컬렉션을 사용하지 않는다.</li>
+<li>컴퓨팅 자원을 많이 사용하는 기억 집합 대신 <strong>연결 행렬</strong>로 리전간의 참조 관계를 기록한다.</li>
+</ul>
+<p><strong>동작 방식<br/>
+<img src="../../assets/images/java/shenandoah-cycle.png" alt="shenandoah-cycle.png"/></strong></p>
+<ol>
+<li><strong>최초 표시</strong><br/>
+GC 루트에서 직접 참조 하는 객체들을 표시, 사용자 스레드가 일시 정지하나 매우 짧다. GC 루트 수에 수행 시간이 비례한다.</li>
+<li><strong>동시 표시</strong><br/>
+객체 그래프를 타고 힙을 탐색하며 도달 가능한 모든 객체를 표시한다. 객체 수에 수행 시간이 비례한다.</li>
+<li><strong>최종 표시</strong><br/>
+보류중인 모든 표시를 완료하고 GC 루트 집합을 다시 스캔 한다. 짧게 일시 정지된다.</li>
+<li><strong>동시 청소</strong><br/>
+살아 있는 객체가 하나도 없는 리전들을 청소한다.</li>
+<li><strong>동시 이주</strong><br/>
+회수 집합 안에 살아 있는 객체들을 다른 빈 리전으로 복사한다. <strong>읽기 장벽</strong>과 <strong>포워딩 포인터</strong>를 이용해 사용자 스레드와 객체 복사 작업의 동시성 문제를 해결한다.</li>
+<li><strong>최초 참조</strong><br/>
+빈 리전으로 객체들을 이주 한 다음 모든 참조를 이주한 새로운 주소로 갱신한다. ( 이 작업을 <strong>참조 갱신</strong> 이라 한다. )<br/>
+이주 단계의 모든 GC 스레드와 사용자 스레드가 <strong>이주를 끝마쳤음을 보장하기만 한다</strong>. 사용자 스레드를 짧게 일시 정지 한다.</li>
+<li><strong>동시 참조 갱신</strong><br/>
+실제 <strong>참조 갱신</strong>을 시작한다. 수행시간은 메모리에 존재하는 참조 수에 비례한다. 물리 메로리 주소의 순서대로 참조 타입을 선형 검색하여 이전 값을 새로운 값으로 갱신 한다.</li>
+<li><strong>최종 참조 갱신</strong><br/>
+힙의 참조를 갱신한 후에 GC 루트 집합의 참조도 갱신한다. 일시 정시되며 GC 루트 개수에 비례한다.</li>
+<li><strong>동시 청소</strong><br/>
+회수 집합의 모든 리전에 살아 있는 객체가 남아 있지 않게 된다. 그래서 동시 청소가 가능하며 할당 공간을 확보할 수 있다.</li>
+</ol>
+<p><strong>포워딩 포인터</strong></p>
+<ul>
+<li>동시 이주를 가능케 하는 핵심 기술</li>
+<li><strong>기존 방식</strong>
+<ul>
+<li>메모리 변경이 일어난 후에 메모리 보호 트랩을 설정하여 옛 주소로 프로그램이 접근하면 트랩에 의해 새로운 주소를 사용하게끔 한다.</li>
+<li>운영체제의 지원이 필수적이며, 사용자 모드 &lt;-> 커널 모드의 전환으로 비용이 크다.</li>
+</ul>
+</li>
+<li><strong>포워딩 포인터</strong>
+<ul>
+<li>원래의 객체 레이아웃 구조 상단에 참조 필드를 추가한다. 동시 이주가 아닌경우에 참조필드가 객체 자신을 가리킨다.</li>
+<li>옛 객체의 포워딩 포인터의 주소가 GC 이후 이주된 새로운 주소 공간을 가리키게 하면된다.</li>
+<li>옛 객체가 아직 회수되지 않았더라도 기존 참조를 사용해 새로운 객체를 포워딩 된다.</li>
+<li>스레드의 경쟁 상태 문제가 존재하게된다. 그래서 CAS로 동기화 한다.</li>
+<li>객체로의 접근을 모두 보호하려면 읽기 장벽 쓰기 장벽을 모두 사용한다.</li>
+</ul>
+</li>
+</ul>
+<p><strong>추가된 개선 사항들</strong></p>
+<ul>
+<li><strong>로드 참조 장벽 도입</strong>
+<ul>
+<li>객체 참조 타입의 데이터를 읽거나 쓸 때만 끼어드는 메모리 장벽 모델</li>
+<li>원시타입에는 장벽이 존재하지 않아 오버헤드가 줄어든다.</li>
+</ul>
+</li>
+<li><strong>포워드 포인터를 객체 해더에 통합</strong>
+<ul>
+<li>객체 헤더의 마크 비트에 포워드 포인터 추가</li>
+</ul>
+</li>
+<li><strong>스택 워터마크를 활용한 스레드 스택 동시 처리</strong>
+<ul>
+<li>스레드 스택에서 최상위 스택만이 변화가 생긴다. 그 아래 프레임은 사용자 스레드가 실행중에도 GC 스레드가 스캔할 수 있음을 의미한다.</li>
+<li>사용자 스레드가 메서드를 반환하거나 예외등으로 스택 프레임을 파괴했을 경우에 워터 마크 (수위) 를 사용한다.</li>
+<li>최초 표시때 일시 정지 후 진행하던 작업을 동시에 수행할 수 있게 되었다.</li>
+</ul>
+</li>
+</ul>
+<p>사용자 스레드가 최상위 스택 프레임을 파괴할 때마다 아래의 작업을 수행한다.</p>
+<ol>
+<li>워터 마크를 한칸 낮춘다.</li>
+<li>GC 스레드가 워터 마크 위로는 스캔하지 못하게 막는다.</li>
+<li>1의 결과로 워터 마크위로 떠오른 스택 프레임을 스캔한다.</li>
+</ol>
+<h4 id="zgc">ZGC<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#zgc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>기본적으로 세대 구분을 하지 않는다.</li>
+<li>리전 기반 메모리 레이아웃 사용</li>
+<li>동시 마크-컴팩트 알고리즘 사용을 위해 <strong>읽기 장벽</strong>, <strong>컬러 포인터</strong>, <strong>메모리 다중 매핑</strong> 기술을 활용</li>
+</ul>
+<h4 id="세대를-구분-하지-않는-zgc">세대를 구분 하지 않는 ZGC<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#세대를-구분-하지-않는-zgc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>리전 기반 메모리 레이아웃</strong></p>
+<ul>
+<li>g1, zgc의 메모리 리전과 차이점은 동적으로 생성/파괴될 수 있으면서 크기 또한 동적이다.
+<ul>
+<li>소 리전 : 2MB</li>
+<li>중 리전 : 32MB</li>
+<li>대 리전 : 크기가 동적이며 ( 4mb 이상 ) , n*2MB 큰 객체를 하나를 담기위해 사용한다.<br/>
+객체의 크키가 크기 때문에 재할당 작업에서 제외된다.</li>
+</ul>
+</li>
+</ul>
+<p><strong>병렬 모으기와 컬러 포인터</strong></p>
+<ul>
+<li>
+<p><strong>컬러 포인터</strong><br/>
+<img src="../../assets/images/java/colorpointer.png" alt="colorpointer.png"/><br/>
+<em>(위의 이미지의 객체 주소는 42bit 인데 jdk 12 버전 까지의 해당 사항이다.)</em></p>
+<ul>
+<li>병렬 모으기를 지원하기 위해 zgc 에서 읽기 장벽과 함께 사용하는 기술이다. </li>
+<li>컬러 포인터는 JVM 에서 메모리를 가리키는데 사용하기 위해 재정의한 포인터 기술 이다.</li>
+<li>객체의 생사 여부를 판단 하는 표시를 컬러 포인터에서는 객체를 가리키는 포인터에 직접 표시한다. 포인터 자체에 추가 정보를 직접 저장하는 기술이다.<br/>
+<em>시리얼 컬렉터는 객체 헤더에, g1,섀년 도어는 비트맵 구조에 기록한다.</em></li>
+<li>리눅스는 46bit ( 64 TB) 의 메모리만 사용가능한데, 컬러 포인터는 객체 주소를 표현 하는 비트를 44 bit 로 제한 하고 남은 20 bit 중 4bit를 플래그 bit 로 사용한다.</li>
+<li>플래그 비트를 통해  삼색 표시 상태(동시 접근 가능성 판단하는 삼색 알고리즘 )를 알 수 있다.
+<ul>
+<li>Finalizable : finalize()로 접근 가능한가</li>
+<li>Rempped : 해당 객체가 재매핑 집합에 추가되었는가</li>
+<li>Marked1 : 객체가 추가 마킹 단계에서도 여전히 유효한가 </li>
+<li>marked0 : 객체가 초기 마킹 단계에서 마킹 되었는가 ( 회색 -> 검은색 )</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>컬러 포인터 장점</strong></p>
+<ul>
+<li>한 리전 안의 생존 객체들이 이동하면 그 즉시 해당 리전을 재활용 가능 하다</li>
+<li>가비지 컬렉션 과정에서 메모리 장벽수를 줄일 수 있다. 정보를 포인터 자체에 두기 때문에 일부 쓰기 장벽이 필요 없어지기 때문이다.</li>
+<li>컬러 포인터를 객체 표시 및 재배치와 관련해 더 많은 정보를 담을 수 있는 확장 가능한 저장 구조로 쓸 수 있다.</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://dev.java/learn/jvm/tool/garbage-collection/zgc-deepdive/" class="external external-link">zgc 참고<svg aria-hidden="true" class="external-icon" style="max-width:0.8em;max-height:0.8em;" viewBox="0 0 512 512"><path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z"></path></svg></a></p>
+<ul>
+<li><strong>다중 매핑</strong><br/>
+<img src="../../assets/images/java/zgc-multi-mapping.png" alt="zgc-multi-mapping.png"/>
+<ul>
+<li>컬러 포인터를 적용하려면 재정의한 포인터가 기계어로 변환되어 프로세서에 전달될때 프로세서가 포인터에 포함된 플래그 비트를 구분할 수 있어야 한다. 그러나 기본적으로 프로세서는 포인터의 전체 값을 메모리 주소 값으로 인식한다.</li>
+<li>가상 주소 마스크로 쉽게 해결할 수 있었던 스팍용 솔라리스 시스템에서와 다르게 x86 시스템에서는 <strong>가상 메모리 매핑 기술</strong>과 관련한 해법인 <strong>다중 매핑을</strong> 도입했다.</li>
+<li>다중 매핑은 다대일 매핑이다. 논리적 주소 여러개와 물리 메모리 공간 하나가 매핑된다. 논리적 주소들은 각각 포인터의 색상 플래그에 해당한다.</li>
+</ul>
+</li>
+</ul>
+<p><strong>ZGC 동작 방식</strong></p>
+<p><img src="../../assets/images/java/zgc-cycle.png" alt="zgc-cycle.png"/></p>
+<ol>
+<li>표시 시작 : g1,셰넌도어의 최초 표시 단계와 같다</li>
+<li><strong>동시 표시</strong> :<br/>
+전체 객체 그래프를 탐색하고 표시한다. 짧은 일시정지가 일어나며 zgc의 표시는 객체가 아닌 포인터에 이루어진다. marked0,marked1 플래그가 갱신된다.</li>
+<li><strong>동시 재배치 준비</strong> :<br/>
+청소해야할 리전들을 선정하여 재배치 집합을 만든다. zgc는 가비지 컬렉션 수행시마다 모든 리전을 수행한다. G1이 기억 집합을 관리하는 비용 대신 전체 스캔 하는 비용을 선택한 것이다.</li>
+<li><strong>동시 재배치</strong> :<br/>
+재배치 집합 안의 생존 객체들을 새로운 리전으로 복사한다. 컬러 포인터 덕분에 객체가 재배치 집합에 속하는지는 참조만 보고 알 수 있다. 
+<ul>
+<li><strong>포인터의 자가 치유</strong> : 사용자 스레드가 재배치 집합에 포함된 객체에 동시 접근시 <strong>메모리 장벽</strong>이 끼어들어 즉시 해당 리전의 포워드 테이블을 확인해 변경된 새로운 객체로 사용자 스레드 포워드 시킨다. 또한, 해당 참조의 값도 새로운 객체를 가리 키도록 갱신한다.</li>
+</ul>
+</li>
+<li><strong>동시 재매핑</strong> :<br/>
+힙 전체에서 재배치 집합에 있는 옛 객체들을 향하는 참조 전부를 갱신하는 작업<br/>
+zgc에서는 재매핑 단계를 다음 가비지 컬렉션이 시작되는 주기에 동시에 수행한다. 두 단계 모두 객체 그래프 전체를 탐색해야하기 때문이다.</li>
+</ol>
+<h4 id="세대-구분-zgc">세대 구분 ZGC<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#세대-구분-zgc" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>세대를 구분해 젊은 객체들을 더 자주 회수할 수 있다는 장점이 존재한다.</li>
+<li>기존 zgc 는 모든 객체를 대상으로 회수 작업을 해야한다는 문제가 있다.</li>
+<li>약한 세대 가설에 따라 젊은 객체는 더 일찍 죽는데 세대를 구분하면 더 많은 메모리 확보가 가능하다.</li>
+<li>세대간 참조를 위해 다른 GC 들과 마찬가지로 쓰기 장벽을 사용한다.</li>
+<li><strong>다중 매핑 메모리 제거</strong>
+<ul>
+<li>실제 메모리 사용량보다 3 배 많게 표시되던 다중 매핑 메모리를 제거했다.</li>
+<li>컬러 포인터에서 관련 플래그 들이 사라졌다.</li>
+</ul>
+</li>
+<li><strong>다양한 장벽 최적화</strong>
+<ul>
+<li>기업 집합 장벽</li>
+<li>시작 단계 스냅숏 표시 장벽</li>
+<li>쓰기 장벽 버퍼</li>
+<li>장벽 패치</li>
+</ul>
+</li>
+<li><strong>이중 버퍼를 이용한 기억 집합 관리</strong>
+<ul>
+<li>세대간 참조를 카드 테이블에 저장하는데 ZGC에서는 비트맵을 사용해 정확한 위치를 기록한다.</li>
+<li>구세대 리전 각각에 기억 집합 비트맵 한쌍을 가지고 있다.</li>
+<li>비트맵 하나는 애플리케이션 스레드들의 쓰기 장벽에서 수정된다.</li>
+<li>나머지 비트맵 하나는 읽기 전용으로 gc 스레드가 참고한다.</li>
+</ul>
+</li>
+<li><strong>밀집도 기반 리전 처리</strong>
+<ul>
+<li>회수 리전을 정하기 위해 신세대 리전들의 밀집도를 기준으로한다.</li>
+<li>생존자 리전들은 다음번 신세대 gc때 밀집도가 더 높아져 회수 대상이 될 가능성이 커진다.</li>
+</ul>
+</li>
+<li><strong>거대 객체 관리</strong>
+<ul>
+<li>거대한 객체는 신세대에 바로 할당되고 객체 재배치 없이 노화시킬 수 있다. </li>
+</ul>
+</li>
+</ul>
+<h2 id="37-적합한-가비지-컬렉터-선택하기">3.7 적합한 가비지 컬렉터 선택하기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#37-적합한-가비지-컬렉터-선택하기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="앱실론-컬렉터">앱실론 컬렉터<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#앱실론-컬렉터" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>노옵 가비지 컬렉터</li>
+<li>가비지 컬렉터의 영향을 배제 해야하는 성능,스트레스 테스트에 이용한다.</li>
+<li>단 몇 분 몇초만 동작해 부하가 적고 메모리 회수 활동을 하지 않는 어플리케이션에 적합하다.</li>
+</ul>
+<h4 id="컬렉터-간-비교-및-선택">컬렉터 간 비교 및 선택<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#컬렉터-간-비교-및-선택" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><strong>컬렉터 선택 요인</strong></p>
+<ul>
+<li>어플리케이션의 주목적
+<ul>
+<li>처리량 </li>
+<li>일시 정지 시간 </li>
+</ul>
+</li>
+<li>어플리케이션 구동 서브시스템</li>
+<li>jdK 제공자</li>
+</ul>
+<p><strong>지연 시간이 중요한 상황 (브라우저 - 서버 시스템)에서의 선택 흐름</strong></p>
+<ul>
+<li>자금 사정이 여유롭고 최적화 경험이 부족 -> 징 VM, C4</li>
+<li>상용 제품을 쓸 여유가 없지만, 소프트웨어 하드웨어 모델을 제어할 수 있다면 -> ZGC</li>
+<li>레거시 시스템의 경우 -> 메모리 용량에 따라 다르다. 
+<ul>
+<li>4~6 GB -> CMS</li>
+<li>6GB 이상 -> G1<br/>
+<em>G1 참조 관계를 유지하기 위해서 더 많은 메모리를 사용하기 때문이다.</em></li>
+</ul>
+</li>
+</ul>
+<p><strong>ORACLE 가비지 선택 메뉴얼</strong></p>
+<ul>
+<li>100mb 이내의 데이터를 다룬다 -> 시리얼 컬렉터</li>
+<li>단일 프로세서만 사용하며 일시 정지 시간에 제약이 없다 -> 시리얼 컬렉터</li>
+<li>최대성능이 가장 중요하고, 지역 시간에 제약이 없거나 1초이상 허용한다 -> 기<strong>본 컬렉터, 페러렐 컬렉터</strong></li>
+<li>처리량 보다 응답 시간이 중요하고 STW가 짧아야 한다 -> <strong>G1</strong></li>
+<li>응답 시간이 매우 중요하다 -> <strong>세대 구분 ZGC</strong></li>
+</ul>
+<h2 id="38-실전-메모리-할당과-회수-전략">3.8 실전 메모리 할당과 회수 전략<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#38-실전-메모리-할당과-회수-전략" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>
+<p>단순한 시리얼 컬렉터를 기반으로 실습한다. <code>-XX:+UseSerialGc</code></p>
+</li>
+<li>
+<p>시리얼 컬렉터는 <strong>마크-카피 알고리즘</strong>을 사용하므로 신세대, 구세대 공간이 1:1 이다.</p>
+</li>
+<li>
+<p>또, 신세대 공간은 <code>--XX:SurvivorRatio=8</code> 로  8:1 로 에덴 공간, 생존자 공간을 나눌 수 있다.</p>
+</li>
+<li>
+<p>에덴 공간이 가득 찼고 생존자 객체 크기가 공간 크기보다 크다면 <strong>할당 보증 메커니즘</strong>에 의해 구세대로 이동한다.</p>
+</li>
+<li>
+<p>객체의 나이로 구세대로 이동 시킬 수 있는데, <code>--XX:TargetSurvivorRatio</code> 를 사용해 생존자 공간이 찬 비율에 따라 구세대로 승격 가능하다.</p>
+</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/java와-jvm" class="internal internal-link alias" data-slug="탐색/주제/java와-jvm">Java와 JVM</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-70" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#35-클래식-가비지-컬렉터" data-for="35-클래식-가비지-컬렉터">3.5 클래식 가비지 컬렉터</a></li><li class="depth-0"><a href="#36-저지연-가비지-컬렉터" data-for="36-저지연-가비지-컬렉터">3.6 저지연 가비지 컬렉터</a></li><li class="depth-0"><a href="#37-적합한-가비지-컬렉터-선택하기" data-for="37-적합한-가비지-컬렉터-선택하기">3.7 적합한 가비지 컬렉터 선택하기</a></li><li class="depth-0"><a href="#38-실전-메모리-할당과-회수-전략" data-for="38-실전-메모리-할당과-회수-전략">3.8 실전 메모리 할당과 회수 전략</a></li><li class="depth-0"><a href="#주제" data-for="주제">주제</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../책/jvm-밑바닥까지-파헤치기/" class="internal">Jvm 밑바닥까지 파헤치기</a></li><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/java와-jvm" class="internal">Java와 JVM</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr"><head><title>16. 트랜잭션 락, 2차 캐시</title><meta charset="utf-8"/><link rel="preload" href="../../index-c2304d2c.css" as="style"/><link rel="preload" href="../../prescript-2bfc6315.js" as="script"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="영석의 기술 노트"/><meta property="og:title" content="16. 트랜잭션 락, 2차 캐시"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="16. 트랜잭션 락, 2차 캐시"/><meta name="twitter:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image:alt" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta property="og:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:url" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta name="twitter:image" content="https://yeongseoksong.github.io/blog/static/og-image.png"/><meta property="og:image:type" content="image/.png"/><meta property="twitter:domain" content="yeongseoksong.github.io/blog"/><meta property="og:url" content="https://yeongseoksong.github.io/blog/책/jpa/16.-트랜잭션-락,-2차-캐시"/><meta property="twitter:url" content="https://yeongseoksong.github.io/blog/책/jpa/16.-트랜잭션-락,-2차-캐시"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="학습과 실험을 정리한 노트입니다. 표시된 날짜는 원본 기록일입니다."/><meta name="generator" content="Quartz"/><link href="../../index-c2304d2c.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-e1e93ade.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-6ee21cee.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-b43df3ac.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-9406c2cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-0be4fa7f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d2eefd3a.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a71023bb.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-89d3cd78.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-2bfc6315.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json() }).catch(e => { console.warn("[Quartz] Could not load ../../static/contentIndex.json (" + e.message + "); is configuration.contentIndex disabled?"); return {} });window.quartzStaticUrl = new URL("../../static/", location.href).href</script></head><body data-slug="책/jpa/16.-트랜잭션-락,-2차-캐시" data-basepath="/blog"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar" data-sidebar-mode="fit"><h2 class="page-title" data-quartz-plugin="page-title" data-quartz-component="PageTitle"><a href="../..">영석의 기술 노트</a></h2><div class="mobile-only"><div class="spacer" data-quartz-plugin="spacer" data-quartz-component="Spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search" data-quartz-plugin="search" data-quartz-component="Search"><button class="search-button" aria-label="검색" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>검색</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="검색어를 입력하세요" placeholder="검색어를 입력하세요"/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="다크 모드" data-quartz-plugin="darkmode" data-quartz-component="Darkmode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="다크 모드"><title>다크 모드</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="라이트 모드"><title>라이트 모드</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="readermode" aria-label="리더 모드" data-quartz-plugin="reader-mode" data-quartz-component="ReaderMode"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="readerIcon" fill="currentColor" stroke="currentColor" stroke-width="0.2" stroke-linecap="round" stroke-linejoin="round" width="64px" height="64px" viewBox="0 0 24 24" aria-label="리더 모드"><title>리더 모드</title><g transform="translate(-1.8, -1.8) scale(1.15, 1.2)"><path d="M8.9891247,2.5 C10.1384702,2.5 11.2209868,2.96705384 12.0049645,3.76669482 C12.7883914,2.96705384 13.8709081,2.5 15.0202536,2.5 L18.7549359,2.5 C19.1691495,2.5 19.5049359,2.83578644 19.5049359,3.25 L19.5046891,4.004 L21.2546891,4.00457396 C21.6343849,4.00457396 21.9481801,4.28672784 21.9978425,4.6528034 L22.0046891,4.75457396 L22.0046891,20.25 C22.0046891,20.6296958 21.7225353,20.943491 21.3564597,20.9931534 L21.2546891,21 L2.75468914,21 C2.37499337,21 2.06119817,20.7178461 2.01153575,20.3517706 L2.00468914,20.25 L2.00468914,4.75457396 C2.00468914,4.37487819 2.28684302,4.061083 2.65291858,4.01142057 L2.75468914,4.00457396 L4.50368914,4.004 L4.50444233,3.25 C4.50444233,2.87030423 4.78659621,2.55650904 5.15267177,2.50684662 L5.25444233,2.5 L8.9891247,2.5 Z M4.50368914,5.504 L3.50468914,5.504 L3.50468914,19.5 L10.9478955,19.4998273 C10.4513189,18.9207296 9.73864328,18.5588115 8.96709342,18.5065584 L8.77307039,18.5 L5.25444233,18.5 C4.87474657,18.5 4.56095137,18.2178461 4.51128895,17.8517706 L4.50444233,17.75 L4.50368914,5.504 Z M19.5049359,17.75 C19.5049359,18.1642136 19.1691495,18.5 18.7549359,18.5 L15.2363079,18.5 C14.3910149,18.5 13.5994408,18.8724714 13.0614828,19.4998273 L20.5046891,19.5 L20.5046891,5.504 L19.5046891,5.504 L19.5049359,17.75 Z M18.0059359,3.999 L15.0202536,4 L14.8259077,4.00692283 C13.9889509,4.06666544 13.2254227,4.50975805 12.7549359,5.212 L12.7549359,17.777 L12.7782651,17.7601316 C13.4923805,17.2719483 14.3447024,17 15.2363079,17 L18.0059359,16.999 L18.0056891,4.798 L18.0033792,4.75457396 L18.0056891,4.71 L18.0059359,3.999 Z M8.9891247,4 L6.00368914,3.999 L6.00599909,4.75457396 L6.00599909,4.75457396 L6.00368914,4.783 L6.00368914,16.999 L8.77307039,17 C9.57551536,17 10.3461406,17.2202781 11.0128313,17.6202194 L11.2536891,17.776 L11.2536891,5.211 C10.8200889,4.56369974 10.1361548,4.13636104 9.37521067,4.02745763 L9.18347055,4.00692283 L8.9891247,4 Z"></path></g></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a, b) => {\n    if (!a.isFolder &amp;&amp; !b.isFolder || a.isFolder &amp;&amp; b.isFolder) {\n      return (a.displayName || \&quot;\&quot;).localeCompare(b.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a.isFolder &amp;&amp; b.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}" data-quartz-plugin="explorer" data-quartz-component="Explorer"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-114" aria-label="탐색기"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>탐색기</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-114" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs" data-quartz-plugin="breadcrumbs" data-quartz-component="Breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/">책</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../책/jpa/">jpa</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>16. 트랜잭션 락, 2차 캐시</a></div></nav><h1 class="article-title" data-quartz-plugin="article-title" data-quartz-component="ArticleTitle">16. 트랜잭션 락, 2차 캐시</h1><p show-comma="true" class="content-meta" data-quartz-plugin="content-meta" data-quartz-component="ContentMeta"><time datetime="2024-12-03T00:00:00.000Z">2024년 12월 03일</time><span>14 min read</span></p><ul class="tags" data-quartz-plugin="tag-list" data-quartz-component="TagList"><li><a href="../../tags/topic/jpa" class="internal tag-link">topic/jpa</a></li><li><a href="../../tags/concept/orm" class="internal tag-link">concept/orm</a></li><li><a href="../../tags/concept/transactions" class="internal tag-link">concept/transactions</a></li></ul></div></div><article class="popover-hint" data-quartz-plugin="content-page" data-quartz-component="ContentPage"><div class="markdown-preview-view markdown-rendered"><h1 id="161-트랜잭션과-락">16.1 트랜잭션과 락<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#161-트랜잭션과-락" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1611-트랜잭션과-격리-수준">16.1.1 트랜잭션과 격리 수준<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1611-트랜잭션과-격리-수준" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>ACID</li>
+<li>격리 수준</li>
+<li><strong>트랜잭션 격리 수준으로는 second lost updates problem 을 해결 불가</strong><br/>
+<em>[참고]</em> : [5. 트랜잭션과 잠금](/%EC%B1%85/real%20mysql%201/5.%20%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98%EA%B3%BC%20%EC%9E%A0%EA%B8%88.md#5.4 MySQL의 격리 수준)</li>
+</ul>
+<blockquote>
+<p>트랜잭션을 사용하면 <strong>마지막 커밋만 인정하기</strong> 만 적용된다.</p>
+</blockquote>
+<h2 id="1612-낙관적-락과-비관적-락-기초">16.1.2 낙관적 락과 비관적 락 기초<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1612-낙관적-락과-비관적-락-기초" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>1차 캐시를 활용헤 READ COMMITTED 격리 수준에서도 어플리케이션 레벨에서 REPEATABLE READ 가능</li>
+<li><strong>낙관적 락</strong></li>
+<li><strong>비관적 락</strong> </li>
+<li><strong>두번의 갱신 분실 문제</strong> : A,B 가 동시에 레코드를 수정했을 때 이후에 수정된 사항만 데이터베이스에 적용되는 것
+<ul>
+<li><strong>마지막 커밋만 인정</strong></li>
+<li><strong>최초 커밋만 인정</strong> : <code>@Version</code> 기능으로 쉽게 구현 가능</li>
+<li><strong>충돌하는 갱신 내용 병합하기</strong></li>
+</ul>
+</li>
+</ul>
+<h2 id="1613-version">16.1.3 @Version<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1613-version" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>JPA 가 제공하는 낙관적 락을 사용하기 위한 어노테이션</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Entity</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Board</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Id</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> String id;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Version</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> Integer version;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<ul>
+<li>수정할 때 마다 <code>version</code> 값이 자동으로 증가한다. 조회 시점 버전과 수정 시점의 버전이 다르다면 예외가 발생한다.</li>
+<li><strong>즉 최초 커밋만 인정 이 사용된다.</strong></li>
+</ul>
+<h4 id="버전-정보-비교-방법">버전 정보 비교 방법<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#버전-정보-비교-방법" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sql" data-theme="github-light github-dark"><code data-language="sql" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">update</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> board </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">set</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> title</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">?,</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">version=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">? (</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">+</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> 시킨다.) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">where</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> id</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">?</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">And</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> version</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">? (최초 조회 시 의 버전)</span></span></code></pre></figure>
+<ul>
+<li>다른 트랜잭션에서 해당 레코드를 수정해 <code>version</code> 이 변경되었으면 where절에 의해 수정할 레코드를 찾지 못하게 된다.</li>
+<li><strong>JPA 가 버전이 이미 증가한 것으로 판단하고 예외를 발생</strong> 시킨다.</li>
+<li>엔티티의 <strong>값</strong>을 변경하면 증가하며, <strong>임베디드 타입</strong>, <strong>값 타입 컬렉션</strong> 또한 변경 시 버전이 증가한다. </li>
+<li><strong>연관관계 필드는 외래 키를 관리하는 연관 관계의 주인 필드를 수정할 때만 버전이 증가한다.</strong> </li>
+<li><code>version</code> 값은 임의로 수정하면 안되나 벌크 연산 시에는 버전 필드를 강제로 증가 시켜야 한다.</li>
+</ul>
+<h2 id="1614-jpa-락-사용">16.1.4 JPA 락 사용<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1614-jpa-락-사용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><code>em.find(Board.class,id,LockModeType.OPTIMISTIC)</code></li>
+<li><code>em.lock(board,LockModeType.OPTIMISTIC)</code></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th><strong>Lock Type</strong></th><th><strong>설명</strong></th></tr></thead><tbody><tr><td><strong>OPTIMISTIC</strong></td><td>낙관적 잠금. 엔티티의 <code>@Version</code> 필드를 기반으로 병행 업데이트를 제어.</td></tr><tr><td><strong>OPTIMISTIC_FORCE_INCREMENT</strong></td><td>낙관적 잠금 + 버전 증가 강제. 업데이트와 관계없이 버전 필드를 증가시킴.</td></tr><tr><td><strong>PESSIMISTIC_READ</strong></td><td>비관적 읽기 잠금. 다른 트랜잭션의 쓰기를 차단하지만 읽기는 허용.</td></tr><tr><td><strong>PESSIMISTIC_WRITE</strong></td><td>비관적 쓰기 잠금. 다른 트랜잭션의 읽기와 쓰기를 모두 차단.</td></tr><tr><td><strong>PESSIMISTIC_FORCE_INCREMENT</strong></td><td>비관적 잠금 + 버전 증가 강제. 다른 트랜잭션을 차단하면서 버전 필드 증가.</td></tr><tr><td><strong>NONE</strong></td><td>잠금 사용 안 함. 기본 동작.</td></tr></tbody></table></div>
+<h2 id="1615-jpa-낙관적-락">16.1.5 JPA 낙관적 락<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1615-jpa-낙관적-락" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>낙관적 락을 사용하기 위해서는 <code>@Version</code> 이 필요하다.</li>
+<li><code>@Version</code> 만 존재해도 낙관적 락이 적용되나, 낙관적 락으로 더 세밀하게 락 제어 가능</li>
+<li>데이터베이스에서 사용하는 실제 락을 사용하는 것이 아니라, JPA가 제공하는 <strong>버전 관리 기능</strong>을 사용하여 애플리케이션단에 락을 거는 방법</li>
+</ul>
+<h4 id="none">None<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#none" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>락 옵션 없이 <code>@Version</code> 만 사용하는 경우이다.</li>
+<li><code>@Version</code> 을 사용하더라도 다른 트랜잭션에 의한 변경(삭제)는 막지 못하므로 이러한 케이스가 없는 상황에서 사용한다. </li>
+<li><strong>엔티티를 수정하는 시점에 버전 정보를 확인한다.</strong></li>
+<li><strong>LostUpdate(두번의 갱신 분실 문제)</strong> 를 예방하게 된다.</li>
+</ul>
+<blockquote>
+<p>트랜잭션에서 먼저 commit을 수행 했다면 version 이 증가되므로  먼저 수행하게된 트랜 잭션이어도 exception이 발생한다. <strong>최초 커밋만 인정</strong></p>
+</blockquote>
+<h4 id="optimistic">OPTIMISTIC<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#optimistic" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><img src="../../assets/images/jpa/jpa-version.png" alt="jpa version.png"/></p>
+<ul>
+<li><strong>none</strong>의 경우 엔티티를 수정할 때만 버전을 체크하지만 해당 옵션을 추가하면 엔티티를 조회만 해도 버전을 체크한다.</li>
+<li>트랜잭션이 종료될 때까지 다른 트랜잭션에 의해 변경되지 않음을 보장한다.</li>
+<li><strong>commit 시점에 버전 정보를 조회해 버전이 같지 않다면 (다른 tx에서 수정한 경우) 예외 발생</strong></li>
+<li><strong>Dirty Read, Non repeatable-read</strong> 방지</li>
+</ul>
+<blockquote>
+<p>mvcc 는 트랜잭션 번호보다 낮은 번호의 내역을 undo log 에서 읽어와 Dirty Read,Non repeatable read 를 방지한다.<br/>
+OPTIMISTIC 방식은 처음 버전 정보만 가지고 commit 시점에 버전이 다르다면 exception이 을 발생시킨다.</p>
+</blockquote>
+<blockquote>
+<p><strong>트랜잭션 격리 수준으로 이미 위의 문제를 해결 가능한데 굳이 필요할까?</strong><br/>
+optimistic lock 옵션은 예외를 발생시킨다는 차이점이 존재한다. isoloation level 을 사용한 방식은 예외를 발생시키지 않고 현재 트랜잭션 레벨보다 낮은 트랜잭션을 읽어온다. 따라서 <strong>second Lost update</strong> 문제는 해결할 수 없는데, <strong>optimistic</strong> 옵션은 최초 커밋만 인정한다는 차이점이 존재한다.<br/>
+[참고]: <a href="../../메모/db/lock-과-mvcc" class="internal internal-link alias" data-slug="메모/db/lock-과-mvcc">lock 과 mvcc</a></p>
+</blockquote>
+<h4 id="optimistic_force_increment">OPTIMISTIC_FORCE_INCREMENT<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#optimistic_force_increment" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>그러나 단순히 image 파일의 추가의 경우 게시물의 버전이 오르지 않는다. </li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">tx.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">begin</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword">Board board </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> em.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">find</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(Board.class, id, LockModeType.OPTIMISTIC_FORCE_INCREMENT)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">board.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getImages</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">().</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">add</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...이미지) </span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//board에 물리적으로는 변경이 없었지만 논리적으로 변경이 일어난 상황</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">tx.</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">commit</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">()</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//버전값 강제 증가</span></span></code></pre></figure>
+<ul>
+<li>위와 같이 실행 했을 때 락이 존재하지 않는다면, image 칼럼이 추가, 수정되어도 board의 버전 값을 그대로이다. </li>
+<li>그러나,  해당 락을 걸었으므로 커밋 시에 버전 값이 증가해 논리적으로 같은 묶음으로 버전 관리가 가능하다.</li>
+<li><strong>엔티티 수정이 없었어도 버전 정보가 강제로 증가된다.</strong></li>
+</ul>
+<h2 id="1616-jpa-비관적-락">16.1.6 JPA 비관적 락<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1616-jpa-비관적-락" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>DB lock 에 의존한다.</li>
+</ul>
+<h4 id="pessimistic_write">PESSIMISTIC_WRITE<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#pessimistic_write" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>데이터 베이스에 write lock(Exclusive lock) 적용</li>
+<li><code>select for update</code></li>
+</ul>
+<h3 id="pessimistic_read">PESSIMISTIC_READ<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#pessimistic_read" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>read lock(shared lock)</li>
+<li><code>lock in share mode</code></li>
+</ul>
+<h4 id="pessimistic_force_increment">PESSIMISTIC_FORCE_INCREMENT<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#pessimistic_force_increment" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>버전을 사용하며 버전 정보를 강제로 증가 시킨다.</li>
+<li>nowait 을 지원하는 db에 for update nowait 적용
+<blockquote>
+<p><strong>for update nowait</strong><br/>
+select 시에 lock을 제어할 수 없으면 에러 처리<br/>
+다른 tx 에서 lock중이면 해당 행에 대한 lock을 바로 포기</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="1617-비관적-락과-타임아웃">16.1.7 비관적 락과 타임아웃<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1617-비관적-락과-타임아웃" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li>lock 취득 시 까지 트랙재션이 대기해야하므로 타임아웃 옵션 이 존재</li>
+</ul>
+<h1 id="162-2차-캐시">16.2 2차 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#162-2차-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<h2 id="1621-1차-캐시와-2차-캐시">16.2.1 1차 캐시와 2차 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1621-1차-캐시와-2차-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<h4 id="1차-캐시">1차 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1차-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>1차 캐시</strong>는 영속성 컨텍스트에 저장되며 트랜잭션과 같은 생명 주기를 갖는다.</li>
+<li>1차 캐시는 한 request 당 성능은 개선시킬 수 있지만 전체 어플리케이션 관점에서 본다면 그렇지 못하다.</li>
+</ul>
+<h4 id="2차-캐시">2차 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#2차-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li><strong>2차 캐시</strong>는 <strong>공유 캐시</strong>라고도 하는데 어플리케이션 전체 레벨에서 생존해 있는 캐시 영역이다.</li>
+<li>동시성을 극대화 하기 위해 캐시 객체는 복사본을 생성해 반환한다.</li>
+<li><strong>특징</strong>
+<ul>
+<li>영속성 유닛 범위의 캐시</li>
+<li>복사본 반환</li>
+<li>pk 기준으로 캐시하지만 영속성 컨텍스트가 다르다면 객체의 동일성을 보장 하지 않는다.
+<ul>
+<li>복사본을 반환 하니 당연하다.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="1623-하이버-네이트와-ehcache-적용">16.2.3 하이버 네이트와 EHCACHE 적용<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#1623-하이버-네이트와-ehcache-적용" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<hr/>
+<ul>
+<li><strong>엔티티 캐시</strong> : 엔티티 단위 캐시, 식별자로 조회하거나 컬렉션이 아닌 연관된 엔티티를 로딩할 때 사용</li>
+<li><strong>컬렉션 캐시</strong> : 엔티티와 연관된 컬렉션을 캐시. 컬렉션이 엔티티를 담고 있으면 식별자 값만 캐시</li>
+<li><strong>쿼리 캐시 :</strong> 쿼리와 파라미터 정보를 키로 사용해서 캐시. 결과가 엔티티면 식별자 값만 캐시</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="yml" data-theme="github-light github-dark"><code data-language="yml" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">properties</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:  </span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">  hibernate</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:  </span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">    cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">:  </span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">      use_second_level_cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">true  //2차 캐시 활성화 엔티티 캐시와, 쿼리 캐시 사용</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> </span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">      use_query_cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">true  // 쿼리 캐시 활성화</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="tag">      region.factory_class</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">: </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">org.hibernate.cache.ehcache.EhCacheRegionFactory//2차 캐시를 처리할 클래스 지정</span></span></code></pre></figure>
+<h4 id="엔티티-캐시와-컬렉션-캐시">엔티티 캐시와 컬렉션 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#엔티티-캐시와-컬렉션-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Entity</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Data</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Cacheable</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">  // 엔티티 캐시 적용</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//하이버 네이트 전용으로 더 세밀한 캐시 제어 설정</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">usage</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> CacheConcurrencyStrategy.READ_WRITE)  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">public</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> class</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="property"> Cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">    @</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Id</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> @</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">GeneratedValue</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> Long id;  </span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> String name;  </span></span>
+<span data-line> </span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">//컬렉션 캐시 적용</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">Cache</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">usage</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> CacheConcurrencyStrategy.READ_WRITE)  </span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">	</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">	@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">OneToMany</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">...</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">	private</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="keyword"> List&lt;..> ...</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span></code></pre></figure>
+<h4 id="cache">@Cache<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#cache" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>usage=CacheConcurrencyStrategy.</li>
+<li><strong>READ_ONLY</strong>
+<ul>
+<li>읽기 전용으로 사용한다. (update 하려고 하면 exception을 던짐) 간단하고 성능이 좋다. 항상 변하지 않는 데이터를 대상으로 사용하는게 좋다.</li>
+</ul>
+</li>
+<li><strong>NONSTRICT_READ_WRITE</strong>
+<ul>
+<li>객체 동시 수정 등에 대한 고려를 전혀 하지 않고 캐싱을 한다. 이 방식은 하나의 객체가 동시에 수정될 가능성이 거의 없는 경우에 사용한다.</li>
+</ul>
+</li>
+<li><strong>READ_WRITE</strong>
+<ul>
+<li>엄격한 읽기/쓰기로 두 개 이상의 스레드에서 동시 수정할 가능성에 대해서 고려하고 만들어야 한다.</li>
+</ul>
+</li>
+</ul>
+<h4 id="캐시-영역">캐시 영역<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#캐시-영역" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>@Cache 가 적용된 코드는 아래 두 영역에 저장된다.
+<ul>
+<li><strong>엔티티 캐시 영역</strong> </li>
+<li><strong>컬랙션 캐시 영역</strong></li>
+</ul>
+</li>
+</ul>
+<h4 id="쿼리-캐시">쿼리 캐시<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#쿼리-캐시" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>쿼리와 파라미터 정보를 키로 쿼리 결과를 캐시하는 방법</li>
+</ul>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="java" data-theme="github-light github-dark"><code data-language="java" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">@</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">QueryHints</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">value</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> @</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">QueryHint</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">( </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">name</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;org.hibernate.readOnly&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">value</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> =</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;true&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)) Member </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">findReadOnlyByUsername</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(String username);</span></span></code></pre></figure>
+<h4 id="쿼리-캐시-영역">쿼리 캐시 영역<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#쿼리-캐시-영역" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>
+<p>application.yml 에서 use_query_cache: true 를 활성화하면 아래 두가지 영역이 추가된다.</p>
+</li>
+<li>
+<p><code>org.hibernate.cache.internal.StandardQueryCache</code> : 쿼리 캐시를 저장하는 영역으로 쿼리, 쿼리 결과 집합, 쿼리를 실행한 시점의 타임스탬프가 보관된다.</p>
+</li>
+<li>
+<p><code>org.hibernate.cache.internal.UpdateTimestampsCache</code> : 쿼리 캐시가 유효한지 확인하기 위해 쿼리 대상 테이블의 가장 최근 변경 시간을 저장한다.</p>
+</li>
+<li>
+<p>쿼리 캐시는 데이터를 가장 최신으로 유지하기 위해 두 영역의 타임스탬프를 비교한다.</p>
+<ul>
+<li>우선 <code>StandardQueryCache</code> 영역을 조회해 타임 스탬프를 확인 A</li>
+<li><code>UpdateTimestampsCache</code> 에서 변경이력중 가장 최근 스탬프를 확인 B</li>
+<li>두 값을 비교해  A의 값이 더 작다면 데이터 베이스로부터 데이터를 조회해 캐시 데이터를 최신으로 업데이트 한다.</li>
+</ul>
+</li>
+<li>
+<p><strong>쿼리 캐시는 성능을 향상 시킬 수 있으나 변경이 잦은 테이블에 적용하면 성능이 오히려 저하된다.</strong></p>
+</li>
+</ul>
+<h4 id="쿼리-캐시와-컬렉션-캐시의-주의점">쿼리 캐시와 컬렉션 캐시의 주의점<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#쿼리-캐시와-컬렉션-캐시의-주의점" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<ul>
+<li>컬렉션 캐시는 엔티티의 식별자 값만 캐시한다.</li>
+<li>컬렉션 캐시의 식별자 값을 하나씩 실제 엔티티 캐시로 부터 찾는 과정일 수행하는데</li>
+<li>대상 엔티티에 엔티티 캐시를 적용하지 않으면 성능에 문제가 생긴다. (각 건을 DB로부터 조회해야한다.)</li>
+</ul>
+<h2 id="주제">주제<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#주제" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../탐색/주제/jpa와-영속성" class="internal internal-link alias" data-slug="탐색/주제/jpa와-영속성">JPA와 영속성</a></li>
+</ul>
+<h2 id="함께-읽기">함께 읽기<a role="anchor" aria-hidden tabindex="-1" data-no-popover href="#함께-읽기" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li><a href="../../메모/db/lock-과-mvcc" class="internal internal-link alias" data-slug="메모/db/lock-과-mvcc">lock 과 mvcc</a></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar" data-sidebar-mode="fit"><div class="graph" data-quartz-plugin="graph" data-quartz-component="Graph"><h3>그래프 뷰</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc" data-quartz-plugin="table-of-contents" data-quartz-component="TableOfContents"><button type="button" class="toc-header" aria-controls="toc-78" aria-expanded="true"><h3>목차</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#161-트랜잭션과-락" data-for="161-트랜잭션과-락">16.1 트랜잭션과 락</a></li><li class="depth-1"><a href="#1611-트랜잭션과-격리-수준" data-for="1611-트랜잭션과-격리-수준">16.1.1 트랜잭션과 격리 수준</a></li><li class="depth-1"><a href="#1612-낙관적-락과-비관적-락-기초" data-for="1612-낙관적-락과-비관적-락-기초">16.1.2 낙관적 락과 비관적 락 기초</a></li><li class="depth-1"><a href="#1613-version" data-for="1613-version">16.1.3 @Version</a></li><li class="depth-1"><a href="#1614-jpa-락-사용" data-for="1614-jpa-락-사용">16.1.4 JPA 락 사용</a></li><li class="depth-1"><a href="#1615-jpa-낙관적-락" data-for="1615-jpa-낙관적-락">16.1.5 JPA 낙관적 락</a></li><li class="depth-1"><a href="#1616-jpa-비관적-락" data-for="1616-jpa-비관적-락">16.1.6 JPA 비관적 락</a></li><li class="depth-2"><a href="#pessimistic_read" data-for="pessimistic_read">PESSIMISTIC_READ</a></li><li class="depth-1"><a href="#1617-비관적-락과-타임아웃" data-for="1617-비관적-락과-타임아웃">16.1.7 비관적 락과 타임아웃</a></li><li class="depth-0"><a href="#162-2차-캐시" data-for="162-2차-캐시">16.2 2차 캐시</a></li><li class="depth-1"><a href="#1621-1차-캐시와-2차-캐시" data-for="1621-1차-캐시와-2차-캐시">16.2.1 1차 캐시와 2차 캐시</a></li><li class="depth-1"><a href="#1623-하이버-네이트와-ehcache-적용" data-for="1623-하이버-네이트와-ehcache-적용">16.2.3 하이버 네이트와 EHCACHE 적용</a></li><li class="depth-1"><a href="#주제" data-for="주제">주제</a></li><li class="depth-1"><a href="#함께-읽기" data-for="함께-읽기">함께 읽기</a></li><li class="overflow-end"></li></ul></div><div class="backlinks" data-quartz-plugin="backlinks" data-quartz-component="Backlinks"><h3>백링크</h3><ul id="list-0" class="overflow"><li><a href="../../메모/db/lock-과-mvcc" class="internal">lock 과 mvcc</a></li><li><a href="../../책/" class="internal">책</a></li><li><a href="../../탐색/주제/jpa와-영속성" class="internal">JPA와 영속성</a></li><li class="overflow-end"></li></ul></div></div><footer class data-quartz-plugin="footer" data-quartz-component="Footer"><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.1.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-b151bd49.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-6f77c57c.js" type="module" data-persist="true"></script></html>
