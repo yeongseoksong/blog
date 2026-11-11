@@ -1,70 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
     <channel>
-      <title>영석의 기술 노트</title>
+      <title>기술 노트</title>
       <link>https://yeongseoksong.github.io/blog</link>
-      <description>최근 10 건 on 영석의 기술 노트</description>
+      <description>최근 10 건 on 기술 노트</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>분산시스템</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EB%B6%84%EC%82%B0%EC%8B%9C%EC%8A%A4%ED%85%9C/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EB%B6%84%EC%82%B0%EC%8B%9C%EC%8A%A4%ED%85%9C/</guid>
+    <title>메모</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>02</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/</guid>
+    <title>CA</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/ca/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/ca/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>2026</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/</guid>
+    <title>DB</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/db/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/db/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>대학원</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/</guid>
+    <title>JPA</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/jpa/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/jpa/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>인공지능</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/</guid>
+    <title>Java</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/java/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/java/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>assignment</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/assignment/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/2026/02/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5/assignment/</guid>
+    <title>OS</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/os/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/os/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>Building effective agents</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/building-effective-agents/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/building-effective-agents/</guid>
+    <title>Spring Security</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/spring-security/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/spring-security/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>ai</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/</guid>
+    <title>레퍼런스</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/%EB%A0%88%ED%8D%BC%EB%9F%B0%EC%8A%A4/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/%EB%A0%88%ED%8D%BC%EB%9F%B0%EC%8A%A4/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>논문 리뷰</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/</guid>
+    <title>알고리즘</title>
+    <link>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EB%A9%94%EB%AA%A8/%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item><item>
-    <title>_</title>
-    <link>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/_/</link>
-    <guid>https://yeongseoksong.github.io/blog/%EB%8C%80%ED%95%99%EC%9B%90/%EB%85%BC%EB%AC%B8-%EB%A6%AC%EB%B7%B0/ai/_/</guid>
+    <title>JPA</title>
+    <link>https://yeongseoksong.github.io/blog/%EC%B1%85/jpa/</link>
+    <guid>https://yeongseoksong.github.io/blog/%EC%B1%85/jpa/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Wed, 11 Nov 2026 02:00:02 GMT</pubDate>
+    <pubDate>Wed, 11 Nov 2026 05:08:05 GMT</pubDate>
   </item>
     </channel>
   </rss>
